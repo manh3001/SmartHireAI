@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server";
-import { zodOutputFormat } from "@anthropic-ai/sdk/helpers/zod";
+import { zodResponseFormat } from "openai/helpers/zod";
 import prisma from "@/lib/db/prisma";
 import { auth } from "@/auth";
-import { getAnthropicClient } from "@/lib/ai/client";
+import { getAiClient, AI_MODEL } from "@/lib/ai/client";
 import { SYSTEM_PROMPT } from "@/lib/ai/prompt";
 import { evaluationResultSchema, type EvaluationResult } from "@/lib/ai/schema";
 import { runCvEvaluation, type CvEvaluationDeps } from "@/lib/ai/evaluate";
@@ -14,18 +14,20 @@ export const runtime = "nodejs";
 const limiter = createRateLimiter({ max: 5, windowMs: 60000 });
 
 async function requestEvaluation(prompt: string): Promise<EvaluationResult> {
-  const client = getAnthropicClient();
-  const response = await client.messages.parse({
-    model: "claude-haiku-4-5",
-    max_tokens: 4096,
-    system: SYSTEM_PROMPT,
-    messages: [{ role: "user", content: prompt }],
-    output_config: { format: zodOutputFormat(evaluationResultSchema) },
+  const client = getAiClient();
+  const completion = await client.chat.completions.parse({
+    model: AI_MODEL,
+    messages: [
+      { role: "system", content: SYSTEM_PROMPT },
+      { role: "user", content: prompt },
+    ],
+    response_format: zodResponseFormat(evaluationResultSchema, "evaluation"),
   });
-  if (!response.parsed_output) {
+  const parsed = completion.choices[0]?.message.parsed;
+  if (!parsed) {
     throw new Error("Model không trả về kết quả hợp lệ");
   }
-  return response.parsed_output;
+  return parsed;
 }
 
 export async function POST(
