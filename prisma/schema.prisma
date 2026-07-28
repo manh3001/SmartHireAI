@@ -17,9 +17,11 @@ model User {
   email        String   @unique
   passwordHash String
   name         String
-  role         Role     @default(CANDIDATE)
-  createdAt    DateTime @default(now())
-  cvs          CV[]
+  role            Role             @default(CANDIDATE)
+  createdAt       DateTime         @default(now())
+  cvs             CV[]
+  jobDescriptions JobDescription[]
+  evaluations     Evaluation[]
 }
 
 model CV {
@@ -32,6 +34,7 @@ model CV {
   educations  Education[]
   skills      Skill[]
   projects    Project[]
+  evaluations Evaluation[]
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @updatedAt
 }
@@ -88,4 +91,34 @@ model Project {
   tech        String @default("")
   link        String @default("")
   order       Int    @default(0)
+}
+
+model JobDescription {
+  id          String       @id @default(cuid())
+  userId      String
+  user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title       String       @default("")
+  company     String       @default("")
+  rawText     String
+  evaluations Evaluation[]
+  createdAt   DateTime     @default(now())
+}
+
+model Evaluation {
+  id               String         @id @default(cuid())
+  cvId             String
+  cv               CV             @relation(fields: [cvId], references: [id], onDelete: Cascade)
+  jobDescriptionId String
+  jobDescription   JobDescription @relation(fields: [jobDescriptionId], references: [id], onDelete: Cascade)
+  userId           String
+  user             User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  overallScore     Int
+  strengths        Json
+  weaknesses       Json
+  matchedKeywords  Json
+  missingKeywords  Json
+  skillGaps        Json
+  summary          String
+  rawModelOutput   Json
+  createdAt        DateTime       @default(now())
 }
