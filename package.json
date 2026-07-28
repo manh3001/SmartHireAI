@@ -3,9 +3,10 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
+    "dev": "cross-env NODE_OPTIONS=--dns-result-order=ipv4first next dev",
+    "build": "cross-env NODE_OPTIONS=--dns-result-order=ipv4first next build",
+    "start": "cross-env NODE_OPTIONS=--dns-result-order=ipv4first next start",
+    "db:push": "cross-env NODE_OPTIONS=--dns-result-order=ipv4first prisma db push",
     "lint": "eslint",
     "test": "vitest run",
     "test:watch": "vitest"
@@ -26,6 +27,7 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "@vitejs/plugin-react": "^6.0.4",
+    "cross-env": "^10.1.0",
     "eslint": "^9",
     "eslint-config-next": "16.2.12",
     "jsdom": "^29.1.1",
