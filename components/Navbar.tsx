@@ -1,0 +1,45 @@
+import Link from "next/link";
+import { Sparkles } from "lucide-react";
+import { auth, signOut } from "@/auth";
+import { Button } from "@/components/ui/button";
+
+export default async function Navbar() {
+  const session = await auth();
+  const loggedIn = !!session?.user;
+
+  return (
+    <header className="sticky top-0 z-20 border-b border-slate-200 bg-white/80 backdrop-blur">
+      <div className="mx-auto flex h-14 max-w-5xl items-center justify-between px-4">
+        <Link
+          href={loggedIn ? "/dashboard" : "/"}
+          className="flex items-center gap-1.5 text-lg font-bold text-blue-600"
+        >
+          <Sparkles className="h-5 w-5" />
+          SmartHire
+        </Link>
+        <nav className="flex items-center gap-2">
+          {loggedIn ? (
+            <>
+              <span className="hidden text-sm text-slate-600 sm:inline">
+                {session!.user!.name}
+              </span>
+              <form
+                action={async () => {
+                  "use server";
+                  await signOut({ redirectTo: "/login" });
+                }}
+              >
+                <Button variant="outline" size="sm">Đăng xuất</Button>
+              </form>
+            </>
+          ) : (
+            <>
+              <Link href="/login"><Button variant="ghost" size="sm">Đăng nhập</Button></Link>
+              <Link href="/register"><Button size="sm">Đăng ký</Button></Link>
+            </>
+          )}
+        </nav>
+      </div>
+    </header>
+  );
+}
