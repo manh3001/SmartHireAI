@@ -6,6 +6,7 @@ import prisma from "@/lib/db/prisma";
 import { createCv, deleteCv } from "@/lib/cv/actions";
 import { deleteJobDescription } from "@/lib/jobs/actions";
 import Navbar from "@/components/Navbar";
+import ImportCvButton from "./ImportCvButton";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 
@@ -80,9 +81,12 @@ export default async function DashboardPage() {
             <h1 className="text-2xl font-bold text-slate-900">CV của bạn</h1>
             <p className="text-sm text-slate-500">Xin chào, {session.user.name}</p>
           </div>
-          <form action={createCv}>
-            <Button type="submit"><Plus className="mr-1 h-4 w-4" /> Tạo CV mới</Button>
-          </form>
+          <div className="flex gap-2">
+            <ImportCvButton />
+            <form action={createCv}>
+              <Button type="submit"><Plus className="mr-1 h-4 w-4" /> Tạo CV mới</Button>
+            </form>
+          </div>
         </div>
         <div className="flex flex-col gap-3">
           {cvs.length === 0 && (
