@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { FileText, Download, Upload, Sparkles, MessageCircle, Briefcase } from "lucide-react";
+import { auth } from "@/auth";
 
 // Trang chủ có Navbar phụ thuộc trạng thái đăng nhập → render động theo mỗi request.
 export const dynamic = "force-dynamic";
@@ -23,7 +24,10 @@ const steps = [
   { n: "3", title: "Cải thiện & ứng tuyển", desc: "Hỏi chatbot, sửa CV và ứng tuyển tin phù hợp." },
 ];
 
-export default function Home() {
+export default async function Home() {
+  const session = await auth();
+  const loggedIn = !!session?.user;
+
   return (
     <div className="flex min-h-full flex-col">
       <Navbar />
@@ -38,8 +42,14 @@ export default function Home() {
               Tạo CV, để AI đánh giá độ phù hợp với công việc, tư vấn cải thiện và kết nối nhà tuyển dụng — tất cả trong một nơi.
             </p>
             <div className="mt-8 flex justify-center gap-3">
-              <Link href="/register" className={buttonVariants({ size: "lg" })}>Bắt đầu miễn phí</Link>
-              <Link href="/login" className={buttonVariants({ size: "lg", variant: "outline" })}>Đăng nhập</Link>
+              {loggedIn ? (
+                <Link href="/dashboard" className={buttonVariants({ size: "lg" })}>Vào bảng điều khiển</Link>
+              ) : (
+                <>
+                  <Link href="/register" className={buttonVariants({ size: "lg" })}>Bắt đầu miễn phí</Link>
+                  <Link href="/login" className={buttonVariants({ size: "lg", variant: "outline" })}>Đăng nhập</Link>
+                </>
+              )}
             </div>
           </div>
         </section>
