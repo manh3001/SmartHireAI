@@ -59,6 +59,9 @@ export default function CvEditor({
       <div className="mb-4 flex items-center justify-between">
         <Link href="/dashboard" className="text-sm underline">← Về dashboard</Link>
         <div className="flex gap-2">
+          <a href={`/cv/${cvId}/chat`}>
+            <Button variant="outline">Chat tư vấn</Button>
+          </a>
           <a href={`/cv/${cvId}/evaluate`}>
             <Button variant="outline">Đánh giá theo JD</Button>
           </a>
