@@ -6,6 +6,7 @@ export type RegisterDeps = {
     email: string;
     name: string;
     passwordHash: string;
+    role: "CANDIDATE" | "RECRUITER";
   }) => Promise<{ id: string }>;
   hash: (p: string) => Promise<string>;
 };
@@ -22,12 +23,12 @@ export async function registerUser(
   if (!parsed.success) {
     return { ok: false, error: parsed.error.issues[0].message };
   }
-  const { email, name, password } = parsed.data;
+  const { email, name, password, role } = parsed.data;
 
   const existing = await deps.findByEmail(email);
   if (existing) return { ok: false, error: "Email đã được đăng ký" };
 
   const passwordHash = await deps.hash(password);
-  const user = await deps.create({ email, name, passwordHash });
+  const user = await deps.create({ email, name, passwordHash, role });
   return { ok: true, userId: user.id };
 }

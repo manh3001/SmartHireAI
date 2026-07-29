@@ -29,4 +29,27 @@ describe("registerSchema", () => {
     });
     expect(r.success).toBe(false);
   });
+
+  it("mac dinh role la CANDIDATE khi thieu", () => {
+    const r = registerSchema.safeParse({
+      email: "a@b.com", name: "Manh", password: "matkhau123",
+    });
+    expect(r.success).toBe(true);
+    if (r.success) expect(r.data.role).toBe("CANDIDATE");
+  });
+
+  it("chap nhan role RECRUITER", () => {
+    const r = registerSchema.safeParse({
+      email: "a@b.com", name: "Manh", password: "matkhau123", role: "RECRUITER",
+    });
+    expect(r.success).toBe(true);
+    if (r.success) expect(r.data.role).toBe("RECRUITER");
+  });
+
+  it("tu choi role khong hop le", () => {
+    const r = registerSchema.safeParse({
+      email: "a@b.com", name: "Manh", password: "matkhau123", role: "ADMIN",
+    });
+    expect(r.success).toBe(false);
+  });
 });

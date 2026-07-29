@@ -15,7 +15,7 @@ describe("registerUser", () => {
     );
     expect(r).toEqual({ ok: true, userId: "u1" });
     expect(d.create).toHaveBeenCalledWith({
-      email: "a@b.com", name: "Manh", passwordHash: "hashed",
+      email: "a@b.com", name: "Manh", passwordHash: "hashed", role: "CANDIDATE",
     });
   });
 

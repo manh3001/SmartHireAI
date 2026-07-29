@@ -24,6 +24,7 @@ export default function RegisterPage() {
         email: form.get("email"),
         name: form.get("name"),
         password: form.get("password"),
+        role: form.get("role"),
       }),
     });
     setLoading(false);
@@ -47,6 +48,14 @@ export default function RegisterPage() {
             <Input name="name" placeholder="Họ tên" required />
             <Input name="email" type="email" placeholder="Email" required />
             <Input name="password" type="password" placeholder="Mật khẩu (>= 8 ký tự)" required />
+            <select
+              name="role"
+              defaultValue="CANDIDATE"
+              className="rounded-md border border-slate-200 bg-white px-3 py-2 text-sm"
+            >
+              <option value="CANDIDATE">Tôi là Ứng viên</option>
+              <option value="RECRUITER">Tôi là Nhà tuyển dụng</option>
+            </select>
             {error && <p className="text-sm text-red-600">{error}</p>}
             <Button type="submit" disabled={loading} className="mt-1">
               {loading ? "Đang xử lý..." : "Đăng ký"}
