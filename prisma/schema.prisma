@@ -102,6 +102,7 @@ model JobDescription {
   title       String       @default("")
   company     String       @default("")
   rawText     String
+  isPublic    Boolean      @default(false)
   evaluations Evaluation[]
   createdAt   DateTime     @default(now())
 }
