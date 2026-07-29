@@ -38,7 +38,7 @@ export default async function Navbar() {
                   await signOut({ redirectTo: "/login" });
                 }}
               >
-                <Button variant="outline" size="sm">Đăng xuất</Button>
+                <Button type="submit" variant="outline" size="sm">Đăng xuất</Button>
               </form>
             </>
           ) : (

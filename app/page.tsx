@@ -1,5 +1,8 @@
 import Link from "next/link";
 import { FileText, Download, Upload, Sparkles, MessageCircle, Briefcase } from "lucide-react";
+
+// Trang chủ có Navbar phụ thuộc trạng thái đăng nhập → render động theo mỗi request.
+export const dynamic = "force-dynamic";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { buttonVariants } from "@/components/ui/button";
