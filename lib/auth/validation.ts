@@ -7,4 +7,5 @@ export const registerSchema = z.object({
   role: z.enum(["CANDIDATE", "RECRUITER"]).default("CANDIDATE"),
 });
 
-export type RegisterInput = z.infer<typeof registerSchema>;
+// z.input: role là tùy chọn ở đầu vào (schema tự điền mặc định CANDIDATE khi parse).
+export type RegisterInput = z.input<typeof registerSchema>;
