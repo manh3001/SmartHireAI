@@ -2,7 +2,7 @@ import Link from "next/link";
 import { FileText, Download, Upload, Sparkles, MessageCircle, Briefcase } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import { Button } from "@/components/ui/button";
+import { buttonVariants } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 
 const features = [
@@ -35,8 +35,8 @@ export default function Home() {
               Tạo CV, để AI đánh giá độ phù hợp với công việc, tư vấn cải thiện và kết nối nhà tuyển dụng — tất cả trong một nơi.
             </p>
             <div className="mt-8 flex justify-center gap-3">
-              <Link href="/register"><Button size="lg">Bắt đầu miễn phí</Button></Link>
-              <Link href="/login"><Button size="lg" variant="outline">Đăng nhập</Button></Link>
+              <Link href="/register" className={buttonVariants({ size: "lg" })}>Bắt đầu miễn phí</Link>
+              <Link href="/login" className={buttonVariants({ size: "lg", variant: "outline" })}>Đăng nhập</Link>
             </div>
           </div>
         </section>

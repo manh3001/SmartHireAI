@@ -5,7 +5,7 @@ import Link from "next/link";
 import { toast } from "sonner";
 import { saveCv } from "@/lib/cv/actions";
 import type { CvInput } from "@/lib/cv/types";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
@@ -59,14 +59,14 @@ export default function CvEditor({
       <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
         <Link href="/dashboard" className="text-sm text-blue-600 hover:underline">← Về dashboard</Link>
         <div className="flex flex-wrap gap-2">
-          <a href={`/cv/${cvId}/chat`}>
-            <Button variant="outline">Chat tư vấn</Button>
-          </a>
-          <a href={`/cv/${cvId}/evaluate`}>
-            <Button variant="outline">Đánh giá theo JD</Button>
-          </a>
-          <a href={`/api/cv/${cvId}/pdf`}>
-            <Button variant="outline">Xuất PDF</Button>
+          <Link href={`/cv/${cvId}/chat`} className={buttonVariants({ variant: "outline" })}>
+            Chat tư vấn
+          </Link>
+          <Link href={`/cv/${cvId}/evaluate`} className={buttonVariants({ variant: "outline" })}>
+            Đánh giá theo JD
+          </Link>
+          <a href={`/api/cv/${cvId}/pdf`} className={buttonVariants({ variant: "outline" })}>
+            Xuất PDF
           </a>
           <Button onClick={onSave} disabled={pending}>
             {pending ? "Đang lưu..." : "Lưu"}

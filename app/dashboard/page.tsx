@@ -7,7 +7,7 @@ import { createCv, deleteCv } from "@/lib/cv/actions";
 import { deleteJobDescription } from "@/lib/jobs/actions";
 import Navbar from "@/components/Navbar";
 import ImportCvButton from "./ImportCvButton";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 
 export default async function DashboardPage() {
@@ -30,7 +30,7 @@ export default async function DashboardPage() {
               <h1 className="text-2xl font-bold text-slate-900">Tin tuyển dụng của bạn</h1>
               <p className="text-sm text-slate-500">Xin chào, {session.user.name}</p>
             </div>
-            <Link href="/jobs/new"><Button><Plus className="mr-1 h-4 w-4" /> Đăng JD</Button></Link>
+            <Link href="/jobs/new" className={buttonVariants()}><Plus className="mr-1 h-4 w-4" /> Đăng JD</Link>
           </div>
           <div className="flex flex-col gap-3">
             {jobs.length === 0 && (
