@@ -23,6 +23,9 @@ export default async function Navbar() {
               <Link href="/jobs" className="hidden text-sm font-medium text-slate-600 hover:text-blue-600 sm:inline">
                 Việc làm
               </Link>
+              <span className="hidden rounded-full bg-blue-100 px-2 py-0.5 text-xs font-medium text-blue-700 sm:inline">
+                {session!.user!.role === "RECRUITER" ? "Nhà tuyển dụng" : "Ứng viên"}
+              </span>
               <span className="hidden text-sm text-slate-600 sm:inline">
                 {session!.user!.name}
               </span>

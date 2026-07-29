@@ -99,8 +99,8 @@ export default function EvaluateClient({
         <Card className="mb-4">
           <CardHeader><CardTitle>Kết quả</CardTitle></CardHeader>
           <CardContent className="grid gap-4">
-            <div className="flex flex-col items-center text-center">
-              <div className={`flex h-28 w-28 flex-col items-center justify-center rounded-full border-4 ${ringClass[scoreColor(result.overallScore)]}`}>
+            <div className="flex flex-col items-center rounded-lg bg-blue-50/50 p-4 text-center">
+              <div className={`flex h-28 w-28 flex-col items-center justify-center rounded-full border-4 bg-white ${ringClass[scoreColor(result.overallScore)]}`}>
                 <span className={`text-4xl font-bold ${colorClass[scoreColor(result.overallScore)]}`}>
                   {result.overallScore}
                 </span>
