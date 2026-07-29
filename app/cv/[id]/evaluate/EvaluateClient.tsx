@@ -26,6 +26,12 @@ const colorClass: Record<"red" | "yellow" | "green", string> = {
   green: "text-green-600",
 };
 
+const ringClass: Record<"red" | "yellow" | "green", string> = {
+  red: "border-red-200",
+  yellow: "border-yellow-200",
+  green: "border-green-200",
+};
+
 export default function EvaluateClient({
   cvId,
   cvTitle,
@@ -65,7 +71,7 @@ export default function EvaluateClient({
   }
 
   return (
-    <main className="mx-auto max-w-3xl p-8">
+    <main className="mx-auto min-h-full max-w-3xl bg-slate-50 p-8">
       <div className="mb-4 flex items-center justify-between">
         <Link href={`/cv/${cvId}`} className="text-sm underline">← Về CV</Link>
         <h1 className="text-lg font-semibold">Đánh giá: {cvTitle}</h1>
@@ -93,12 +99,14 @@ export default function EvaluateClient({
         <Card className="mb-4">
           <CardHeader><CardTitle>Kết quả</CardTitle></CardHeader>
           <CardContent className="grid gap-4">
-            <div className="text-center">
-              <div className={`text-5xl font-bold ${colorClass[scoreColor(result.overallScore)]}`}>
-                {result.overallScore}
-                <span className="text-xl text-gray-400">/100</span>
+            <div className="flex flex-col items-center text-center">
+              <div className={`flex h-28 w-28 flex-col items-center justify-center rounded-full border-4 ${ringClass[scoreColor(result.overallScore)]}`}>
+                <span className={`text-4xl font-bold ${colorClass[scoreColor(result.overallScore)]}`}>
+                  {result.overallScore}
+                </span>
+                <span className="text-xs text-slate-400">/100</span>
               </div>
-              <p className="mt-2 text-gray-600">{result.summary}</p>
+              <p className="mt-3 max-w-xl text-slate-600">{result.summary}</p>
             </div>
 
             <div className="grid gap-4 sm:grid-cols-2">
@@ -116,14 +124,24 @@ export default function EvaluateClient({
               </div>
             </div>
 
-            <div className="flex flex-wrap gap-4 text-sm">
+            <div className="grid gap-3 text-sm sm:grid-cols-2">
               <div>
-                <span className="font-semibold">Từ khóa khớp: </span>
-                {result.matchedKeywords.join(", ") || "—"}
+                <p className="mb-1 font-semibold text-slate-700">Từ khóa khớp</p>
+                <div className="flex flex-wrap gap-1">
+                  {result.matchedKeywords.length === 0 && <span className="text-slate-400">—</span>}
+                  {result.matchedKeywords.map((k, i) => (
+                    <span key={i} className="rounded-full bg-blue-100 px-2 py-0.5 text-xs text-blue-700">{k}</span>
+                  ))}
+                </div>
               </div>
               <div>
-                <span className="font-semibold">Từ khóa còn thiếu: </span>
-                {result.missingKeywords.join(", ") || "—"}
+                <p className="mb-1 font-semibold text-slate-700">Từ khóa còn thiếu</p>
+                <div className="flex flex-wrap gap-1">
+                  {result.missingKeywords.length === 0 && <span className="text-slate-400">—</span>}
+                  {result.missingKeywords.map((k, i) => (
+                    <span key={i} className="rounded-full bg-slate-200 px-2 py-0.5 text-xs text-slate-600">{k}</span>
+                  ))}
+                </div>
               </div>
             </div>
 

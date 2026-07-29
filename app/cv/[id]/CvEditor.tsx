@@ -55,7 +55,7 @@ export default function CvEditor({
   }
 
   return (
-    <main className="mx-auto max-w-3xl p-8">
+    <main className="mx-auto min-h-full max-w-3xl bg-slate-50 p-8">
       <div className="mb-4 flex items-center justify-between">
         <Link href="/dashboard" className="text-sm underline">← Về dashboard</Link>
         <div className="flex gap-2">
@@ -80,7 +80,7 @@ export default function CvEditor({
 
       {/* Profile */}
       <Card className="mb-4">
-        <CardHeader><CardTitle>Thông tin cá nhân</CardTitle></CardHeader>
+        <CardHeader><CardTitle className="text-blue-700">Thông tin cá nhân</CardTitle></CardHeader>
         <CardContent className="grid gap-3">
           <div><Label>Họ tên</Label>
             <Input value={cv.profile.fullName} onChange={(e) => setProfile("fullName", e.target.value)} /></div>
@@ -97,7 +97,7 @@ export default function CvEditor({
 
       {/* Experiences */}
       <Card className="mb-4">
-        <CardHeader><CardTitle>Kinh nghiệm làm việc</CardTitle></CardHeader>
+        <CardHeader><CardTitle className="text-blue-700">Kinh nghiệm làm việc</CardTitle></CardHeader>
         <CardContent className="grid gap-4">
           {cv.experiences.map((e, i) => (
             <div key={i} className="grid gap-2 border-b pb-3 last:border-0">
@@ -126,7 +126,7 @@ export default function CvEditor({
 
       {/* Educations */}
       <Card className="mb-4">
-        <CardHeader><CardTitle>Học vấn</CardTitle></CardHeader>
+        <CardHeader><CardTitle className="text-blue-700">Học vấn</CardTitle></CardHeader>
         <CardContent className="grid gap-4">
           {cv.educations.map((e, i) => (
             <div key={i} className="grid gap-2 border-b pb-3 last:border-0">
@@ -153,7 +153,7 @@ export default function CvEditor({
 
       {/* Skills */}
       <Card className="mb-4">
-        <CardHeader><CardTitle>Kỹ năng</CardTitle></CardHeader>
+        <CardHeader><CardTitle className="text-blue-700">Kỹ năng</CardTitle></CardHeader>
         <CardContent className="grid gap-4">
           {cv.skills.map((s, i) => (
             <div key={i} className="flex gap-2">
@@ -173,7 +173,7 @@ export default function CvEditor({
 
       {/* Projects */}
       <Card className="mb-4">
-        <CardHeader><CardTitle>Dự án</CardTitle></CardHeader>
+        <CardHeader><CardTitle className="text-blue-700">Dự án</CardTitle></CardHeader>
         <CardContent className="grid gap-4">
           {cv.projects.map((p, i) => (
             <div key={i} className="grid gap-2 border-b pb-3 last:border-0">
