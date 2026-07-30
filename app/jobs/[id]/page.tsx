@@ -18,11 +18,13 @@ export default async function JobDetailPage({
 
   const job = await prisma.jobDescription.findFirst({
     where: { id, isPublic: true },
-    select: { id: true, title: true, company: true, rawText: true },
+    select: { id: true, title: true, company: true, rawText: true, userId: true },
   });
   if (!job) notFound();
 
   const isCandidate = session.user.role === "CANDIDATE";
+  const isOwnerRecruiter =
+    session.user.role === "RECRUITER" && job.userId === session.user.id;
   const cvs = isCandidate
     ? await prisma.cV.findMany({
         where: { userId: session.user.id },
@@ -63,6 +65,14 @@ export default async function JobDetailPage({
                 Ứng tuyển ngay
               </Link>
             )}
+          </div>
+        )}
+
+        {isOwnerRecruiter && (
+          <div className="mt-4">
+            <Link href={`/jobs/${job.id}/applicants`} className={buttonVariants()}>
+              Xem ứng viên đã nộp
+            </Link>
           </div>
         )}
 
