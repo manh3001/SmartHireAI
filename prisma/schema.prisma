@@ -161,6 +161,7 @@ enum ApplicationStatus {
   OFFER
   HIRED
   REJECTED
+  WITHDRAWN
 }
 
 model Application {
