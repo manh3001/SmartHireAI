@@ -26,17 +26,20 @@ const params = {
   candidateId: "u_1",
   cvId: "cv_1",
   coverLetter: "xin chào",
-  evaluationId: "ev_1",
 };
 
 describe("runApply", () => {
-  it("nộp đơn thành công và chụp snapshot CV", async () => {
+  it("nộp đơn thành công, truyền snapshot CV, không kèm evaluationId", async () => {
     const d = deps();
     const r = await runApply(params, d);
     expect(r).toEqual({ ok: true, applicationId: "app_1" });
-    expect(d.createApplication).toHaveBeenCalledWith(
-      expect.objectContaining({ cvSnapshot: cv, evaluationId: "ev_1" }),
-    );
+    expect(d.createApplication).toHaveBeenCalledWith({
+      jobId: "job_1",
+      candidateId: "u_1",
+      cvId: "cv_1",
+      cvSnapshot: cv,
+      coverLetter: "xin chào",
+    });
   });
 
   it("báo lỗi khi job không tồn tại/không công khai", async () => {
