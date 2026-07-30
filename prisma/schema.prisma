@@ -22,6 +22,7 @@ model User {
   cvs             CV[]
   jobDescriptions JobDescription[]
   evaluations     Evaluation[]
+  applications    Application[]
   chatSessions    ChatSession[]
 }
 
@@ -36,6 +37,7 @@ model CV {
   skills      Skill[]
   projects    Project[]
   evaluations Evaluation[]
+  applications Application[]
   chatSessions ChatSession[]
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @updatedAt
@@ -104,6 +106,7 @@ model JobDescription {
   rawText     String
   isPublic    Boolean      @default(false)
   evaluations Evaluation[]
+  applications Application[]
   createdAt   DateTime     @default(now())
 }
 
@@ -123,6 +126,7 @@ model Evaluation {
   skillGaps        Json
   summary          String
   rawModelOutput   Json
+  application      Application?
   createdAt        DateTime       @default(now())
 }
 
@@ -148,4 +152,43 @@ model ChatMessage {
   role      ChatRole
   content   String
   createdAt DateTime    @default(now())
+}
+
+enum ApplicationStatus {
+  SUBMITTED
+  SCREENING
+  INTERVIEW
+  OFFER
+  HIRED
+  REJECTED
+}
+
+model Application {
+  id           String            @id @default(cuid())
+  jobId        String
+  job          JobDescription    @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  candidateId  String
+  candidate    User              @relation(fields: [candidateId], references: [id], onDelete: Cascade)
+  cvId         String
+  cv           CV                @relation(fields: [cvId], references: [id], onDelete: Cascade)
+  cvSnapshot   Json
+  coverLetter  String            @default("")
+  status       ApplicationStatus @default(SUBMITTED)
+  evaluationId String?           @unique
+  evaluation   Evaluation?       @relation(fields: [evaluationId], references: [id], onDelete: SetNull)
+  events       ApplicationEvent[]
+  createdAt    DateTime          @default(now())
+  updatedAt    DateTime          @updatedAt
+
+  @@unique([jobId, candidateId])
+}
+
+model ApplicationEvent {
+  id            String            @id @default(cuid())
+  applicationId String
+  application   Application       @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  fromStatus    ApplicationStatus?
+  toStatus      ApplicationStatus
+  note          String            @default("")
+  createdAt     DateTime          @default(now())
 }
