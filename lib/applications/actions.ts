@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import prisma from "@/lib/db/prisma";
 import { auth } from "@/auth";
 import { applySchema } from "./schema";
-import { canWithdraw, type ApplicationStatus } from "./status";
+import { APPLICATION_STATUSES, canWithdraw, type ApplicationStatus } from "./status";
 import { runApply, type ApplyDeps } from "./apply";
 import { runChangeStatus, type ChangeStatusDeps } from "./transition";
 import { loadCvInput } from "@/lib/cv/load";
@@ -91,6 +91,20 @@ export async function submitApplication(input: {
   if (!parsed.success)
     return { ok: false, error: parsed.error.issues[0].message };
 
+  const trustedEvaluationId = input.evaluationId
+    ? (
+        await prisma.evaluation.findFirst({
+          where: {
+            id: input.evaluationId,
+            userId,
+            cvId: input.cvId,
+            jobDescriptionId: input.jobId,
+          },
+          select: { id: true },
+        })
+      )?.id ?? null
+    : null;
+
   const deps: ApplyDeps = {
     findPublicJob: (jobId) =>
       prisma.jobDescription.findFirst({
@@ -126,7 +140,7 @@ export async function submitApplication(input: {
       candidateId: userId,
       cvId: input.cvId,
       coverLetter: parsed.data.coverLetter,
-      evaluationId: input.evaluationId,
+      evaluationId: trustedEvaluationId,
     },
     deps,
   );
@@ -171,6 +185,9 @@ export async function changeStatus(
   if (session.user.role !== "RECRUITER")
     return { ok: false, error: "Chỉ nhà tuyển dụng mới đổi trạng thái" };
 
+  if (!APPLICATION_STATUSES.includes(toStatus))
+    return { ok: false, error: "Trạng thái không hợp lệ" };
+
   const deps: ChangeStatusDeps = {
     findApplicationForRecruiter: (appId, recruiterId) =>
       prisma.application.findFirst({
@@ -199,6 +216,6 @@ export async function changeStatus(
     { applicationId, recruiterId: userId, toStatus, note },
     deps,
   );
-  if (outcome.ok) revalidatePath(`/jobs`);
+  if (outcome.ok) revalidatePath("/applications");
   return outcome;
 }
