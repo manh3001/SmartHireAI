@@ -144,6 +144,8 @@ export async function withdrawApplication(
   const session = await auth();
   const userId = session?.user?.id;
   if (!userId) return { ok: false, error: "Chưa đăng nhập" };
+  if (session.user.role !== "CANDIDATE")
+    return { ok: false, error: "Chỉ ứng viên mới được rút đơn" };
 
   const app = await prisma.application.findFirst({
     where: { id: applicationId, candidateId: userId },
