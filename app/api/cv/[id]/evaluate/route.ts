@@ -1,34 +1,14 @@
 import { NextResponse } from "next/server";
-import { zodResponseFormat } from "openai/helpers/zod";
 import prisma from "@/lib/db/prisma";
 import { auth } from "@/auth";
-import { getAiClient, AI_MODEL } from "@/lib/ai/client";
-import { SYSTEM_PROMPT } from "@/lib/ai/prompt";
-import { evaluationResultSchema, type EvaluationResult } from "@/lib/ai/schema";
 import { runCvEvaluation, type CvEvaluationDeps } from "@/lib/ai/evaluate";
 import { createRateLimiter } from "@/lib/ai/rate-limit";
-import type { CvInput } from "@/lib/cv/types";
+import { loadCvInput } from "@/lib/cv/load";
+import { requestEvaluation } from "@/lib/ai/request-evaluation";
 
 export const runtime = "nodejs";
 
 const limiter = createRateLimiter({ max: 5, windowMs: 60000 });
-
-async function requestEvaluation(prompt: string): Promise<EvaluationResult> {
-  const client = getAiClient();
-  const completion = await client.chat.completions.parse({
-    model: AI_MODEL,
-    messages: [
-      { role: "system", content: SYSTEM_PROMPT },
-      { role: "user", content: prompt },
-    ],
-    response_format: zodResponseFormat(evaluationResultSchema, "evaluation"),
-  });
-  const parsed = completion.choices[0]?.message.parsed;
-  if (!parsed) {
-    throw new Error("Model không trả về kết quả hợp lệ");
-  }
-  return parsed;
-}
 
 export async function POST(
   req: Request,
@@ -56,41 +36,7 @@ export async function POST(
   }
 
   const deps: CvEvaluationDeps = {
-    findCv: async (cvId, uid) => {
-      const cv = await prisma.cV.findFirst({
-        where: { id: cvId, userId: uid },
-        include: {
-          profile: true,
-          experiences: { orderBy: { order: "asc" } },
-          educations: { orderBy: { order: "asc" } },
-          skills: { orderBy: { order: "asc" } },
-          projects: { orderBy: { order: "asc" } },
-        },
-      });
-      if (!cv) return null;
-      const data: CvInput = {
-        title: cv.title,
-        profile: {
-          fullName: cv.profile?.fullName ?? "",
-          headline: cv.profile?.headline ?? "",
-          email: cv.profile?.email ?? "",
-          phone: cv.profile?.phone ?? "",
-          summary: cv.profile?.summary ?? "",
-        },
-        experiences: cv.experiences.map((e) => ({
-          company: e.company, position: e.position,
-          startDate: e.startDate, endDate: e.endDate, description: e.description,
-        })),
-        educations: cv.educations.map((e) => ({
-          school: e.school, major: e.major, startDate: e.startDate, endDate: e.endDate,
-        })),
-        skills: cv.skills.map((s) => ({ name: s.name, level: s.level })),
-        projects: cv.projects.map((p) => ({
-          name: p.name, description: p.description, tech: p.tech, link: p.link,
-        })),
-      };
-      return data;
-    },
+    findCv: (cvId, uid) => loadCvInput(cvId, uid),
     requestEvaluation,
     saveEvaluation: async (d) => {
       const jd = await prisma.jobDescription.create({
