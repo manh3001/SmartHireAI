@@ -11,15 +11,16 @@ import { loadCvInput } from "@/lib/cv/load";
 import { requestEvaluation } from "@/lib/ai/request-evaluation";
 import { buildEvaluationPrompt } from "@/lib/ai/prompt";
 import { createRateLimiter } from "@/lib/ai/rate-limit";
+import type { EvaluationResult } from "@/lib/ai/schema";
 
 const previewLimiter = createRateLimiter({ max: 5, windowMs: 60000 });
+const submitLimiter = createRateLimiter({ max: 5, windowMs: 60000 });
 
 export async function previewMatch(
   jobId: string,
   cvId: string,
 ): Promise<
-  | { ok: true; evaluationId: string; score: number; summary: string }
-  | { ok: false; error: string }
+  { ok: true; score: number; summary: string } | { ok: false; error: string }
 > {
   const session = await auth();
   const userId = session?.user?.id;
@@ -40,31 +41,8 @@ export async function previewMatch(
   if (!cv) return { ok: false, error: "Không tìm thấy CV" };
 
   try {
-    const result = await requestEvaluation(
-      buildEvaluationPrompt(cv, job.rawText),
-    );
-    const ev = await prisma.evaluation.create({
-      data: {
-        cvId,
-        jobDescriptionId: job.id,
-        userId,
-        overallScore: result.overallScore,
-        strengths: result.strengths,
-        weaknesses: result.weaknesses,
-        matchedKeywords: result.matchedKeywords,
-        missingKeywords: result.missingKeywords,
-        skillGaps: result.skillGaps,
-        summary: result.summary,
-        rawModelOutput: result,
-      },
-      select: { id: true },
-    });
-    return {
-      ok: true,
-      evaluationId: ev.id,
-      score: result.overallScore,
-      summary: result.summary,
-    };
+    const result = await requestEvaluation(buildEvaluationPrompt(cv, job.rawText));
+    return { ok: true, score: result.overallScore, summary: result.summary };
   } catch {
     return { ok: false, error: "AI đánh giá thất bại, vui lòng thử lại" };
   }
@@ -74,7 +52,6 @@ export async function submitApplication(input: {
   jobId: string;
   cvId: string;
   coverLetter: string;
-  evaluationId: string | null;
 }): Promise<
   { ok: true; applicationId: string } | { ok: false; error: string }
 > {
@@ -84,6 +61,9 @@ export async function submitApplication(input: {
   if (session.user.role !== "CANDIDATE")
     return { ok: false, error: "Chỉ ứng viên mới được ứng tuyển" };
 
+  if (!submitLimiter.check(userId, Date.now()))
+    return { ok: false, error: "Bạn thao tác quá nhanh, thử lại sau một phút" };
+
   const parsed = applySchema.safeParse({
     cvId: input.cvId,
     coverLetter: input.coverLetter,
@@ -91,26 +71,19 @@ export async function submitApplication(input: {
   if (!parsed.success)
     return { ok: false, error: parsed.error.issues[0].message };
 
-  const trustedEvaluationId = input.evaluationId
-    ? (
-        await prisma.evaluation.findFirst({
-          where: {
-            id: input.evaluationId,
-            userId,
-            cvId: input.cvId,
-            jobDescriptionId: input.jobId,
-          },
-          select: { id: true },
-        })
-      )?.id ?? null
-    : null;
+  // Nạp job (kèm rawText để tính điểm chính thức lúc nộp). runApply dùng lại
+  // đúng object này qua findPublicJob nên không truy vấn job hai lần.
+  const job = await prisma.jobDescription.findFirst({
+    where: { id: input.jobId, isPublic: true },
+    select: { id: true, rawText: true },
+  });
 
   const deps: ApplyDeps = {
-    findPublicJob: (jobId) =>
-      prisma.jobDescription.findFirst({
-        where: { id: jobId, isPublic: true },
-        select: { id: true },
-      }),
+    findPublicJob: async () => job,
+    // Khớp mọi đơn theo (jobId, candidateId) bất kể trạng thái: rút đơn là
+    // quyết định cuối cho job đó — ứng viên đã rút KHÔNG nộp lại được (cũng
+    // trùng ràng buộc @@unique([jobId, candidateId]) ở schema). Đây là hành vi
+    // chủ đích, không phải thiếu sót.
     findExistingApplication: (jobId, candidateId) =>
       prisma.application.findFirst({
         where: { jobId, candidateId },
@@ -118,19 +91,59 @@ export async function submitApplication(input: {
       }),
     findCandidateCv: (cvId, candidateId) => loadCvInput(cvId, candidateId),
     createApplication: async (data) => {
-      const app = await prisma.application.create({
-        data: {
-          jobId: data.jobId,
-          candidateId: data.candidateId,
-          cvId: data.cvId,
-          cvSnapshot: data.cvSnapshot,
-          coverLetter: data.coverLetter,
-          evaluationId: data.evaluationId,
-          events: { create: { toStatus: "SUBMITTED" } },
-        },
-        select: { id: true },
+      // job chắc chắn non-null ở đây (runApply chỉ gọi createApplication sau
+      // khi findPublicJob trả về truthy).
+      const rawText = job!.rawText;
+
+      // Tính điểm CHÍNH THỨC ở server (không tin điểm client). AI gọi NGOÀI
+      // transaction; lỗi AI -> đơn vẫn nộp, evaluationId = null.
+      let evalData: (EvaluationResult & { rawModelOutput: EvaluationResult }) | null = null;
+      try {
+        const result = await requestEvaluation(
+          buildEvaluationPrompt(data.cvSnapshot, rawText),
+        );
+        evalData = { ...result, rawModelOutput: result };
+      } catch {
+        evalData = null;
+      }
+
+      const appId = await prisma.$transaction(async (tx) => {
+        let evaluationId: string | null = null;
+        if (evalData) {
+          const ev = await tx.evaluation.create({
+            data: {
+              cvId: data.cvId,
+              jobDescriptionId: data.jobId,
+              userId: data.candidateId,
+              overallScore: evalData.overallScore,
+              strengths: evalData.strengths,
+              weaknesses: evalData.weaknesses,
+              matchedKeywords: evalData.matchedKeywords,
+              missingKeywords: evalData.missingKeywords,
+              skillGaps: evalData.skillGaps,
+              summary: evalData.summary,
+              rawModelOutput: evalData.rawModelOutput,
+            },
+            select: { id: true },
+          });
+          evaluationId = ev.id;
+        }
+        const app = await tx.application.create({
+          data: {
+            jobId: data.jobId,
+            candidateId: data.candidateId,
+            cvId: data.cvId,
+            cvSnapshot: data.cvSnapshot,
+            coverLetter: data.coverLetter,
+            evaluationId,
+            events: { create: { toStatus: "SUBMITTED" } },
+          },
+          select: { id: true },
+        });
+        return app.id;
       });
-      return { id: app.id };
+
+      return { id: appId };
     },
   };
 
@@ -140,7 +153,6 @@ export async function submitApplication(input: {
       candidateId: userId,
       cvId: input.cvId,
       coverLetter: parsed.data.coverLetter,
-      evaluationId: trustedEvaluationId,
     },
     deps,
   );
@@ -169,7 +181,19 @@ export async function withdrawApplication(
   if (!canWithdraw(app.status))
     return { ok: false, error: "Không thể rút đơn ở trạng thái này" };
 
-  await prisma.application.delete({ where: { id: app.id } });
+  await prisma.$transaction([
+    prisma.application.update({
+      where: { id: app.id },
+      data: { status: "WITHDRAWN" },
+    }),
+    prisma.applicationEvent.create({
+      data: {
+        applicationId: app.id,
+        fromStatus: app.status,
+        toStatus: "WITHDRAWN",
+      },
+    }),
+  ]);
   revalidatePath("/applications");
   return { ok: true };
 }

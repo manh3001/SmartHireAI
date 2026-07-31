@@ -5,7 +5,6 @@ export type ApplyParams = {
   candidateId: string;
   cvId: string;
   coverLetter: string;
-  evaluationId: string | null;
 };
 
 export type CreateApplicationData = {
@@ -14,7 +13,6 @@ export type CreateApplicationData = {
   cvId: string;
   cvSnapshot: CvInput;
   coverLetter: string;
-  evaluationId: string | null;
 };
 
 export type ApplyDeps = {
@@ -56,7 +54,6 @@ export async function runApply(
     cvId: params.cvId,
     cvSnapshot: cv,
     coverLetter: params.coverLetter,
-    evaluationId: params.evaluationId,
   });
   return { ok: true, applicationId: created.id };
 }

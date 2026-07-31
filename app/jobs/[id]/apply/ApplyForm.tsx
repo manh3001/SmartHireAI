@@ -17,7 +17,6 @@ export default function ApplyForm({
   const router = useRouter();
   const [cvId, setCvId] = useState(cvs[0]?.id ?? "");
   const [coverLetter, setCoverLetter] = useState("");
-  const [evaluationId, setEvaluationId] = useState<string | null>(null);
   const [match, setMatch] = useState<{ score: number; summary: string } | null>(null);
   const [previewing, setPreviewing] = useState(false);
   const [submitting, setSubmitting] = useState(false);
@@ -28,7 +27,6 @@ export default function ApplyForm({
     setMatch(null);
     const r = await previewMatch(jobId, cvId);
     if (r.ok) {
-      setEvaluationId(r.evaluationId);
       setMatch({ score: r.score, summary: r.summary });
     } else {
       toast.error(r.error);
@@ -39,7 +37,7 @@ export default function ApplyForm({
   async function onSubmit() {
     if (!cvId) return;
     setSubmitting(true);
-    const r = await submitApplication({ jobId, cvId, coverLetter, evaluationId });
+    const r = await submitApplication({ jobId, cvId, coverLetter });
     if (r.ok) {
       toast.success("Đã nộp đơn ứng tuyển");
       router.push("/applications");
@@ -68,7 +66,6 @@ export default function ApplyForm({
           value={cvId}
           onChange={(e) => {
             setCvId(e.target.value);
-            setEvaluationId(null);
             setMatch(null);
           }}
           className="rounded-md border border-slate-200 bg-white px-3 py-2 text-sm"
@@ -87,6 +84,7 @@ export default function ApplyForm({
           <div className="rounded-md border border-blue-100 bg-blue-50 p-3 text-sm">
             <p className="font-semibold text-blue-700">Điểm phù hợp: {match.score}/100</p>
             <p className="mt-1 text-slate-700">{match.summary}</p>
+            <p className="mt-1 text-xs text-slate-400">Điểm chính thức sẽ được tính lại khi bạn nộp đơn.</p>
           </div>
         )}
 
