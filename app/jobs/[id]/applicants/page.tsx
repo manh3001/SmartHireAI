@@ -58,7 +58,7 @@ export default async function ApplicantsPage({
         {initial.length === 0 ? (
           <p className="mt-4 text-sm text-slate-500">Chưa có ai ứng tuyển tin này.</p>
         ) : (
-          <ApplicantsBoard initial={initial} />
+          <ApplicantsBoard jobId={id} initial={initial} />
         )}
       </main>
     </div>

@@ -2,9 +2,10 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { toast } from "sonner";
 import {
-  APPLICATION_STATUSES,
+  BOARD_STATUSES,
   STATUS_LABELS,
   type ApplicationStatus,
 } from "@/lib/applications/status";
@@ -18,7 +19,13 @@ export type ApplicantCard = {
   coverLetter: string;
 };
 
-export default function ApplicantsBoard({ initial }: { initial: ApplicantCard[] }) {
+export default function ApplicantsBoard({
+  jobId,
+  initial,
+}: {
+  jobId: string;
+  initial: ApplicantCard[];
+}) {
   const router = useRouter();
   const [cards, setCards] = useState(initial);
   const [dragId, setDragId] = useState<string | null>(null);
@@ -42,42 +49,74 @@ export default function ApplicantsBoard({ initial }: { initial: ApplicantCard[] 
     }
   }
 
+  const withdrawn = cards.filter((c) => c.status === "WITHDRAWN");
+
   return (
-    <div className="mt-4 grid grid-flow-col gap-3 overflow-x-auto pb-2 [grid-auto-columns:minmax(220px,1fr)]">
-      {APPLICATION_STATUSES.map((status) => {
-        const col = cards.filter((c) => c.status === status);
-        return (
-          <div
-            key={status}
-            onDragOver={(e) => e.preventDefault()}
-            onDrop={() => onDrop(status)}
-            className="rounded-lg border border-slate-200 bg-white p-2"
-          >
-            <div className="mb-2 flex items-center justify-between px-1">
-              <span className="text-sm font-semibold text-blue-700">{STATUS_LABELS[status]}</span>
-              <span className="text-xs text-slate-400">{col.length}</span>
+    <>
+      <div className="mt-4 grid grid-flow-col gap-3 overflow-x-auto pb-2 [grid-auto-columns:minmax(220px,1fr)]">
+        {BOARD_STATUSES.map((status) => {
+          const col = cards.filter((c) => c.status === status);
+          return (
+            <div
+              key={status}
+              onDragOver={(e) => e.preventDefault()}
+              onDrop={() => onDrop(status)}
+              className="rounded-lg border border-slate-200 bg-white p-2"
+            >
+              <div className="mb-2 flex items-center justify-between px-1">
+                <span className="text-sm font-semibold text-blue-700">{STATUS_LABELS[status]}</span>
+                <span className="text-xs text-slate-400">{col.length}</span>
+              </div>
+              <div className="grid gap-2">
+                {col.map((c) => (
+                  <div
+                    key={c.id}
+                    draggable
+                    onDragStart={() => setDragId(c.id)}
+                    className="cursor-grab rounded-md border border-slate-200 bg-slate-50 p-2 text-sm active:cursor-grabbing"
+                  >
+                    <p className="font-medium text-slate-800">{c.candidateName}</p>
+                    {c.score !== null && (
+                      <p className="text-xs text-blue-600">Điểm phù hợp: {c.score}/100</p>
+                    )}
+                    {c.coverLetter && (
+                      <p className="mt-1 line-clamp-3 text-xs text-slate-500">{c.coverLetter}</p>
+                    )}
+                    <Link
+                      href={`/jobs/${jobId}/applicants/${c.id}`}
+                      draggable={false}
+                      className="mt-1 inline-block text-xs text-blue-600 hover:underline"
+                    >
+                      Xem chi tiết →
+                    </Link>
+                  </div>
+                ))}
+              </div>
             </div>
-            <div className="grid gap-2">
-              {col.map((c) => (
-                <div
-                  key={c.id}
-                  draggable
-                  onDragStart={() => setDragId(c.id)}
-                  className="cursor-grab rounded-md border border-slate-200 bg-slate-50 p-2 text-sm active:cursor-grabbing"
+          );
+        })}
+      </div>
+
+      {withdrawn.length > 0 && (
+        <div className="mt-4 rounded-lg border border-slate-200 bg-white p-3">
+          <p className="mb-2 text-sm font-semibold text-slate-500">
+            Đã rút ({withdrawn.length})
+          </p>
+          <div className="grid gap-1">
+            {withdrawn.map((c) => (
+              <div key={c.id} className="flex items-center justify-between text-sm text-slate-500">
+                <span>{c.candidateName}</span>
+                <Link
+                  href={`/jobs/${jobId}/applicants/${c.id}`}
+                  className="text-xs text-blue-600 hover:underline"
                 >
-                  <p className="font-medium text-slate-800">{c.candidateName}</p>
-                  {c.score !== null && (
-                    <p className="text-xs text-blue-600">Điểm phù hợp: {c.score}/100</p>
-                  )}
-                  {c.coverLetter && (
-                    <p className="mt-1 line-clamp-3 text-xs text-slate-500">{c.coverLetter}</p>
-                  )}
-                </div>
-              ))}
-            </div>
+                  Xem chi tiết →
+                </Link>
+              </div>
+            ))}
           </div>
-        );
-      })}
-    </div>
+        </div>
+      )}
+    </>
   );
 }
