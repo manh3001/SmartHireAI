@@ -68,9 +68,12 @@ export default async function JobsPage({
           </button>
         </form>
         {isCandidate && (
-          <div className="mb-4">
+          <div className="mb-4 flex gap-4">
             <Link href="/jobs/saved" className="text-sm text-blue-600 hover:underline">
               🔖 Tin đã lưu
+            </Link>
+            <Link href="/jobs/recommendations" className="text-sm text-blue-600 hover:underline">
+              ✨ Gợi ý việc cho tôi
             </Link>
           </div>
         )}
