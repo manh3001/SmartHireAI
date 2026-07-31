@@ -107,6 +107,7 @@ model JobDescription {
   isPublic    Boolean      @default(false)
   evaluations Evaluation[]
   applications Application[]
+  screening    Screening?
   createdAt   DateTime     @default(now())
 }
 
@@ -192,4 +193,15 @@ model ApplicationEvent {
   toStatus      ApplicationStatus
   note          String            @default("")
   createdAt     DateTime          @default(now())
+}
+
+model Screening {
+  id             String         @id @default(cuid())
+  jobId          String         @unique
+  job            JobDescription @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  summary        String
+  result         Json
+  rawModelOutput Json
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
 }
