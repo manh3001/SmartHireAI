@@ -13,7 +13,7 @@ export default function ScreeningClient({
   screening,
 }: {
   jobId: string;
-  screening: { summary: string; result: ScreeningResultItem[] } | null;
+  screening: { summary: string; result: (ScreeningResultItem & { currentStatus: string | null })[] } | null;
 }) {
   const router = useRouter();
   const [running, setRunning] = useState(false);
@@ -81,7 +81,7 @@ export default function ScreeningClient({
                     </p>
                     <p className="mt-1 text-slate-700">{r.reason}</p>
                   </div>
-                  {r.shortlisted && (
+                  {r.shortlisted && r.currentStatus && r.currentStatus !== "SCREENING" && r.currentStatus !== "WITHDRAWN" && (
                     <Button
                       variant="outline"
                       size="sm"

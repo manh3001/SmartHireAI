@@ -28,12 +28,22 @@ export default async function ScreeningPage({
   });
   if (!job) notFound();
 
-  const screening = job.screening
-    ? {
-        summary: job.screening.summary,
-        result: job.screening.result as unknown as ScreeningResultItem[],
-      }
-    : null;
+  let resolvedScreening: { summary: string; result: (ScreeningResultItem & { currentStatus: string | null })[] } | null = null;
+
+  if (job.screening) {
+    const statusRows = await prisma.application.findMany({
+      where: { jobId: id },
+      select: { id: true, status: true },
+    });
+    const statusById = new Map(statusRows.map((r) => [r.id, r.status as string]));
+    resolvedScreening = {
+      summary: job.screening.summary,
+      result: (job.screening.result as unknown as ScreeningResultItem[]).map((r) => ({
+        ...r,
+        currentStatus: statusById.get(r.applicationId) ?? null,
+      })),
+    };
+  }
 
   return (
     <div className="flex min-h-full flex-col bg-slate-50">
@@ -48,7 +58,7 @@ export default async function ScreeningPage({
         <p className="text-sm text-slate-500">
           AI xếp hạng và so sánh các ứng viên (không tính đơn đã rút), tối đa 20 ứng viên điểm cao nhất.
         </p>
-        <ScreeningClient jobId={job.id} screening={screening} />
+        <ScreeningClient jobId={job.id} screening={resolvedScreening} />
       </main>
     </div>
   );
