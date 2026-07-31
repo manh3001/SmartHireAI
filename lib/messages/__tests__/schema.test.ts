@@ -17,4 +17,16 @@ describe("messageSchema", () => {
     expect(r.success).toBe(false);
     if (!r.success) expect(r.error.issues[0].message).toBe("Tin nhắn tối đa 2000 ký tự");
   });
+
+  it("từ chối body chỉ toàn khoảng trắng", () => {
+    const r = messageSchema.safeParse({ body: "   " });
+    expect(r.success).toBe(false);
+    if (!r.success) expect(r.error.issues[0].message).toBe("Vui lòng nhập nội dung");
+  });
+
+  it("xóa khoảng trắng xung quanh body", () => {
+    const r = messageSchema.safeParse({ body: "  hi  " });
+    expect(r.success).toBe(true);
+    if (r.success) expect(r.data.body).toBe("hi");
+  });
 });
