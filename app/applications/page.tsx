@@ -73,6 +73,11 @@ export default async function MyApplicationsPage() {
                       </span>
                     ))}
                   </div>
+                  <div>
+                    <Link href={`/messages/${a.id}`} className="text-sm text-blue-600 hover:underline">
+                      Nhắn tin
+                    </Link>
+                  </div>
                   {canWithdraw(a.status as ApplicationStatus) && (
                     <div><WithdrawButton applicationId={a.id} /></div>
                   )}
