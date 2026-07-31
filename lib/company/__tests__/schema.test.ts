@@ -24,4 +24,22 @@ describe("companySchema", () => {
     expect(r.success).toBe(false);
     if (!r.success) expect(r.error.issues[0].message).toBe("Vui lòng nhập tên công ty");
   });
+
+  it("sanitize javascript:alert(1) in website to empty string", () => {
+    const r = companySchema.safeParse({ ...base, website: "javascript:alert(1)" });
+    expect(r.success).toBe(true);
+    if (r.success) expect(r.data.website).toBe("");
+  });
+
+  it("preserve http:// URLs in logoUrl", () => {
+    const r = companySchema.safeParse({ ...base, logoUrl: "http://x/logo.png" });
+    expect(r.success).toBe(true);
+    if (r.success) expect(r.data.logoUrl).toBe("http://x/logo.png");
+  });
+
+  it("preserve https:// URLs in website", () => {
+    const r = companySchema.safeParse({ ...base, website: "https://example.com" });
+    expect(r.success).toBe(true);
+    if (r.success) expect(r.data.website).toBe("https://example.com");
+  });
 });
