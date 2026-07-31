@@ -26,6 +26,7 @@ model User {
   chatSessions    ChatSession[]
   savedJobs       SavedJob[]
   companyProfile  CompanyProfile?
+  messages        Message[]
 }
 
 model CV {
@@ -201,6 +202,7 @@ model Application {
   evaluationId String?           @unique
   evaluation   Evaluation?       @relation(fields: [evaluationId], references: [id], onDelete: SetNull)
   events       ApplicationEvent[]
+  messages     Message[]
   createdAt    DateTime          @default(now())
   updatedAt    DateTime          @updatedAt
 
@@ -250,4 +252,14 @@ model CompanyProfile {
   logoUrl     String   @default("")
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+}
+
+model Message {
+  id            String      @id @default(cuid())
+  applicationId String
+  application   Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  senderId      String
+  sender        User        @relation(fields: [senderId], references: [id], onDelete: Cascade)
+  body          String
+  createdAt     DateTime    @default(now())
 }

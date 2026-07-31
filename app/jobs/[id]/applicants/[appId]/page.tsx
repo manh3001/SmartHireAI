@@ -52,6 +52,11 @@ export default async function ApplicantDetailPage({
             {STATUS_LABELS[app.status as ApplicationStatus]}
           </span>
         </div>
+        <div className="mt-2">
+          <Link href={`/messages/${app.id}`} className="text-sm text-blue-600 hover:underline">
+            Nhắn tin với ứng viên
+          </Link>
+        </div>
 
         {app.evaluation && (
           <Card className="mt-3">
