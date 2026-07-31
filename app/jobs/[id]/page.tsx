@@ -44,6 +44,11 @@ export default async function JobDetailPage({
       })
     : null;
 
+  const companyProfile = await prisma.companyProfile.findUnique({
+    where: { userId: job.userId },
+    select: { id: true },
+  });
+
   return (
     <div className="flex min-h-full flex-col bg-slate-50">
       <Navbar />
@@ -53,6 +58,11 @@ export default async function JobDetailPage({
           <CardHeader>
             <CardTitle className="text-blue-700">{job.title || "(chưa có tiêu đề)"}</CardTitle>
             <p className="text-sm text-slate-500">{job.company || "—"}</p>
+            {companyProfile && (
+              <Link href={`/companies/${companyProfile.id}`} className="text-sm text-blue-600 hover:underline">
+                Xem trang công ty →
+              </Link>
+            )}
             <div className="mt-2">
               <JobMeta
                 location={job.location}

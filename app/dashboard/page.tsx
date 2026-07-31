@@ -21,6 +21,10 @@ export default async function DashboardPage() {
       orderBy: { createdAt: "desc" },
       select: { id: true, title: true, company: true, createdAt: true },
     });
+    const companyProfile = await prisma.companyProfile.findUnique({
+      where: { userId: session.user.id },
+      select: { id: true },
+    });
     return (
       <div className="flex min-h-full flex-col bg-slate-50">
         <Navbar />
@@ -30,7 +34,13 @@ export default async function DashboardPage() {
               <h1 className="text-2xl font-bold text-slate-900">Tin tuyển dụng của bạn</h1>
               <p className="text-sm text-slate-500">Xin chào, {session.user.name}</p>
             </div>
-            <Link href="/jobs/new" className={buttonVariants()}><Plus className="mr-1 h-4 w-4" /> Đăng JD</Link>
+            <div className="flex flex-wrap items-center gap-2">
+              <Link href="/company/edit" className={buttonVariants({ variant: "outline" })}>Hồ sơ công ty</Link>
+              {companyProfile && (
+                <Link href={`/companies/${companyProfile.id}`} className={buttonVariants({ variant: "outline" })}>Xem trang công ty</Link>
+              )}
+              <Link href="/jobs/new" className={buttonVariants()}><Plus className="mr-1 h-4 w-4" /> Đăng JD</Link>
+            </div>
           </div>
           <div className="flex flex-col gap-3">
             {jobs.length === 0 && (

@@ -25,6 +25,7 @@ model User {
   applications    Application[]
   chatSessions    ChatSession[]
   savedJobs       SavedJob[]
+  companyProfile  CompanyProfile?
 }
 
 model CV {
@@ -236,4 +237,17 @@ model SavedJob {
   createdAt DateTime       @default(now())
 
   @@unique([userId, jobId])
+}
+
+model CompanyProfile {
+  id          String   @id @default(cuid())
+  userId      String   @unique
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name        String
+  description String   @default("")
+  website     String   @default("")
+  location    String   @default("")
+  logoUrl     String   @default("")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }
