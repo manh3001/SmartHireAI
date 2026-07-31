@@ -1,11 +1,16 @@
 import Link from "next/link";
-import { Sparkles } from "lucide-react";
+import { Sparkles, Bell } from "lucide-react";
 import { auth, signOut } from "@/auth";
 import { Button, buttonVariants } from "@/components/ui/button";
+import prisma from "@/lib/db/prisma";
 
 export default async function Navbar() {
   const session = await auth();
   const loggedIn = !!session?.user;
+
+  const unread = loggedIn
+    ? await prisma.notification.count({ where: { userId: session!.user!.id, read: false } })
+    : 0;
 
   return (
     <header className="sticky top-0 z-20 border-b border-slate-200 bg-white/80 backdrop-blur">
@@ -32,6 +37,14 @@ export default async function Navbar() {
               <span className="hidden text-sm text-slate-600 sm:inline">
                 {session!.user!.name}
               </span>
+              <Link href="/notifications" className="relative text-slate-600 hover:text-blue-600" aria-label="Thông báo">
+                <Bell className="h-5 w-5" />
+                {unread > 0 && (
+                  <span className="absolute -right-1.5 -top-1.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-red-500 px-1 text-[10px] font-medium text-white">
+                    {unread > 9 ? "9+" : unread}
+                  </span>
+                )}
+              </Link>
               <form
                 action={async () => {
                   "use server";
