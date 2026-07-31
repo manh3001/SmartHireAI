@@ -5,6 +5,8 @@ import prisma from "@/lib/db/prisma";
 import { auth } from "@/auth";
 import { messageSchema } from "./schema";
 import { isThreadParticipant } from "./access";
+import { createNotification } from "@/lib/notifications/create";
+import { newMessageNotification } from "@/lib/notifications/messages";
 
 export async function sendMessage(
   applicationId: string,
@@ -16,7 +18,7 @@ export async function sendMessage(
 
   const app = await prisma.application.findUnique({
     where: { id: applicationId },
-    select: { candidateId: true, job: { select: { userId: true } } },
+    select: { candidateId: true, job: { select: { userId: true, title: true } } },
   });
   if (!app) return { ok: false, error: "Không tìm thấy đơn ứng tuyển" };
 
@@ -29,6 +31,20 @@ export async function sendMessage(
   await prisma.message.create({
     data: { applicationId, senderId: userId, body: parsed.data.body },
   });
+
+  const recipientId = userId === app.candidateId ? app.job.userId : app.candidateId;
+  try {
+    await createNotification(
+      recipientId,
+      newMessageNotification(
+        session.user.name ?? "Người dùng",
+        app.job.title || "(chưa có tiêu đề)",
+        applicationId,
+      ),
+    );
+  } catch {
+    // thông báo lỗi không làm hỏng việc gửi tin
+  }
 
   revalidatePath(`/messages/${applicationId}`);
   return { ok: true };
