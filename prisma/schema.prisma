@@ -99,18 +99,22 @@ model Project {
 }
 
 model JobDescription {
-  id          String       @id @default(cuid())
-  userId      String
-  user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
-  title       String       @default("")
-  company     String       @default("")
-  rawText     String
-  isPublic    Boolean      @default(false)
-  evaluations Evaluation[]
-  applications Application[]
-  screening    Screening?
-  savedBy     SavedJob[]
-  createdAt   DateTime     @default(now())
+  id              String          @id @default(cuid())
+  userId          String
+  user            User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title           String          @default("")
+  company         String          @default("")
+  rawText         String
+  location        String?
+  employmentType  EmploymentType?
+  experienceLevel ExperienceLevel?
+  skills          String          @default("")
+  isPublic        Boolean         @default(false)
+  evaluations     Evaluation[]
+  applications    Application[]
+  screening       Screening?
+  savedBy         SavedJob[]
+  createdAt       DateTime        @default(now())
 }
 
 model Evaluation {
@@ -131,6 +135,21 @@ model Evaluation {
   rawModelOutput   Json
   application      Application?
   createdAt        DateTime       @default(now())
+}
+
+enum EmploymentType {
+  FULL_TIME
+  PART_TIME
+  CONTRACT
+  INTERNSHIP
+}
+
+enum ExperienceLevel {
+  INTERN
+  JUNIOR
+  MID
+  SENIOR
+  LEAD
 }
 
 enum ChatRole {

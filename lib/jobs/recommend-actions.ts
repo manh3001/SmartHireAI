@@ -5,6 +5,7 @@ import { auth } from "@/auth";
 import { createRateLimiter } from "@/lib/ai/rate-limit";
 import { loadCvInput } from "@/lib/cv/load";
 import { requestRecommendations } from "@/lib/ai/request-recommendations";
+import { composeJdText } from "@/lib/jobs/job-fields";
 import {
   runRecommendations,
   MAX_RECOMMEND_JOBS,
@@ -39,14 +40,17 @@ export async function recommendJobs(
     where: { isPublic: true, id: { notIn: appliedJobIds } },
     orderBy: { createdAt: "desc" },
     take: MAX_RECOMMEND_JOBS,
-    select: { id: true, title: true, company: true, rawText: true },
+    select: {
+      id: true, title: true, company: true, rawText: true,
+      location: true, employmentType: true, experienceLevel: true, skills: true,
+    },
   });
 
   const jobs: RecommendationJobInput[] = rows.map((r) => ({
     jobId: r.id,
     title: r.title,
     company: r.company,
-    rawText: r.rawText,
+    rawText: composeJdText(r),
   }));
 
   return runRecommendations({ cv, jobs }, { requestRecommendations });

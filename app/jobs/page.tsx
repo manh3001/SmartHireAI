@@ -6,33 +6,49 @@ import prisma from "@/lib/db/prisma";
 import Navbar from "@/components/Navbar";
 import { Card, CardContent } from "@/components/ui/card";
 import SaveJobButton from "./SaveJobButton";
+import JobMeta from "@/components/JobMeta";
+import {
+  EMPLOYMENT_TYPES,
+  EMPLOYMENT_TYPE_LABELS,
+  EXPERIENCE_LEVELS,
+  EXPERIENCE_LEVEL_LABELS,
+} from "@/lib/jobs/job-fields";
 
 export default async function JobsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ q?: string }>;
+  searchParams: Promise<{ q?: string; type?: string; level?: string }>;
 }) {
   const session = await auth();
   if (!session?.user?.id) redirect("/login");
 
-  const { q } = await searchParams;
+  const { q, type, level } = await searchParams;
   const term = (q ?? "").trim();
+  const typeFilter = EMPLOYMENT_TYPES.includes(type as never) ? (type as (typeof EMPLOYMENT_TYPES)[number]) : undefined;
+  const levelFilter = EXPERIENCE_LEVELS.includes(level as never) ? (level as (typeof EXPERIENCE_LEVELS)[number]) : undefined;
 
   const jobs = await prisma.jobDescription.findMany({
     where: {
       isPublic: true,
+      ...(typeFilter ? { employmentType: typeFilter } : {}),
+      ...(levelFilter ? { experienceLevel: levelFilter } : {}),
       ...(term
         ? {
             OR: [
               { title: { contains: term, mode: "insensitive" } },
               { company: { contains: term, mode: "insensitive" } },
               { rawText: { contains: term, mode: "insensitive" } },
+              { location: { contains: term, mode: "insensitive" } },
+              { skills: { contains: term, mode: "insensitive" } },
             ],
           }
         : {}),
     },
     orderBy: { createdAt: "desc" },
-    select: { id: true, title: true, company: true, rawText: true, createdAt: true },
+    select: {
+      id: true, title: true, company: true, rawText: true, createdAt: true,
+      location: true, employmentType: true, experienceLevel: true, skills: true,
+    },
   });
 
   const isCandidate = session.user.role === "CANDIDATE";
@@ -52,20 +68,27 @@ export default async function JobsPage({
       <Navbar />
       <main className="mx-auto w-full max-w-3xl flex-1 p-6">
         <h1 className="mb-4 text-2xl font-bold text-slate-900">Tin tuyển dụng</h1>
-        <form method="get" className="mb-4 flex gap-2">
+        <form method="get" className="mb-4 flex flex-wrap gap-2">
           <input
             type="text"
             name="q"
             defaultValue={term}
             placeholder="Tìm theo tiêu đề, công ty, nội dung..."
-            className="flex-1 rounded-md border border-slate-200 bg-white px-3 py-2 text-sm"
+            className="min-w-[12rem] flex-1 rounded-md border border-slate-200 bg-white px-3 py-2 text-sm"
           />
-          <button
-            type="submit"
-            className="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
-          >
-            Tìm
-          </button>
+          <select name="type" defaultValue={typeFilter ?? ""} className="rounded-md border border-slate-200 bg-white px-3 py-2 text-sm">
+            <option value="">Mọi loại hình</option>
+            {EMPLOYMENT_TYPES.map((t) => (
+              <option key={t} value={t}>{EMPLOYMENT_TYPE_LABELS[t]}</option>
+            ))}
+          </select>
+          <select name="level" defaultValue={levelFilter ?? ""} className="rounded-md border border-slate-200 bg-white px-3 py-2 text-sm">
+            <option value="">Mọi cấp bậc</option>
+            {EXPERIENCE_LEVELS.map((l) => (
+              <option key={l} value={l}>{EXPERIENCE_LEVEL_LABELS[l]}</option>
+            ))}
+          </select>
+          <button type="submit" className="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700">Tìm</button>
         </form>
         {isCandidate && (
           <div className="mb-4 flex gap-4">
@@ -81,7 +104,9 @@ export default async function JobsPage({
           {jobs.length === 0 && (
             <Card className="border-dashed">
               <CardContent className="py-10 text-center text-slate-500">
-                {term ? `Không tìm thấy tin nào khớp "${term}".` : "Chưa có tin tuyển dụng nào."}
+                {term || typeFilter || levelFilter
+                  ? "Không tìm thấy tin nào khớp bộ lọc."
+                  : "Chưa có tin tuyển dụng nào."}
               </CardContent>
             </Card>
           )}
@@ -97,6 +122,14 @@ export default async function JobsPage({
                       <div className="font-medium text-slate-900">{j.title || "(chưa có tiêu đề)"}</div>
                       <div className="text-xs text-slate-400">{j.company || "—"}</div>
                       <p className="mt-1 line-clamp-2 text-sm text-slate-600">{j.rawText}</p>
+                      <div className="mt-2">
+                        <JobMeta
+                          location={j.location}
+                          employmentType={j.employmentType}
+                          experienceLevel={j.experienceLevel}
+                          skills={j.skills}
+                        />
+                      </div>
                     </div>
                   </CardContent>
                 </Card>
