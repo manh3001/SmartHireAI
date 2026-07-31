@@ -6,6 +6,7 @@ import Navbar from "@/components/Navbar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { buttonVariants } from "@/components/ui/button";
 import EvaluateFromJob from "./EvaluateFromJob";
+import JobMeta from "@/components/JobMeta";
 
 export default async function JobDetailPage({
   params,
@@ -18,7 +19,10 @@ export default async function JobDetailPage({
 
   const job = await prisma.jobDescription.findFirst({
     where: { id, isPublic: true },
-    select: { id: true, title: true, company: true, rawText: true, userId: true },
+    select: {
+      id: true, title: true, company: true, rawText: true, userId: true,
+      location: true, employmentType: true, experienceLevel: true, skills: true,
+    },
   });
   if (!job) notFound();
 
@@ -48,6 +52,14 @@ export default async function JobDetailPage({
           <CardHeader>
             <CardTitle className="text-blue-700">{job.title || "(chưa có tiêu đề)"}</CardTitle>
             <p className="text-sm text-slate-500">{job.company || "—"}</p>
+            <div className="mt-2">
+              <JobMeta
+                location={job.location}
+                employmentType={job.employmentType}
+                experienceLevel={job.experienceLevel}
+                skills={job.skills}
+              />
+            </div>
           </CardHeader>
           <CardContent>
             <p className="whitespace-pre-wrap text-sm text-slate-700">{job.rawText}</p>

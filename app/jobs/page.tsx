@@ -6,6 +6,7 @@ import prisma from "@/lib/db/prisma";
 import Navbar from "@/components/Navbar";
 import { Card, CardContent } from "@/components/ui/card";
 import SaveJobButton from "./SaveJobButton";
+import JobMeta from "@/components/JobMeta";
 
 export default async function JobsPage({
   searchParams,
@@ -32,7 +33,10 @@ export default async function JobsPage({
         : {}),
     },
     orderBy: { createdAt: "desc" },
-    select: { id: true, title: true, company: true, rawText: true, createdAt: true },
+    select: {
+      id: true, title: true, company: true, rawText: true, createdAt: true,
+      location: true, employmentType: true, experienceLevel: true, skills: true,
+    },
   });
 
   const isCandidate = session.user.role === "CANDIDATE";
@@ -97,6 +101,14 @@ export default async function JobsPage({
                       <div className="font-medium text-slate-900">{j.title || "(chưa có tiêu đề)"}</div>
                       <div className="text-xs text-slate-400">{j.company || "—"}</div>
                       <p className="mt-1 line-clamp-2 text-sm text-slate-600">{j.rawText}</p>
+                      <div className="mt-2">
+                        <JobMeta
+                          location={j.location}
+                          employmentType={j.employmentType}
+                          experienceLevel={j.experienceLevel}
+                          skills={j.skills}
+                        />
+                      </div>
                     </div>
                   </CardContent>
                 </Card>
