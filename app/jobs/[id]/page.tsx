@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { buttonVariants } from "@/components/ui/button";
 import EvaluateFromJob from "./EvaluateFromJob";
 import JobMeta from "@/components/JobMeta";
+import { composeJdText } from "@/lib/jobs/job-fields";
 
 export default async function JobDetailPage({
   params,
@@ -91,7 +92,7 @@ export default async function JobDetailPage({
         {isCandidate && (
           <EvaluateFromJob
             jobId={job.id}
-            jdText={job.rawText}
+            jdText={composeJdText(job)}
             jdTitle={job.title}
             jdCompany={job.company}
             cvs={cvs}

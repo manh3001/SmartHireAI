@@ -5,6 +5,7 @@ import prisma from "@/lib/db/prisma";
 import { auth } from "@/auth";
 import { createRateLimiter } from "@/lib/ai/rate-limit";
 import { requestScreening } from "@/lib/ai/request-screening";
+import { composeJdText } from "@/lib/jobs/job-fields";
 import {
   runScreening,
   MAX_SCREENING_APPLICANTS,
@@ -29,7 +30,10 @@ export async function screenApplicants(
 
   const job = await prisma.jobDescription.findFirst({
     where: { id: jobId, userId },
-    select: { id: true, rawText: true },
+    select: {
+      id: true, rawText: true,
+      location: true, employmentType: true, experienceLevel: true, skills: true,
+    },
   });
   if (!job) return { ok: false, error: "Không tìm thấy tin tuyển dụng" };
 
@@ -77,7 +81,7 @@ export async function screenApplicants(
   };
 
   const outcome = await runScreening(
-    { jobId: job.id, jdText: job.rawText, applicants },
+    { jobId: job.id, jdText: composeJdText(job), applicants },
     deps,
   );
 

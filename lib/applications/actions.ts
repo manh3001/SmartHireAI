@@ -10,6 +10,7 @@ import { runChangeStatus, type ChangeStatusDeps } from "./transition";
 import { loadCvInput } from "@/lib/cv/load";
 import { requestEvaluation } from "@/lib/ai/request-evaluation";
 import { buildEvaluationPrompt } from "@/lib/ai/prompt";
+import { composeJdText } from "@/lib/jobs/job-fields";
 import { createRateLimiter } from "@/lib/ai/rate-limit";
 import type { EvaluationResult } from "@/lib/ai/schema";
 
@@ -33,7 +34,10 @@ export async function previewMatch(
 
   const job = await prisma.jobDescription.findFirst({
     where: { id: jobId, isPublic: true },
-    select: { id: true, rawText: true },
+    select: {
+      id: true, rawText: true,
+      location: true, employmentType: true, experienceLevel: true, skills: true,
+    },
   });
   if (!job) return { ok: false, error: "Không tìm thấy tin tuyển dụng" };
 
@@ -41,7 +45,7 @@ export async function previewMatch(
   if (!cv) return { ok: false, error: "Không tìm thấy CV" };
 
   try {
-    const result = await requestEvaluation(buildEvaluationPrompt(cv, job.rawText));
+    const result = await requestEvaluation(buildEvaluationPrompt(cv, composeJdText(job)));
     return { ok: true, score: result.overallScore, summary: result.summary };
   } catch {
     return { ok: false, error: "AI đánh giá thất bại, vui lòng thử lại" };
@@ -75,7 +79,10 @@ export async function submitApplication(input: {
   // đúng object này qua findPublicJob nên không truy vấn job hai lần.
   const job = await prisma.jobDescription.findFirst({
     where: { id: input.jobId, isPublic: true },
-    select: { id: true, rawText: true },
+    select: {
+      id: true, rawText: true,
+      location: true, employmentType: true, experienceLevel: true, skills: true,
+    },
   });
 
   const deps: ApplyDeps = {
@@ -93,14 +100,13 @@ export async function submitApplication(input: {
     createApplication: async (data) => {
       // job chắc chắn non-null ở đây (runApply chỉ gọi createApplication sau
       // khi findPublicJob trả về truthy).
-      const rawText = job!.rawText;
 
       // Tính điểm CHÍNH THỨC ở server (không tin điểm client). AI gọi NGOÀI
       // transaction; lỗi AI -> đơn vẫn nộp, evaluationId = null.
       let evalData: (EvaluationResult & { rawModelOutput: EvaluationResult }) | null = null;
       try {
         const result = await requestEvaluation(
-          buildEvaluationPrompt(data.cvSnapshot, rawText),
+          buildEvaluationPrompt(data.cvSnapshot, composeJdText(job!)),
         );
         evalData = { ...result, rawModelOutput: result };
       } catch {
