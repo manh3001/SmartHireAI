@@ -55,6 +55,12 @@ export default async function ApplicantsPage({
         <p className="text-sm text-slate-500">
           Kéo thẻ ứng viên giữa các cột để đổi trạng thái. Tổng {initial.length} ứng viên.
         </p>
+        <Link
+          href={`/jobs/${id}/screening`}
+          className="mt-2 inline-block text-sm text-blue-600 hover:underline"
+        >
+          🔎 Sàng lọc AI
+        </Link>
         {initial.length === 0 ? (
           <p className="mt-4 text-sm text-slate-500">Chưa có ai ứng tuyển tin này.</p>
         ) : (
