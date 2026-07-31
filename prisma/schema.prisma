@@ -27,6 +27,7 @@ model User {
   savedJobs       SavedJob[]
   companyProfile  CompanyProfile?
   messages        Message[]
+  notifications   Notification[]
 }
 
 model CV {
@@ -262,4 +263,16 @@ model Message {
   sender        User        @relation(fields: [senderId], references: [id], onDelete: Cascade)
   body          String
   createdAt     DateTime    @default(now())
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  message   String
+  link      String
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@index([userId, read])
 }
