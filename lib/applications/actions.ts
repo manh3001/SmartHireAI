@@ -80,6 +80,10 @@ export async function submitApplication(input: {
 
   const deps: ApplyDeps = {
     findPublicJob: async () => job,
+    // Khớp mọi đơn theo (jobId, candidateId) bất kể trạng thái: rút đơn là
+    // quyết định cuối cho job đó — ứng viên đã rút KHÔNG nộp lại được (cũng
+    // trùng ràng buộc @@unique([jobId, candidateId]) ở schema). Đây là hành vi
+    // chủ đích, không phải thiếu sót.
     findExistingApplication: (jobId, candidateId) =>
       prisma.application.findFirst({
         where: { jobId, candidateId },
