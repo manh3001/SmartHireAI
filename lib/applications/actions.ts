@@ -4,7 +4,9 @@ import { revalidatePath } from "next/cache";
 import prisma from "@/lib/db/prisma";
 import { auth } from "@/auth";
 import { applySchema } from "./schema";
-import { APPLICATION_STATUSES, canWithdraw, type ApplicationStatus } from "./status";
+import { APPLICATION_STATUSES, canWithdraw, STATUS_LABELS, type ApplicationStatus } from "./status";
+import { createNotification } from "@/lib/notifications/create";
+import { statusChangeNotification, newApplicationNotification } from "@/lib/notifications/messages";
 import { runApply, type ApplyDeps } from "./apply";
 import { runChangeStatus, type ChangeStatusDeps } from "./transition";
 import { loadCvInput } from "@/lib/cv/load";
@@ -80,7 +82,7 @@ export async function submitApplication(input: {
   const job = await prisma.jobDescription.findFirst({
     where: { id: input.jobId, isPublic: true },
     select: {
-      id: true, rawText: true,
+      id: true, rawText: true, userId: true, title: true,
       location: true, employmentType: true, experienceLevel: true, skills: true,
     },
   });
@@ -167,6 +169,20 @@ export async function submitApplication(input: {
     revalidatePath("/applications");
     revalidatePath(`/jobs/${input.jobId}`);
   }
+  if (outcome.ok && job) {
+    try {
+      await createNotification(
+        job.userId,
+        newApplicationNotification(
+          session.user.name ?? "Ứng viên",
+          job.title || "(chưa có tiêu đề)",
+          input.jobId,
+        ),
+      );
+    } catch {
+      // thông báo lỗi không làm hỏng việc nộp đơn
+    }
+  }
   return outcome;
 }
 
@@ -247,5 +263,21 @@ export async function changeStatus(
     deps,
   );
   if (outcome.ok) revalidatePath("/applications");
+  if (outcome.ok) {
+    try {
+      const app = await prisma.application.findUnique({
+        where: { id: applicationId },
+        select: { candidateId: true, job: { select: { title: true } } },
+      });
+      if (app) {
+        await createNotification(
+          app.candidateId,
+          statusChangeNotification(app.job.title || "(chưa có tiêu đề)", STATUS_LABELS[toStatus]),
+        );
+      }
+    } catch {
+      // thông báo lỗi không làm hỏng việc đổi trạng thái
+    }
+  }
   return outcome;
 }
