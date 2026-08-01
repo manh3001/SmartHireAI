@@ -13,25 +13,29 @@ import {
   EXPERIENCE_LEVELS,
   EXPERIENCE_LEVEL_LABELS,
 } from "@/lib/jobs/job-fields";
+import { salaryWhere, SALARY_FILTER_STEPS } from "@/lib/jobs/salary";
 
 export default async function JobsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ q?: string; type?: string; level?: string }>;
+  searchParams: Promise<{ q?: string; type?: string; level?: string; salary?: string }>;
 }) {
   const session = await auth();
   if (!session?.user?.id) redirect("/login");
 
-  const { q, type, level } = await searchParams;
+  const { q, type, level, salary } = await searchParams;
   const term = (q ?? "").trim();
   const typeFilter = EMPLOYMENT_TYPES.includes(type as never) ? (type as (typeof EMPLOYMENT_TYPES)[number]) : undefined;
   const levelFilter = EXPERIENCE_LEVELS.includes(level as never) ? (level as (typeof EXPERIENCE_LEVELS)[number]) : undefined;
+  const salaryNum = Number(salary);
+  const salaryFilter = SALARY_FILTER_STEPS.includes(salaryNum as never) ? salaryNum : null;
 
   const jobs = await prisma.jobDescription.findMany({
     where: {
       isPublic: true,
       ...(typeFilter ? { employmentType: typeFilter } : {}),
       ...(levelFilter ? { experienceLevel: levelFilter } : {}),
+      ...salaryWhere(salaryFilter),
       ...(term
         ? {
             OR: [
@@ -89,6 +93,12 @@ export default async function JobsPage({
               <option key={l} value={l}>{EXPERIENCE_LEVEL_LABELS[l]}</option>
             ))}
           </select>
+          <select name="salary" defaultValue={salaryFilter ?? ""} className="rounded-md border border-slate-200 bg-white px-3 py-2 text-sm">
+            <option value="">Mọi mức lương</option>
+            {SALARY_FILTER_STEPS.map((s) => (
+              <option key={s} value={s}>Từ {s} triệu</option>
+            ))}
+          </select>
           <button type="submit" className="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700">Tìm</button>
         </form>
         {isCandidate && (
@@ -105,7 +115,7 @@ export default async function JobsPage({
           {jobs.length === 0 && (
             <Card className="border-dashed">
               <CardContent className="py-10 text-center text-slate-500">
-                {term || typeFilter || levelFilter
+                {term || typeFilter || levelFilter || salaryFilter
                   ? "Không tìm thấy tin nào khớp bộ lọc."
                   : "Chưa có tin tuyển dụng nào."}
               </CardContent>
