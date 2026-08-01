@@ -51,6 +51,17 @@ export default async function NewJobPage() {
                 </select></div>
               <div><Label>Kỹ năng yêu cầu</Label>
                 <Input name="skills" placeholder="VD: React, Node, SQL (cách nhau bởi phẩy)" /></div>
+                <div>
+                  <label className="mb-1 block text-sm font-medium text-slate-700">Mức lương (triệu VND / tháng)</label>
+                  <div className="flex items-center gap-2">
+                    <Input name="salaryMin" type="number" min="0" step="0.5" placeholder="Từ" className="w-28" />
+                    <span className="text-slate-400">–</span>
+                    <Input name="salaryMax" type="number" min="0" step="0.5" placeholder="Đến" className="w-28" />
+                    <label className="ml-2 flex items-center gap-1 text-sm text-slate-600">
+                      <input type="checkbox" name="salaryNegotiable" value="1" /> Thỏa thuận
+                    </label>
+                  </div>
+                </div>
               <div><Label>Mô tả công việc (JD)</Label>
                 <Textarea name="rawText" rows={10} placeholder="Dán nội dung mô tả công việc..." required /></div>
               <Button type="submit" className="justify-self-start">Đăng tin</Button>
