@@ -9,6 +9,9 @@ const base = {
   skills: "React",
   employmentType: "FULL_TIME",
   experienceLevel: "SENIOR",
+  salaryMin: 15_000_000,
+  salaryMax: 25_000_000,
+  salaryNegotiable: false,
 };
 
 describe("jobSchema", () => {
@@ -40,5 +43,24 @@ describe("jobSchema", () => {
 
   it("enum sai -> lỗi", () => {
     expect(jobSchema.safeParse({ ...base, employmentType: "BOGUS" }).success).toBe(false);
+  });
+
+  it("min > max -> lỗi", () => {
+    const r = jobSchema.safeParse({ ...base, salaryMin: 30_000_000, salaryMax: 10_000_000 });
+    expect(r.success).toBe(false);
+  });
+
+  it("lương âm -> lỗi", () => {
+    expect(jobSchema.safeParse({ ...base, salaryMin: -1 }).success).toBe(false);
+  });
+
+  it("chỉ có một đầu lương vẫn hợp lệ", () => {
+    expect(jobSchema.safeParse({ ...base, salaryMin: 15_000_000, salaryMax: null }).success).toBe(true);
+    expect(jobSchema.safeParse({ ...base, salaryMin: null, salaryMax: 25_000_000 }).success).toBe(true);
+  });
+
+  it("không lương (null cả hai) vẫn hợp lệ", () => {
+    const r = jobSchema.safeParse({ ...base, salaryMin: null, salaryMax: null, salaryNegotiable: true });
+    expect(r.success).toBe(true);
   });
 });
