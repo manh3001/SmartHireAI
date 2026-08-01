@@ -51,4 +51,19 @@ describe("composeJdText", () => {
     const out = composeJdText({ location: "Remote", rawText: "ND" });
     expect(out).toBe("Địa điểm: Remote\nND");
   });
+
+  it("chèn dòng lương khi có", () => {
+    const out = composeJdText({
+      rawText: "Mô tả",
+      salaryMin: 15_000_000,
+      salaryMax: 25_000_000,
+      salaryNegotiable: false,
+    });
+    expect(out).toContain("Mức lương: 15 – 25 triệu");
+  });
+
+  it("không có lương thì không chèn dòng lương", () => {
+    const out = composeJdText({ rawText: "Mô tả" });
+    expect(out).not.toContain("Mức lương");
+  });
 });
