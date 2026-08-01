@@ -48,3 +48,16 @@ export function canTransition(
 export function canWithdraw(status: ApplicationStatus): boolean {
   return status === "SUBMITTED" || status === "SCREENING";
 }
+
+// Định hình kết quả groupBy status thành mảng đủ 7 trạng thái đúng thứ tự vòng đời,
+// kèm nhãn tiếng Việt; trạng thái vắng mặt = 0. Dùng chung cho /admin và dashboard.
+export function shapeStatusDistribution(
+  groups: { status: string; count: number }[],
+): { status: string; label: string; count: number }[] {
+  const map = new Map(groups.map((g) => [g.status, g.count]));
+  return APPLICATION_STATUSES.map((s) => ({
+    status: s,
+    label: STATUS_LABELS[s],
+    count: map.get(s) ?? 0,
+  }));
+}

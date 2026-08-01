@@ -1,16 +1,3 @@
-import { APPLICATION_STATUSES, STATUS_LABELS } from "@/lib/applications/status";
-
-export function shapeStatusDistribution(
-  groups: { status: string; count: number }[],
-): { status: string; label: string; count: number }[] {
-  const map = new Map(groups.map((g) => [g.status, g.count]));
-  return APPLICATION_STATUSES.map((s) => ({
-    status: s,
-    label: STATUS_LABELS[s],
-    count: map.get(s) ?? 0,
-  }));
-}
-
 export function shapeRoleCounts(
   groups: { role: string; count: number }[],
 ): { candidates: number; recruiters: number; admins: number; total: number } {

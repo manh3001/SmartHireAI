@@ -7,6 +7,8 @@ import { createCv, deleteCv } from "@/lib/cv/actions";
 import { deleteJobDescription } from "@/lib/jobs/actions";
 import Navbar from "@/components/Navbar";
 import ImportCvButton from "./ImportCvButton";
+import RecruiterStats from "./RecruiterStats";
+import CandidateStats from "./CandidateStats";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 
@@ -42,6 +44,7 @@ export default async function DashboardPage() {
               <Link href="/jobs/new" className={buttonVariants()}><Plus className="mr-1 h-4 w-4" /> Đăng JD</Link>
             </div>
           </div>
+          <RecruiterStats userId={session.user.id} />
           <div className="flex flex-col gap-3">
             {jobs.length === 0 && (
               <Card className="border-dashed">
@@ -98,6 +101,7 @@ export default async function DashboardPage() {
             </form>
           </div>
         </div>
+        <CandidateStats userId={session.user.id} />
         <div className="flex flex-col gap-3">
           {cvs.length === 0 && (
             <Card className="border-dashed">
