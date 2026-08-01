@@ -43,6 +43,7 @@ export async function recommendJobs(
     select: {
       id: true, title: true, company: true, rawText: true,
       location: true, employmentType: true, experienceLevel: true, skills: true,
+      salaryMin: true, salaryMax: true, salaryNegotiable: true,
     },
   });
 
