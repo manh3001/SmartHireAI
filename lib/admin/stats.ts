@@ -1,5 +1,6 @@
 import prisma from "@/lib/db/prisma";
-import { shapeStatusDistribution, shapeRoleCounts, summarizeSalaries } from "./stats-shape";
+import { shapeRoleCounts, summarizeSalaries } from "./stats-shape";
+import { shapeStatusDistribution } from "@/lib/applications/status";
 
 export async function getAdminStats() {
   const [

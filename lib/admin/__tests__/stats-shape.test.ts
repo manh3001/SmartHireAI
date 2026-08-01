@@ -1,20 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { shapeStatusDistribution, shapeRoleCounts, summarizeSalaries } from "../stats-shape";
-
-describe("shapeStatusDistribution", () => {
-  it("đủ 7 trạng thái đúng thứ tự, vắng mặt = 0", () => {
-    const out = shapeStatusDistribution([
-      { status: "HIRED", count: 3 },
-      { status: "SUBMITTED", count: 5 },
-    ]);
-    expect(out.map((o) => o.status)).toEqual([
-      "SUBMITTED", "SCREENING", "INTERVIEW", "OFFER", "HIRED", "REJECTED", "WITHDRAWN",
-    ]);
-    expect(out[0]).toEqual({ status: "SUBMITTED", label: "Đã nộp", count: 5 });
-    expect(out.find((o) => o.status === "SCREENING")!.count).toBe(0);
-    expect(out.find((o) => o.status === "HIRED")!.count).toBe(3);
-  });
-});
+import { shapeRoleCounts, summarizeSalaries } from "../stats-shape";
 
 describe("shapeRoleCounts", () => {
   it("đếm theo vai + total", () => {
