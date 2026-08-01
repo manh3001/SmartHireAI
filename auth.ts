@@ -28,14 +28,14 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     jwt({ token, user }) {
       if (user) {
         token.id = user.id;
-        token.role = (user as { role?: "CANDIDATE" | "RECRUITER" }).role;
+        token.role = (user as { role?: "CANDIDATE" | "RECRUITER" | "ADMIN" }).role;
       }
       return token;
     },
     session({ session, token }) {
       if (session.user) {
         session.user.id = token.id as string;
-        session.user.role = (token.role as "CANDIDATE" | "RECRUITER") ?? "CANDIDATE";
+        session.user.role = (token.role as "CANDIDATE" | "RECRUITER" | "ADMIN") ?? "CANDIDATE";
       }
       return session;
     },
