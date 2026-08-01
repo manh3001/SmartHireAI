@@ -112,6 +112,9 @@ model JobDescription {
   employmentType  EmploymentType?
   experienceLevel ExperienceLevel?
   skills          String          @default("")
+  salaryMin        Int?
+  salaryMax        Int?
+  salaryNegotiable Boolean         @default(false)
   isPublic        Boolean         @default(false)
   evaluations     Evaluation[]
   applications    Application[]
