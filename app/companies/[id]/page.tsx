@@ -32,6 +32,7 @@ export default async function CompanyPage({
     select: {
       id: true, title: true, company: true, rawText: true,
       location: true, employmentType: true, experienceLevel: true, skills: true,
+      salaryMin: true, salaryMax: true, salaryNegotiable: true,
     },
   });
 
@@ -89,6 +90,9 @@ export default async function CompanyPage({
                       employmentType={j.employmentType}
                       experienceLevel={j.experienceLevel}
                       skills={j.skills}
+                      salaryMin={j.salaryMin}
+                      salaryMax={j.salaryMax}
+                      salaryNegotiable={j.salaryNegotiable}
                     />
                   </div>
                 </CardContent>

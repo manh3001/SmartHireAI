@@ -48,6 +48,7 @@ export default async function JobsPage({
     select: {
       id: true, title: true, company: true, rawText: true, createdAt: true,
       location: true, employmentType: true, experienceLevel: true, skills: true,
+      salaryMin: true, salaryMax: true, salaryNegotiable: true,
     },
   });
 
@@ -128,6 +129,9 @@ export default async function JobsPage({
                           employmentType={j.employmentType}
                           experienceLevel={j.experienceLevel}
                           skills={j.skills}
+                          salaryMin={j.salaryMin}
+                          salaryMax={j.salaryMax}
+                          salaryNegotiable={j.salaryNegotiable}
                         />
                       </div>
                     </div>
