@@ -13,7 +13,8 @@ import {
   EXPERIENCE_LEVELS,
   EXPERIENCE_LEVEL_LABELS,
 } from "@/lib/jobs/job-fields";
-import { salaryWhere, SALARY_FILTER_STEPS } from "@/lib/jobs/salary";
+import { SALARY_FILTER_STEPS } from "@/lib/jobs/salary";
+import { buildJobsWhere } from "@/lib/jobs/job-query";
 
 export default async function JobsPage({
   searchParams,
@@ -31,23 +32,12 @@ export default async function JobsPage({
   const salaryFilter = SALARY_FILTER_STEPS.includes(salaryNum as never) ? salaryNum : null;
 
   const jobs = await prisma.jobDescription.findMany({
-    where: {
-      isPublic: true,
-      ...(typeFilter ? { employmentType: typeFilter } : {}),
-      ...(levelFilter ? { experienceLevel: levelFilter } : {}),
-      ...salaryWhere(salaryFilter),
-      ...(term
-        ? {
-            OR: [
-              { title: { contains: term, mode: "insensitive" } },
-              { company: { contains: term, mode: "insensitive" } },
-              { rawText: { contains: term, mode: "insensitive" } },
-              { location: { contains: term, mode: "insensitive" } },
-              { skills: { contains: term, mode: "insensitive" } },
-            ],
-          }
-        : {}),
-    },
+    where: buildJobsWhere({
+      term,
+      employmentType: typeFilter,
+      experienceLevel: levelFilter,
+      salaryMillions: salaryFilter,
+    }),
     orderBy: { createdAt: "desc" },
     select: {
       id: true, title: true, company: true, rawText: true, createdAt: true,
