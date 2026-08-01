@@ -23,6 +23,7 @@ export default async function JobDetailPage({
     select: {
       id: true, title: true, company: true, rawText: true, userId: true,
       location: true, employmentType: true, experienceLevel: true, skills: true,
+      salaryMin: true, salaryMax: true, salaryNegotiable: true,
     },
   });
   if (!job) notFound();
@@ -69,6 +70,9 @@ export default async function JobDetailPage({
                 employmentType={job.employmentType}
                 experienceLevel={job.experienceLevel}
                 skills={job.skills}
+                salaryMin={job.salaryMin}
+                salaryMax={job.salaryMax}
+                salaryNegotiable={job.salaryNegotiable}
               />
             </div>
           </CardHeader>

@@ -5,6 +5,7 @@ import { revalidatePath } from "next/cache";
 import prisma from "@/lib/db/prisma";
 import { auth } from "@/auth";
 import { jobSchema } from "./schema";
+import { parseSalaryInput } from "./salary";
 
 export async function createJobDescription(formData: FormData): Promise<void> {
   const session = await auth();
@@ -19,6 +20,9 @@ export async function createJobDescription(formData: FormData): Promise<void> {
     skills: String(formData.get("skills") ?? "").trim(),
     employmentType: String(formData.get("employmentType") ?? ""),
     experienceLevel: String(formData.get("experienceLevel") ?? ""),
+    salaryMin: parseSalaryInput(String(formData.get("salaryMin") ?? "")),
+    salaryMax: parseSalaryInput(String(formData.get("salaryMax") ?? "")),
+    salaryNegotiable: formData.get("salaryNegotiable") === "1",
   });
   if (!parsed.success) redirect("/jobs/new");
 
@@ -32,6 +36,9 @@ export async function createJobDescription(formData: FormData): Promise<void> {
       skills: parsed.data.skills,
       employmentType: parsed.data.employmentType,
       experienceLevel: parsed.data.experienceLevel,
+      salaryMin: parsed.data.salaryMin,
+      salaryMax: parsed.data.salaryMax,
+      salaryNegotiable: parsed.data.salaryNegotiable,
       isPublic: true,
     },
   });

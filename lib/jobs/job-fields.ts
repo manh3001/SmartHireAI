@@ -1,3 +1,5 @@
+import { formatSalary } from "./salary";
+
 export type EmploymentType = "FULL_TIME" | "PART_TIME" | "CONTRACT" | "INTERNSHIP";
 export type ExperienceLevel = "INTERN" | "JUNIOR" | "MID" | "SENIOR" | "LEAD";
 
@@ -36,6 +38,9 @@ export type JobTextInput = {
   employmentType?: EmploymentType | null;
   experienceLevel?: ExperienceLevel | null;
   skills?: string | null;
+  salaryMin?: number | null;
+  salaryMax?: number | null;
+  salaryNegotiable?: boolean | null;
   rawText: string;
 };
 
@@ -48,6 +53,12 @@ export function composeJdText(job: JobTextInput): string {
     meta.push(`Loại hình: ${EMPLOYMENT_TYPE_LABELS[job.employmentType]}`);
   if (job.experienceLevel)
     meta.push(`Cấp bậc: ${EXPERIENCE_LEVEL_LABELS[job.experienceLevel]}`);
+  const salary = formatSalary(
+    job.salaryMin ?? null,
+    job.salaryMax ?? null,
+    !!job.salaryNegotiable,
+  );
+  if (salary) meta.push(`Mức lương: ${salary}`);
   if (job.skills?.trim()) meta.push(`Kỹ năng: ${job.skills.trim()}`);
   if (meta.length === 0) return job.rawText;
   return `${meta.join(" | ")}\n${job.rawText}`;

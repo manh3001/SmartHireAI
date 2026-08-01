@@ -33,6 +33,7 @@ export async function screenApplicants(
     select: {
       id: true, rawText: true,
       location: true, employmentType: true, experienceLevel: true, skills: true,
+      salaryMin: true, salaryMax: true, salaryNegotiable: true,
     },
   });
   if (!job) return { ok: false, error: "Không tìm thấy tin tuyển dụng" };
