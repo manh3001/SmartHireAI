@@ -13,7 +13,9 @@ export function decidePollAction(
   next: NotificationSignal,
   currentPath: string,
 ): PollAction {
-  const shouldRefresh = next.unreadCount !== prev.unreadCount;
+  const shouldRefresh =
+    next.unreadCount !== prev.unreadCount ||
+    (next.latest?.id ?? null) !== (prev.latest?.id ?? null);
 
   const isNewLatest =
     next.latest != null && next.latest.id !== (prev.latest?.id ?? null);

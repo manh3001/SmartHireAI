@@ -59,4 +59,10 @@ describe("decidePollAction", () => {
     const next: NotificationSignal = { unreadCount: 0, latest: null };
     expect(decidePollAction(prev, next, "/dashboard").toast).toBeNull();
   });
+
+  it("count không đổi nhưng latest id mới → vẫn refresh", () => {
+    const prev: NotificationSignal = { unreadCount: 2, latest: n("a") };
+    const next: NotificationSignal = { unreadCount: 2, latest: n("b", "/messages/x") };
+    expect(decidePollAction(prev, next, "/dashboard").shouldRefresh).toBe(true);
+  });
 });
