@@ -28,12 +28,16 @@ export default function RealtimeProvider({
   });
   const inFlightRef = useRef(false);
 
+  // Sync pathname to ref without recreating poll interval
   useEffect(() => {
     pathRef.current = pathname;
+  }, [pathname]);
+
+  useEffect(() => {
     let stopped = false;
     let timer: ReturnType<typeof setInterval> | null = null;
 
-    async function poll() {
+    const poll = async () => {
       if (stopped || inFlightRef.current || document.hidden) return;
       inFlightRef.current = true;
       try {
@@ -49,6 +53,7 @@ export default function RealtimeProvider({
           unreadCount: data.unreadCount,
           latest: data.latest,
         };
+        if (stopped) return;
         const action = decidePollAction(prevRef.current, next, pathRef.current);
         prevRef.current = next;
         if (action.shouldRefresh) router.refresh();
@@ -63,7 +68,7 @@ export default function RealtimeProvider({
       } finally {
         inFlightRef.current = false;
       }
-    }
+    };
 
     function onVisible() {
       if (!document.hidden) poll();
@@ -76,7 +81,7 @@ export default function RealtimeProvider({
       if (timer) clearInterval(timer);
       document.removeEventListener("visibilitychange", onVisible);
     };
-  }, [router, pathname]);
+  }, [router]);
 
   return null;
 }
