@@ -2,15 +2,17 @@ import Link from "next/link";
 import { Sparkles, Bell } from "lucide-react";
 import { auth, signOut } from "@/auth";
 import { Button, buttonVariants } from "@/components/ui/button";
-import prisma from "@/lib/db/prisma";
+import { getNotificationSignal } from "@/lib/notifications/poll";
+import RealtimeProvider from "@/components/RealtimeProvider";
 
 export default async function Navbar() {
   const session = await auth();
   const loggedIn = !!session?.user;
 
-  const unread = loggedIn
-    ? await prisma.notification.count({ where: { userId: session!.user!.id, read: false } })
-    : 0;
+  const signal = loggedIn
+    ? await getNotificationSignal(session!.user!.id)
+    : { unreadCount: 0, latest: null };
+  const unread = signal.unreadCount;
 
   return (
     <header className="sticky top-0 z-20 border-b border-slate-200 bg-white/80 backdrop-blur">
@@ -25,6 +27,10 @@ export default async function Navbar() {
         <nav className="flex items-center gap-2">
           {loggedIn ? (
             <>
+              <RealtimeProvider
+                initialUnreadCount={signal.unreadCount}
+                initialLatestId={signal.latest?.id ?? null}
+              />
               <Link href="/dashboard" className="hidden text-sm font-medium text-slate-600 hover:text-blue-600 sm:inline">
                 Bảng điều khiển
               </Link>
