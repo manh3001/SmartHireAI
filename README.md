@@ -2,7 +2,7 @@
 
 Sàn tuyển dụng 2 chiều tích hợp **AI**: ứng viên tạo CV có cấu trúc, xuất PDF và được AI đánh giá độ phù hợp với mô tả công việc (JD); nhà tuyển dụng đăng tin, được AI sàng lọc hồ sơ và trao đổi trực tiếp với ứng viên.
 
-> Dự án portfolio cá nhân — ưu tiên một demo chạy được đầu-cuối, dùng công nghệ hiện đại mà nhà tuyển dụng nhận ra.
+> Dự án portfolio cá nhân — ưu tiên một demo chạy được đầu-cuối.
 
 ---
 
