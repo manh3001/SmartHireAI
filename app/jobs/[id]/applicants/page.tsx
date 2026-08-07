@@ -45,24 +45,24 @@ export default async function ApplicantsPage({
   }));
 
   return (
-    <div className="flex min-h-full flex-col bg-slate-50">
+    <div className="flex min-h-full flex-col bg-muted/20">
       <Navbar />
       <main className="mx-auto w-full max-w-6xl flex-1 p-6">
-        <Link href={`/jobs/${id}`} className="text-sm text-blue-600 hover:underline">← Về tin tuyển dụng</Link>
-        <h1 className="mt-2 text-xl font-semibold text-blue-700">
+        <Link href={`/jobs/${id}`} className="text-sm text-primary hover:underline">← Về tin tuyển dụng</Link>
+        <h1 className="mt-2 text-xl font-semibold text-foreground">
           Ứng viên — {job.title || "(chưa có tiêu đề)"}
         </h1>
-        <p className="text-sm text-slate-500">
+        <p className="text-sm text-muted-foreground">
           Kéo thẻ ứng viên giữa các cột để đổi trạng thái. Tổng {initial.length} ứng viên.
         </p>
         <Link
           href={`/jobs/${id}/screening`}
-          className="mt-2 inline-block text-sm text-blue-600 hover:underline"
+          className="mt-2 inline-block text-sm text-primary hover:underline"
         >
           🔎 Sàng lọc AI
         </Link>
         {initial.length === 0 ? (
-          <p className="mt-4 text-sm text-slate-500">Chưa có ai ứng tuyển tin này.</p>
+          <p className="mt-4 text-sm text-muted-foreground">Chưa có ai ứng tuyển tin này.</p>
         ) : (
           <ApplicantsBoard jobId={id} initial={initial} />
         )}

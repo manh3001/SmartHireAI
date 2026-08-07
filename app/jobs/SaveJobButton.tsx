@@ -38,10 +38,10 @@ export default function SaveJobButton({
       onClick={onToggle}
       disabled={pending}
       aria-label={saved ? "Bỏ lưu tin" : "Lưu tin"}
-      className="rounded-md p-1.5 text-slate-400 hover:bg-slate-100 hover:text-blue-600 disabled:opacity-50"
+      className="rounded-md p-1.5 text-muted-foreground hover:bg-muted hover:text-primary disabled:opacity-50"
     >
       {saved ? (
-        <BookmarkCheck className="h-4 w-4 text-blue-600" />
+        <BookmarkCheck className="h-4 w-4 text-primary" />
       ) : (
         <Bookmark className="h-4 w-4" />
       )}
