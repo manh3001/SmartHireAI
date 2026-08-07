@@ -3,11 +3,10 @@ import { redirect, notFound } from "next/navigation";
 import Link from "next/link";
 import prisma from "@/lib/db/prisma";
 import Navbar from "@/components/Navbar";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { buttonVariants } from "@/components/ui/button";
 import EvaluateFromJob from "./EvaluateFromJob";
-import JobMeta from "@/components/JobMeta";
 import { composeJdText } from "@/lib/jobs/job-fields";
+import JobDetail from "@/components/jobs/JobDetail";
 
 export default async function JobDetailPage({
   params,
@@ -50,58 +49,40 @@ export default async function JobDetailPage({
     select: { id: true },
   });
 
+  const actionSlot = (
+    <div className="flex flex-wrap gap-3">
+      {isCandidate && (
+        applied ? (
+          <Link href="/applications" className={buttonVariants({ variant: "outline" })}>
+            Bạn đã ứng tuyển — xem đơn của tôi
+          </Link>
+        ) : (
+          <Link href={`/jobs/${job.id}/apply`} className={buttonVariants()}>
+            Ứng tuyển ngay
+          </Link>
+        )
+      )}
+      {isOwnerRecruiter && (
+        <Link href={`/jobs/${job.id}/applicants`} className={buttonVariants()}>
+          Xem ứng viên đã nộp
+        </Link>
+      )}
+      {companyProfile && (
+        <Link href={`/companies/${companyProfile.id}`} className="self-center text-sm text-primary hover:underline">
+          Xem trang công ty →
+        </Link>
+      )}
+    </div>
+  );
+
   return (
-    <div className="flex min-h-full flex-col bg-slate-50">
+    <div className="flex min-h-full flex-col bg-muted/20">
       <Navbar />
-      <main className="mx-auto w-full max-w-2xl flex-1 p-6">
-        <Link href="/jobs" className="text-sm text-blue-600 hover:underline">← Về danh sách</Link>
-        <Card className="mt-3">
-          <CardHeader>
-            <CardTitle className="text-blue-700">{job.title || "(chưa có tiêu đề)"}</CardTitle>
-            <p className="text-sm text-slate-500">{job.company || "—"}</p>
-            {companyProfile && (
-              <Link href={`/companies/${companyProfile.id}`} className="text-sm text-blue-600 hover:underline">
-                Xem trang công ty →
-              </Link>
-            )}
-            <div className="mt-2">
-              <JobMeta
-                location={job.location}
-                employmentType={job.employmentType}
-                experienceLevel={job.experienceLevel}
-                skills={job.skills}
-                salaryMin={job.salaryMin}
-                salaryMax={job.salaryMax}
-                salaryNegotiable={job.salaryNegotiable}
-              />
-            </div>
-          </CardHeader>
-          <CardContent>
-            <p className="whitespace-pre-wrap text-sm text-slate-700">{job.rawText}</p>
-          </CardContent>
-        </Card>
-
-        {isCandidate && (
-          <div className="mt-4">
-            {applied ? (
-              <Link href="/applications" className={buttonVariants({ variant: "outline" })}>
-                Bạn đã ứng tuyển — xem đơn của tôi
-              </Link>
-            ) : (
-              <Link href={`/jobs/${job.id}/apply`} className={buttonVariants()}>
-                Ứng tuyển ngay
-              </Link>
-            )}
-          </div>
-        )}
-
-        {isOwnerRecruiter && (
-          <div className="mt-4">
-            <Link href={`/jobs/${job.id}/applicants`} className={buttonVariants()}>
-              Xem ứng viên đã nộp
-            </Link>
-          </div>
-        )}
+      <main className="mx-auto w-full max-w-3xl flex-1 p-4 sm:p-6">
+        <Link href="/jobs" className="text-sm text-primary hover:underline">← Về danh sách</Link>
+        <div className="mt-3">
+          <JobDetail job={job} action={actionSlot} />
+        </div>
 
         {isCandidate && (
           <EvaluateFromJob
