@@ -15,11 +15,11 @@ export default async function Navbar() {
   const unread = signal.unreadCount;
 
   return (
-    <header className="sticky top-0 z-20 border-b border-slate-200 bg-white/80 backdrop-blur">
-      <div className="mx-auto flex h-14 max-w-5xl items-center justify-between px-4">
+    <header className="sticky top-0 z-20 border-b border-border bg-white/80 backdrop-blur">
+      <div className="mx-auto flex h-14 max-w-6xl items-center justify-between px-4">
         <Link
           href="/"
-          className="flex items-center gap-1.5 text-lg font-bold text-blue-600"
+          className="flex items-center gap-1.5 text-lg font-bold text-brand-gradient"
         >
           <Sparkles className="h-5 w-5" />
           SmartHire
@@ -31,28 +31,33 @@ export default async function Navbar() {
                 initialUnreadCount={signal.unreadCount}
                 initialLatestId={signal.latest?.id ?? null}
               />
-              <Link href="/dashboard" className="hidden text-sm font-medium text-slate-600 hover:text-blue-600 sm:inline">
-                Bảng điều khiển
-              </Link>
-              <Link href="/jobs" className="hidden text-sm font-medium text-slate-600 hover:text-blue-600 sm:inline">
+              <Link href="/jobs" className="text-sm font-medium text-muted-foreground hover:text-foreground sm:hidden">
                 Việc làm
               </Link>
-              {session!.user!.role === "ADMIN" && (
-                <Link href="/admin" className="hidden text-sm font-medium text-slate-600 hover:text-blue-600 sm:inline">
-                  Quản trị
+              <div className="hidden items-center gap-2 sm:flex">
+                <Link href="/dashboard" className="text-sm font-medium text-muted-foreground hover:text-foreground">
+                  Bảng điều khiển
                 </Link>
-              )}
-              <span className="hidden rounded-full bg-blue-100 px-2 py-0.5 text-xs font-medium text-blue-700 sm:inline">
-                {session!.user!.role === "ADMIN"
-                  ? "Quản trị viên"
-                  : session!.user!.role === "RECRUITER"
-                    ? "Nhà tuyển dụng"
-                    : "Ứng viên"}
-              </span>
-              <span className="hidden text-sm text-slate-600 sm:inline">
-                {session!.user!.name}
-              </span>
-              <Link href="/notifications" className="relative text-slate-600 hover:text-blue-600" aria-label="Thông báo">
+                <Link href="/jobs" className="text-sm font-medium text-muted-foreground hover:text-foreground">
+                  Việc làm
+                </Link>
+                {session!.user!.role === "ADMIN" && (
+                  <Link href="/admin" className="text-sm font-medium text-muted-foreground hover:text-foreground">
+                    Quản trị
+                  </Link>
+                )}
+                <span className="rounded-full bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary">
+                  {session!.user!.role === "ADMIN"
+                    ? "Quản trị viên"
+                    : session!.user!.role === "RECRUITER"
+                      ? "Nhà tuyển dụng"
+                      : "Ứng viên"}
+                </span>
+                <span className="text-sm text-muted-foreground">
+                  {session!.user!.name}
+                </span>
+              </div>
+              <Link href="/notifications" className="relative text-muted-foreground hover:text-foreground" aria-label="Thông báo">
                 <Bell className="h-5 w-5" />
                 {unread > 0 && (
                   <span className="absolute -right-1.5 -top-1.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-red-500 px-1 text-[10px] font-medium text-white">
