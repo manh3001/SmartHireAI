@@ -15,6 +15,7 @@ export type JobCardData = {
   salaryMin?: number | null;
   salaryMax?: number | null;
   salaryNegotiable?: boolean | null;
+  category?: string | null;
   rawText?: string | null;
 };
 
