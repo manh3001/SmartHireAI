@@ -8,6 +8,7 @@ import {
   Font,
 } from "@react-pdf/renderer";
 import type { CvInput } from "@/lib/cv/types";
+import { dateRange, contactLine, eduSubLine } from "@/lib/cv/cv-format";
 
 Font.register({
   family: "Roboto",
@@ -32,14 +33,9 @@ const s = StyleSheet.create({
   skillRow: { marginBottom: 2 },
 });
 
-function dateRange(a: string, b: string): string {
-  if (!a && !b) return "";
-  return [a, b].filter(Boolean).join(" - ");
-}
-
 export function CvDocument({ cv }: { cv: CvInput }) {
   const p = cv.profile;
-  const contact = [p.email, p.phone].filter(Boolean).join("  •  ");
+  const contact = contactLine(p.email, p.phone);
   return (
     <Document>
       <Page style={s.page}>
@@ -70,7 +66,7 @@ export function CvDocument({ cv }: { cv: CvInput }) {
               <View key={i} wrap={false} style={{ marginBottom: 6 }}>
                 <Text style={s.itemTitle}>{e.school}</Text>
                 <Text style={s.itemSub}>
-                  {[e.major, dateRange(e.startDate, e.endDate)].filter(Boolean).join("  •  ")}
+                  {eduSubLine(e.major, dateRange(e.startDate, e.endDate))}
                 </Text>
               </View>
             ))}
