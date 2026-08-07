@@ -63,4 +63,17 @@ describe("jobSchema", () => {
     const r = jobSchema.safeParse({ ...base, salaryMin: null, salaryMax: null, salaryNegotiable: true });
     expect(r.success).toBe(true);
   });
+
+  it("chấp nhận category null và slug hợp lệ", () => {
+    const base = {
+      title: "Dev", company: "ACME", rawText: "JD", location: "HN", skills: "React",
+      employmentType: "", experienceLevel: "",
+      salaryMin: null, salaryMax: null, salaryNegotiable: false,
+    };
+    expect(jobSchema.safeParse({ ...base, category: null }).success).toBe(true);
+    expect(jobSchema.safeParse({ ...base, category: "it" }).success).toBe(true);
+    const parsedBad = jobSchema.safeParse({ ...base, category: "xxx" });
+    expect(parsedBad.success).toBe(true);
+    if (parsedBad.success) expect(parsedBad.data.category).toBeNull();
+  });
 });

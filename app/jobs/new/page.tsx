@@ -14,6 +14,7 @@ import {
   EXPERIENCE_LEVELS,
   EXPERIENCE_LEVEL_LABELS,
 } from "@/lib/jobs/job-fields";
+import { JOB_CATEGORIES } from "@/lib/jobs/job-categories";
 
 export default async function NewJobPage() {
   const session = await auth();
@@ -40,6 +41,13 @@ export default async function NewJobPage() {
                   <option value="">— Chọn —</option>
                   {EMPLOYMENT_TYPES.map((t) => (
                     <option key={t} value={t}>{EMPLOYMENT_TYPE_LABELS[t]}</option>
+                  ))}
+                </select></div>
+              <div><Label>Ngành nghề</Label>
+                <select name="category" className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm">
+                  <option value="">— Chọn —</option>
+                  {JOB_CATEGORIES.map((c) => (
+                    <option key={c.slug} value={c.slug}>{c.label}</option>
                   ))}
                 </select></div>
               <div><Label>Cấp bậc</Label>

@@ -113,6 +113,7 @@ model JobDescription {
   employmentType  EmploymentType?
   experienceLevel ExperienceLevel?
   skills          String          @default("")
+  category        String?
   salaryMin        Int?
   salaryMax        Int?
   salaryNegotiable Boolean         @default(false)
