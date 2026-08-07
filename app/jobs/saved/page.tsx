@@ -17,7 +17,13 @@ export default async function SavedJobsPage() {
     where: { userId: session.user.id },
     orderBy: { createdAt: "desc" },
     select: {
-      job: { select: { id: true, title: true, company: true, rawText: true } },
+      job: {
+        select: {
+          id: true, title: true, company: true,
+          location: true, employmentType: true, experienceLevel: true, skills: true,
+          salaryMin: true, salaryMax: true, salaryNegotiable: true,
+        },
+      },
     },
   });
 
