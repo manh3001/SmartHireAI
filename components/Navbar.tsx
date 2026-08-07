@@ -15,7 +15,7 @@ export default async function Navbar() {
   const unread = signal.unreadCount;
 
   return (
-    <header className="sticky top-0 z-20 border-b border-border bg-white/80 backdrop-blur">
+    <header className="sticky top-0 z-20 border-b border-border bg-background/80 backdrop-blur">
       <div className="mx-auto flex h-14 max-w-6xl items-center justify-between px-4">
         <Link
           href="/"
