@@ -35,17 +35,17 @@ export default async function ApplyPage({
   });
 
   return (
-    <div className="flex min-h-full flex-col bg-slate-50">
+    <div className="flex min-h-full flex-col bg-muted/20">
       <Navbar />
       <main className="mx-auto w-full max-w-2xl flex-1 p-6">
-        <Link href={`/jobs/${id}`} className="text-sm text-blue-600 hover:underline">← Về tin tuyển dụng</Link>
+        <Link href={`/jobs/${id}`} className="text-sm text-primary hover:underline">← Về tin tuyển dụng</Link>
         <Card className="mt-3">
           <CardHeader>
-            <CardTitle className="text-blue-700">{job.title || "(chưa có tiêu đề)"}</CardTitle>
-            <p className="text-sm text-slate-500">{job.company || "—"}</p>
+            <CardTitle className="text-foreground">{job.title || "(chưa có tiêu đề)"}</CardTitle>
+            <p className="text-sm text-muted-foreground">{job.company || "—"}</p>
           </CardHeader>
           <CardContent>
-            <p className="text-sm text-slate-500">Chọn CV, xem điểm phù hợp và nộp đơn.</p>
+            <p className="text-sm text-muted-foreground">Chọn CV, xem điểm phù hợp và nộp đơn.</p>
           </CardContent>
         </Card>
         <ApplyForm jobId={job.id} cvs={cvs} />

@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { previewMatch, submitApplication } from "@/lib/applications/actions";
+import ScoreBadge from "@/components/ScoreBadge";
 
 export default function ApplyForm({
   jobId,
@@ -49,7 +50,7 @@ export default function ApplyForm({
 
   if (cvs.length === 0) {
     return (
-      <p className="text-sm text-slate-500">
+      <p className="text-sm text-muted-foreground">
         Bạn chưa có CV nào. Hãy tạo CV trước ở dashboard rồi quay lại ứng tuyển.
       </p>
     );
@@ -58,17 +59,17 @@ export default function ApplyForm({
   return (
     <Card className="mt-4">
       <CardHeader>
-        <CardTitle className="text-blue-700">Ứng tuyển</CardTitle>
+        <CardTitle className="text-foreground">Ứng tuyển</CardTitle>
       </CardHeader>
       <CardContent className="grid gap-3">
-        <label className="text-sm font-medium text-slate-700">Chọn CV để nộp</label>
+        <label className="text-sm font-medium text-foreground">Chọn CV để nộp</label>
         <select
           value={cvId}
           onChange={(e) => {
             setCvId(e.target.value);
             setMatch(null);
           }}
-          className="rounded-md border border-slate-200 bg-white px-3 py-2 text-sm"
+          className="rounded-md border border-input bg-background px-3 py-2 text-sm"
         >
           {cvs.map((c) => (
             <option key={c.id} value={c.id}>{c.title}</option>
@@ -81,21 +82,21 @@ export default function ApplyForm({
           </Button>
         </div>
         {match && (
-          <div className="rounded-md border border-blue-100 bg-blue-50 p-3 text-sm">
-            <p className="font-semibold text-blue-700">Điểm phù hợp: {match.score}/100</p>
-            <p className="mt-1 text-slate-700">{match.summary}</p>
-            <p className="mt-1 text-xs text-slate-400">Điểm chính thức sẽ được tính lại khi bạn nộp đơn.</p>
+          <div className="rounded-md border border-border bg-muted/40 p-3 text-sm">
+            <p className="font-semibold text-foreground">Điểm phù hợp: <ScoreBadge score={match.score} /></p>
+            <p className="mt-1 text-foreground">{match.summary}</p>
+            <p className="mt-1 text-xs text-muted-foreground">Điểm chính thức sẽ được tính lại khi bạn nộp đơn.</p>
           </div>
         )}
 
-        <label className="text-sm font-medium text-slate-700">Thư giới thiệu (không bắt buộc)</label>
+        <label className="text-sm font-medium text-foreground">Thư giới thiệu (không bắt buộc)</label>
         <textarea
           value={coverLetter}
           onChange={(e) => setCoverLetter(e.target.value)}
           rows={5}
           maxLength={3000}
           placeholder="Vài dòng giới thiệu bản thân và lý do phù hợp..."
-          className="rounded-md border border-slate-200 bg-white px-3 py-2 text-sm"
+          className="rounded-md border border-input bg-background px-3 py-2 text-sm"
         />
 
         <Button onClick={onSubmit} disabled={submitting || !cvId} className="justify-self-start">
