@@ -72,15 +72,15 @@ export default function ChatClient({
   }
 
   return (
-    <main className="mx-auto flex h-[calc(100vh-1px)] max-w-3xl flex-col bg-slate-50 p-4">
+    <main className="mx-auto flex h-[calc(100vh-1px)] max-w-3xl flex-col bg-muted/20 p-4">
       <div className="mb-3 flex items-center justify-between">
-        <Link href={`/cv/${cvId}`} className="text-sm text-blue-600 hover:underline">← Về CV</Link>
-        <h1 className="text-lg font-semibold text-slate-900">Tư vấn: {cvTitle}</h1>
+        <Link href={`/cv/${cvId}`} className="text-sm text-primary hover:underline">← Về CV</Link>
+        <h1 className="text-lg font-semibold text-foreground">Tư vấn: {cvTitle}</h1>
       </div>
 
-      <div ref={scrollRef} className="flex-1 space-y-3 overflow-y-auto rounded-lg border border-slate-200 bg-white p-4">
+      <div ref={scrollRef} className="flex-1 space-y-3 overflow-y-auto rounded-lg border border-border bg-card p-4">
         {messages.length === 0 && (
-          <p className="mt-10 text-center text-sm text-slate-400">
+          <p className="mt-10 text-center text-sm text-muted-foreground">
             Hãy hỏi bất cứ điều gì về CV hoặc định hướng nghề nghiệp của bạn.
           </p>
         )}
@@ -89,8 +89,8 @@ export default function ChatClient({
             <div
               className={
                 m.role === "user"
-                  ? "max-w-[80%] whitespace-pre-wrap rounded-2xl bg-blue-600 px-4 py-2 text-sm text-white"
-                  : "max-w-[80%] whitespace-pre-wrap rounded-2xl border border-slate-200 bg-white px-4 py-2 text-sm text-slate-800"
+                  ? "max-w-[80%] whitespace-pre-wrap rounded-2xl bg-primary px-4 py-2 text-sm text-primary-foreground"
+                  : "max-w-[80%] whitespace-pre-wrap rounded-2xl border border-border bg-background px-4 py-2 text-sm text-foreground"
               }
             >
               {m.content || (m.role === "assistant" && loading ? "..." : "")}
