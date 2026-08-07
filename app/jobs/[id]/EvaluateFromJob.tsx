@@ -47,16 +47,16 @@ export default function EvaluateFromJob({
 
   return (
     <Card className="mt-4">
-      <CardHeader><CardTitle className="text-blue-700">Đánh giá CV của bạn với tin này</CardTitle></CardHeader>
+      <CardHeader><CardTitle className="text-foreground">Đánh giá CV của bạn với tin này</CardTitle></CardHeader>
       <CardContent className="grid gap-3">
         {cvs.length === 0 ? (
-          <p className="text-sm text-slate-500">Bạn chưa có CV nào. Hãy tạo CV trước ở dashboard.</p>
+          <p className="text-sm text-muted-foreground">Bạn chưa có CV nào. Hãy tạo CV trước ở dashboard.</p>
         ) : (
           <>
             <select
               value={cvId}
               onChange={(e) => setCvId(e.target.value)}
-              className="rounded-md border border-slate-200 bg-white px-3 py-2 text-sm"
+              className="rounded-md border border-input bg-background px-3 py-2 text-sm"
             >
               {cvs.map((c) => (
                 <option key={c.id} value={c.id}>{c.title}</option>
