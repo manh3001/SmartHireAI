@@ -10,6 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 
 export type PastEvaluation = {
   id: string;
@@ -71,7 +72,7 @@ export default function EvaluateClient({
   }
 
   return (
-    <main className="mx-auto min-h-full max-w-3xl bg-slate-50 p-8">
+    <main className="mx-auto min-h-full max-w-3xl bg-muted/20 p-8">
       <div className="mb-4 flex items-center justify-between">
         <Link href={`/cv/${cvId}`} className="text-sm underline">← Về CV</Link>
         <h1 className="text-lg font-semibold">Đánh giá: {cvTitle}</h1>
@@ -99,14 +100,14 @@ export default function EvaluateClient({
         <Card className="mb-4">
           <CardHeader><CardTitle>Kết quả</CardTitle></CardHeader>
           <CardContent className="grid gap-4">
-            <div className="flex flex-col items-center rounded-lg bg-blue-50/50 p-4 text-center">
+            <div className="flex flex-col items-center rounded-lg bg-muted/40 p-4 text-center">
               <div className={`flex h-28 w-28 flex-col items-center justify-center rounded-full border-4 bg-white ${ringClass[scoreColor(result.overallScore)]}`}>
                 <span className={`text-4xl font-bold ${colorClass[scoreColor(result.overallScore)]}`}>
                   {result.overallScore}
                 </span>
-                <span className="text-xs text-slate-400">/100</span>
+                <span className="text-xs text-muted-foreground">/100</span>
               </div>
-              <p className="mt-3 max-w-xl text-slate-600">{result.summary}</p>
+              <p className="mt-3 max-w-xl text-muted-foreground">{result.summary}</p>
             </div>
 
             <div className="grid gap-4 sm:grid-cols-2">
@@ -126,20 +127,20 @@ export default function EvaluateClient({
 
             <div className="grid gap-3 text-sm sm:grid-cols-2">
               <div>
-                <p className="mb-1 font-semibold text-slate-700">Từ khóa khớp</p>
+                <p className="mb-1 font-semibold text-foreground">Từ khóa khớp</p>
                 <div className="flex flex-wrap gap-1">
-                  {result.matchedKeywords.length === 0 && <span className="text-slate-400">—</span>}
+                  {result.matchedKeywords.length === 0 && <span className="text-muted-foreground">—</span>}
                   {result.matchedKeywords.map((k, i) => (
-                    <span key={i} className="rounded-full bg-blue-100 px-2 py-0.5 text-xs text-blue-700">{k}</span>
+                    <Badge key={i}>{k}</Badge>
                   ))}
                 </div>
               </div>
               <div>
-                <p className="mb-1 font-semibold text-slate-700">Từ khóa còn thiếu</p>
+                <p className="mb-1 font-semibold text-foreground">Từ khóa còn thiếu</p>
                 <div className="flex flex-wrap gap-1">
-                  {result.missingKeywords.length === 0 && <span className="text-slate-400">—</span>}
+                  {result.missingKeywords.length === 0 && <span className="text-muted-foreground">—</span>}
                   {result.missingKeywords.map((k, i) => (
-                    <span key={i} className="rounded-full bg-slate-200 px-2 py-0.5 text-xs text-slate-600">{k}</span>
+                    <Badge key={i} variant="muted">{k}</Badge>
                   ))}
                 </div>
               </div>
@@ -152,8 +153,8 @@ export default function EvaluateClient({
                   {result.skillGaps.map((g, i) => (
                     <div key={i} className="rounded border p-3 text-sm">
                       <div className="font-medium">{g.skill}</div>
-                      <div className="text-gray-600">Vì sao: {g.why}</div>
-                      <div className="text-gray-600">Học thế nào: {g.howToLearn}</div>
+                      <div className="text-muted-foreground">Vì sao: {g.why}</div>
+                      <div className="text-muted-foreground">Học thế nào: {g.howToLearn}</div>
                     </div>
                   ))}
                 </div>
@@ -166,16 +167,16 @@ export default function EvaluateClient({
       <Card>
         <CardHeader><CardTitle>Lịch sử đánh giá</CardTitle></CardHeader>
         <CardContent className="grid gap-2">
-          {history.length === 0 && <p className="text-sm text-gray-500">Chưa có lần đánh giá nào.</p>}
+          {history.length === 0 && <p className="text-sm text-muted-foreground">Chưa có lần đánh giá nào.</p>}
           {history.map((h) => (
             <div key={h.id} className="flex items-center justify-between border-b pb-2 last:border-0 text-sm">
               <div>
                 <span className={`font-bold ${colorClass[scoreColor(h.overallScore)]}`}>{h.overallScore}/100</span>
-                <span className="ml-2 text-gray-600">
+                <span className="ml-2 text-muted-foreground">
                   {h.jdTitle || "JD"}{h.jdCompany ? ` @ ${h.jdCompany}` : ""}
                 </span>
               </div>
-              <span className="text-gray-400">{new Date(h.createdAt).toLocaleDateString("vi-VN")}</span>
+              <span className="text-muted-foreground">{new Date(h.createdAt).toLocaleDateString("vi-VN")}</span>
             </div>
           ))}
         </CardContent>
