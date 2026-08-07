@@ -43,3 +43,6 @@ next-env.d.ts
 
 # CV PDF mau (khong commit)
 sample-cv-mau.pdf
+
+# Visual brainstorming companion (temp mockups)
+.superpowers/
