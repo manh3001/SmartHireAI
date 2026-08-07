@@ -37,13 +37,13 @@ export default function RegisterPage() {
   }
 
   return (
-    <div className="flex min-h-full items-center justify-center bg-gradient-to-b from-blue-50 to-white p-4">
+    <div className="flex min-h-full items-center justify-center bg-gradient-to-b from-primary/5 to-background p-4">
       <div className="w-full max-w-sm">
-        <Link href="/" className="mb-6 flex items-center justify-center gap-1.5 text-xl font-bold text-blue-600">
+        <Link href="/" className="mb-6 flex items-center justify-center gap-1.5 text-xl font-bold text-brand-gradient">
           <Sparkles className="h-6 w-6" /> SmartHire
         </Link>
-        <div className="rounded-xl border border-slate-200 bg-white p-8 shadow-sm">
-          <h1 className="mb-6 text-center text-2xl font-bold text-slate-900">Đăng ký</h1>
+        <div className="rounded-xl border border-border bg-card p-8 shadow-sm">
+          <h1 className="mb-6 text-center text-2xl font-bold text-foreground">Đăng ký</h1>
           <form onSubmit={onSubmit} className="flex flex-col gap-3">
             <Input name="name" placeholder="Họ tên" required />
             <Input name="email" type="email" placeholder="Email" required />
@@ -51,7 +51,7 @@ export default function RegisterPage() {
             <select
               name="role"
               defaultValue="CANDIDATE"
-              className="rounded-md border border-slate-200 bg-white px-3 py-2 text-sm"
+              className="rounded-md border border-input bg-background px-3 py-2 text-sm"
             >
               <option value="CANDIDATE">Tôi là Ứng viên</option>
               <option value="RECRUITER">Tôi là Nhà tuyển dụng</option>
@@ -61,9 +61,9 @@ export default function RegisterPage() {
               {loading ? "Đang xử lý..." : "Đăng ký"}
             </Button>
           </form>
-          <p className="mt-4 text-center text-sm text-slate-600">
+          <p className="mt-4 text-center text-sm text-muted-foreground">
             Đã có tài khoản?{" "}
-            <Link href="/login" className="font-medium text-blue-600 hover:underline">Đăng nhập</Link>
+            <Link href="/login" className="font-medium text-primary hover:underline">Đăng nhập</Link>
           </p>
         </div>
       </div>
