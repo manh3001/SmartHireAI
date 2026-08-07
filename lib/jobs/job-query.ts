@@ -1,11 +1,13 @@
 import { salaryWhere } from "./salary";
 import type { EmploymentType, ExperienceLevel } from "./job-fields";
+import type { JobCategory } from "./job-categories";
 
 export type JobsFilter = {
   term?: string;
   employmentType?: EmploymentType;
   experienceLevel?: ExperienceLevel;
   salaryMillions?: number | null;
+  category?: JobCategory;
 };
 
 // Dựng Prisma where cho danh sách việc làm. Gộp các mảnh có OR (lương, tìm kiếm)
@@ -30,6 +32,7 @@ export function buildJobsWhere(f: JobsFilter): Record<string, unknown> {
     isPublic: true,
     ...(f.employmentType ? { employmentType: f.employmentType } : {}),
     ...(f.experienceLevel ? { experienceLevel: f.experienceLevel } : {}),
+    ...(f.category ? { category: f.category } : {}),
     ...(and.length > 0 ? { AND: and } : {}),
   };
 }

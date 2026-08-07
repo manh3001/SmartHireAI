@@ -78,4 +78,15 @@ describe("buildJobsWhere", () => {
     expect(result.experienceLevel).toBe("SENIOR");
     expect(result.isPublic).toBe(true);
   });
+
+  it("category passed -> appears as top-level key", () => {
+    const result = buildJobsWhere({ category: "it" });
+    expect(result.category).toBe("it");
+    expect(result.isPublic).toBe(true);
+  });
+
+  it("no category -> no category key", () => {
+    const result = buildJobsWhere({ term: "react" });
+    expect(result).not.toHaveProperty("category");
+  });
 });
