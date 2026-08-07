@@ -5,6 +5,7 @@ import {
   type ExperienceLevel,
 } from "@/lib/jobs/job-fields";
 import { formatSalary } from "@/lib/jobs/salary";
+import { Badge } from "@/components/ui/badge";
 
 export default function JobMeta({
   location,
@@ -36,20 +37,12 @@ export default function JobMeta({
 
   return (
     <div className="flex flex-wrap gap-1.5">
-      {salary && (
-        <span className="rounded-full bg-amber-50 px-2 py-0.5 text-xs font-medium text-amber-700">💰 {salary}</span>
-      )}
-      {location?.trim() && (
-        <span className="rounded-full bg-slate-100 px-2 py-0.5 text-xs text-slate-600">📍 {location.trim()}</span>
-      )}
-      {employmentType && (
-        <span className="rounded-full bg-blue-50 px-2 py-0.5 text-xs text-blue-700">{EMPLOYMENT_TYPE_LABELS[employmentType]}</span>
-      )}
-      {experienceLevel && (
-        <span className="rounded-full bg-blue-50 px-2 py-0.5 text-xs text-blue-700">{EXPERIENCE_LEVEL_LABELS[experienceLevel]}</span>
-      )}
+      {salary && <Badge variant="salary">💰 {salary}</Badge>}
+      {location?.trim() && <Badge variant="muted">📍 {location.trim()}</Badge>}
+      {employmentType && <Badge variant="default">{EMPLOYMENT_TYPE_LABELS[employmentType]}</Badge>}
+      {experienceLevel && <Badge variant="default">{EXPERIENCE_LEVEL_LABELS[experienceLevel]}</Badge>}
       {skillList.map((s) => (
-        <span key={s} className="rounded-full bg-green-50 px-2 py-0.5 text-xs text-green-700">{s}</span>
+        <Badge key={s} variant="skill">{s}</Badge>
       ))}
     </div>
   );

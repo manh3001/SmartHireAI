@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { EMPLOYMENT_TYPES, EXPERIENCE_LEVELS } from "./job-fields";
+import { normalizeCategory } from "./job-categories";
 
 const emptyToNull = (v: unknown) => (v === "" || v == null ? null : v);
 
@@ -12,6 +13,7 @@ export const jobSchema = z
     skills: z.string(),
     employmentType: z.preprocess(emptyToNull, z.enum(EMPLOYMENT_TYPES).nullable()),
     experienceLevel: z.preprocess(emptyToNull, z.enum(EXPERIENCE_LEVELS).nullable()),
+    category: z.preprocess((v) => normalizeCategory(v), z.string().nullable()),
     salaryMin: z.number().int().nonnegative().nullable(),
     salaryMax: z.number().int().nonnegative().nullable(),
     salaryNegotiable: z.boolean(),

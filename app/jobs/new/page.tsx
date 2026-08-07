@@ -14,6 +14,7 @@ import {
   EXPERIENCE_LEVELS,
   EXPERIENCE_LEVEL_LABELS,
 } from "@/lib/jobs/job-fields";
+import { JOB_CATEGORIES } from "@/lib/jobs/job-categories";
 
 export default async function NewJobPage() {
   const session = await auth();
@@ -21,12 +22,12 @@ export default async function NewJobPage() {
   if (session.user.role !== "RECRUITER") redirect("/dashboard");
 
   return (
-    <div className="flex min-h-full flex-col bg-slate-50">
+    <div className="flex min-h-full flex-col bg-muted/30">
       <Navbar />
       <main className="mx-auto w-full max-w-2xl flex-1 p-6">
-        <Link href="/dashboard" className="text-sm text-blue-600 hover:underline">← Về dashboard</Link>
+        <Link href="/dashboard" className="text-sm text-primary hover:underline">← Về dashboard</Link>
         <Card className="mt-3">
-          <CardHeader><CardTitle className="text-blue-700">Đăng tin tuyển dụng</CardTitle></CardHeader>
+          <CardHeader><CardTitle className="text-primary">Đăng tin tuyển dụng</CardTitle></CardHeader>
           <CardContent>
             <form action={createJobDescription} className="grid gap-3">
               <div><Label>Tiêu đề vị trí</Label>
@@ -36,14 +37,21 @@ export default async function NewJobPage() {
               <div><Label>Địa điểm</Label>
                 <Input name="location" placeholder="VD: Hà Nội, Remote" /></div>
               <div><Label>Loại hình làm việc</Label>
-                <select name="employmentType" className="w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm">
+                <select name="employmentType" className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm">
                   <option value="">— Chọn —</option>
                   {EMPLOYMENT_TYPES.map((t) => (
                     <option key={t} value={t}>{EMPLOYMENT_TYPE_LABELS[t]}</option>
                   ))}
                 </select></div>
+              <div><Label>Ngành nghề</Label>
+                <select name="category" className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm">
+                  <option value="">— Chọn —</option>
+                  {JOB_CATEGORIES.map((c) => (
+                    <option key={c.slug} value={c.slug}>{c.label}</option>
+                  ))}
+                </select></div>
               <div><Label>Cấp bậc</Label>
-                <select name="experienceLevel" className="w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm">
+                <select name="experienceLevel" className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm">
                   <option value="">— Chọn —</option>
                   {EXPERIENCE_LEVELS.map((l) => (
                     <option key={l} value={l}>{EXPERIENCE_LEVEL_LABELS[l]}</option>
@@ -52,12 +60,12 @@ export default async function NewJobPage() {
               <div><Label>Kỹ năng yêu cầu</Label>
                 <Input name="skills" placeholder="VD: React, Node, SQL (cách nhau bởi phẩy)" /></div>
                 <div>
-                  <label className="mb-1 block text-sm font-medium text-slate-700">Mức lương (triệu VND / tháng)</label>
+                  <label className="mb-1 block text-sm font-medium text-foreground">Mức lương (triệu VND / tháng)</label>
                   <div className="flex items-center gap-2">
                     <Input name="salaryMin" type="number" min="0" step="0.5" placeholder="Từ" className="w-28" />
-                    <span className="text-slate-400">–</span>
+                    <span className="text-muted-foreground">–</span>
                     <Input name="salaryMax" type="number" min="0" step="0.5" placeholder="Đến" className="w-28" />
-                    <label className="ml-2 flex items-center gap-1 text-sm text-slate-600">
+                    <label className="ml-2 flex items-center gap-1 text-sm text-muted-foreground">
                       <input type="checkbox" name="salaryNegotiable" value="1" /> Thỏa thuận
                     </label>
                   </div>
