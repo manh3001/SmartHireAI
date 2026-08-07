@@ -18,15 +18,15 @@ export default async function RecruiterStats({ userId }: { userId: string }) {
       </div>
 
       <div>
-        <h2 className="mb-3 text-sm font-semibold text-slate-500">Phễu theo trạng thái</h2>
+        <h2 className="mb-3 text-sm font-semibold text-muted-foreground">Phễu theo trạng thái</h2>
         <div className="flex flex-col gap-2">
           {dist.map((d) => (
             <div key={d.status} className="flex items-center gap-3">
-              <div className="w-28 shrink-0 text-sm text-slate-600">{d.label}</div>
-              <div className="h-4 flex-1 rounded bg-slate-100">
-                <div className="h-4 rounded bg-blue-500" style={{ width: `${(d.count / maxStatus) * 100}%` }} />
+              <div className="w-28 shrink-0 text-sm text-foreground">{d.label}</div>
+              <div className="h-4 flex-1 rounded bg-muted">
+                <div className="h-4 rounded bg-primary" style={{ width: `${(d.count / maxStatus) * 100}%` }} />
               </div>
-              <div className="w-10 shrink-0 text-right text-sm font-medium text-slate-700">{d.count}</div>
+              <div className="w-10 shrink-0 text-right text-sm font-medium text-foreground">{d.count}</div>
             </div>
           ))}
         </div>
