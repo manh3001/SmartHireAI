@@ -7,6 +7,7 @@ import { buttonVariants } from "@/components/ui/button";
 import EvaluateFromJob from "./EvaluateFromJob";
 import { composeJdText } from "@/lib/jobs/job-fields";
 import JobDetail from "@/components/jobs/JobDetail";
+import SaveJobButton from "../SaveJobButton";
 
 export default async function JobDetailPage({
   params,
@@ -44,6 +45,13 @@ export default async function JobDetailPage({
       })
     : null;
 
+  const savedJob = isCandidate
+    ? await prisma.savedJob.findFirst({
+        where: { jobId: job.id, userId: session.user.id },
+        select: { id: true },
+      })
+    : null;
+
   const companyProfile = await prisma.companyProfile.findUnique({
     where: { userId: job.userId },
     select: { id: true },
@@ -62,6 +70,7 @@ export default async function JobDetailPage({
           </Link>
         )
       )}
+      {isCandidate && <SaveJobButton jobId={job.id} initialSaved={!!savedJob} />}
       {isOwnerRecruiter && (
         <Link href={`/jobs/${job.id}/applicants`} className={buttonVariants()}>
           Xem ứng viên đã nộp
