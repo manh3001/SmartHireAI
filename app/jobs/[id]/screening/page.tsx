@@ -46,16 +46,16 @@ export default async function ScreeningPage({
   }
 
   return (
-    <div className="flex min-h-full flex-col bg-slate-50">
+    <div className="flex min-h-full flex-col bg-muted/20">
       <Navbar />
       <main className="mx-auto w-full max-w-3xl flex-1 p-6">
-        <Link href={`/jobs/${id}/applicants`} className="text-sm text-blue-600 hover:underline">
+        <Link href={`/jobs/${id}/applicants`} className="text-sm text-primary hover:underline">
           ← Về danh sách ứng viên
         </Link>
-        <h1 className="mt-2 text-xl font-semibold text-blue-700">
+        <h1 className="mt-2 text-xl font-semibold text-foreground">
           Sàng lọc AI — {job.title || "(chưa có tiêu đề)"}
         </h1>
-        <p className="text-sm text-slate-500">
+        <p className="text-sm text-muted-foreground">
           AI xếp hạng và so sánh các ứng viên (không tính đơn đã rút), tối đa 20 ứng viên điểm cao nhất.
         </p>
         <ScreeningClient jobId={job.id} screening={resolvedScreening} />

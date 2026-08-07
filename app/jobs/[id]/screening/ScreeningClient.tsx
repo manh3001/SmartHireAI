@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
+import ScoreBadge from "@/components/ScoreBadge";
 import { screenApplicants } from "@/lib/applications/screening-actions";
 import { changeStatus } from "@/lib/applications/actions";
 import type { ScreeningResultItem } from "@/lib/applications/screening";
@@ -52,11 +53,11 @@ export default function ScreeningClient({
       </div>
 
       {!screening ? (
-        <p className="text-sm text-slate-500">Chưa có kết quả sàng lọc. Bấm nút trên để AI xếp hạng ứng viên.</p>
+        <p className="text-sm text-muted-foreground">Chưa có kết quả sàng lọc. Bấm nút trên để AI xếp hạng ứng viên.</p>
       ) : (
         <>
-          <div className="rounded-md border border-blue-100 bg-blue-50 p-3 text-sm text-slate-700">
-            <p className="font-semibold text-blue-700">Nhận xét tổng quan</p>
+          <div className="rounded-md border border-border bg-muted/40 p-3 text-sm text-foreground">
+            <p className="font-semibold text-foreground">Nhận xét tổng quan</p>
             <p className="mt-1 whitespace-pre-wrap">{screening.summary}</p>
           </div>
 
@@ -64,11 +65,11 @@ export default function ScreeningClient({
             {screening.result.map((r, i) => (
               <div
                 key={r.applicationId}
-                className="rounded-lg border border-slate-200 bg-white p-3 text-sm"
+                className="rounded-lg border border-border bg-card p-3 text-sm"
               >
                 <div className="flex items-start justify-between gap-2">
                   <div>
-                    <p className="font-medium text-slate-800">
+                    <p className="font-medium text-foreground">
                       #{i + 1} · {r.candidateName}
                       {r.shortlisted && (
                         <span className="ml-2 rounded-full bg-green-100 px-2 py-0.5 text-xs font-medium text-green-700">
@@ -76,10 +77,10 @@ export default function ScreeningClient({
                         </span>
                       )}
                     </p>
-                    <p className="text-xs text-blue-600">
-                      {r.score !== null ? `Điểm: ${r.score}/100` : "Chưa xếp hạng"}
+                    <p className="text-xs">
+                      {r.score !== null ? <ScoreBadge score={r.score} /> : <span className="text-muted-foreground">Chưa xếp hạng</span>}
                     </p>
-                    <p className="mt-1 text-slate-700">{r.reason}</p>
+                    <p className="mt-1 text-foreground">{r.reason}</p>
                   </div>
                   {r.shortlisted && r.currentStatus && r.currentStatus !== "SCREENING" && r.currentStatus !== "WITHDRAWN" && (
                     <Button
