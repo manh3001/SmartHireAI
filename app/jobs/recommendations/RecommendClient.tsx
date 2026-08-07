@@ -5,6 +5,7 @@ import Link from "next/link";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import SaveJobButton from "../SaveJobButton";
+import ScoreBadge from "@/components/ScoreBadge";
 import { recommendJobs } from "@/lib/jobs/recommend-actions";
 import type { RecommendationItem } from "@/lib/jobs/recommendations";
 
@@ -35,7 +36,7 @@ export default function RecommendClient({
 
   if (cvs.length === 0) {
     return (
-      <p className="mt-4 text-sm text-slate-500">
+      <p className="mt-4 text-sm text-muted-foreground">
         Bạn chưa có CV nào. Hãy tạo CV trước ở bảng điều khiển rồi quay lại.
       </p>
     );
@@ -47,7 +48,7 @@ export default function RecommendClient({
         <select
           value={cvId}
           onChange={(e) => setCvId(e.target.value)}
-          className="rounded-md border border-slate-200 bg-white px-3 py-2 text-sm"
+          className="rounded-md border border-input bg-background px-3 py-2 text-sm"
         >
           {cvs.map((c) => (
             <option key={c.id} value={c.id}>{c.title}</option>
@@ -61,26 +62,26 @@ export default function RecommendClient({
       {result && (
         <>
           {result.summary && (
-            <div className="rounded-md border border-blue-100 bg-blue-50 p-3 text-sm text-slate-700">
-              <p className="font-semibold text-blue-700">Nhận xét</p>
+            <div className="rounded-md border border-border bg-muted/40 p-3 text-sm text-foreground">
+              <p className="font-semibold text-foreground">Nhận xét</p>
               <p className="mt-1 whitespace-pre-wrap">{result.summary}</p>
             </div>
           )}
           {result.items.length === 0 ? (
-            <p className="text-sm text-slate-500">Chưa tìm được tin phù hợp để gợi ý.</p>
+            <p className="text-sm text-muted-foreground">Chưa tìm được tin phù hợp để gợi ý.</p>
           ) : (
             <div className="grid gap-2">
               {result.items.map((it, i) => (
-                <div key={it.jobId} className="relative rounded-lg border border-slate-200 bg-white p-3 pr-10 text-sm">
-                  <p className="font-medium text-slate-800">
+                <div key={it.jobId} className="relative rounded-lg border border-border bg-card p-3 pr-10 text-sm">
+                  <p className="font-medium text-foreground">
                     #{i + 1} ·{" "}
-                    <Link href={`/jobs/${it.jobId}`} className="text-blue-700 hover:underline">
+                    <Link href={`/jobs/${it.jobId}`} className="text-primary hover:underline">
                       {it.title || "(chưa có tiêu đề)"}
                     </Link>{" "}
-                    <span className="text-xs text-slate-400">{it.company || "—"}</span>
+                    <span className="text-xs text-muted-foreground">{it.company || "—"}</span>
                   </p>
-                  <p className="text-xs text-blue-600">Điểm phù hợp: {it.score}/100</p>
-                  <p className="mt-1 text-slate-700">{it.reason}</p>
+                  <div className="mt-0.5"><ScoreBadge score={it.score} /></div>
+                  <p className="mt-1 text-foreground">{it.reason}</p>
                   <div className="absolute right-2 top-2">
                     <SaveJobButton jobId={it.jobId} initialSaved={false} />
                   </div>

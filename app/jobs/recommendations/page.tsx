@@ -19,12 +19,12 @@ export default async function RecommendationsPage() {
   });
 
   return (
-    <div className="flex min-h-full flex-col bg-slate-50">
+    <div className="flex min-h-full flex-col bg-muted/20">
       <Navbar />
       <main className="mx-auto w-full max-w-3xl flex-1 p-6">
-        <Link href="/jobs" className="text-sm text-blue-600 hover:underline">← Về danh sách việc</Link>
-        <h1 className="mb-1 mt-2 text-2xl font-bold text-slate-900">Gợi ý việc cho tôi</h1>
-        <p className="text-sm text-slate-500">
+        <Link href="/jobs" className="text-sm text-primary hover:underline">← Về danh sách việc</Link>
+        <h1 className="mb-1 mt-2 text-2xl font-bold text-foreground">Gợi ý việc cho tôi</h1>
+        <p className="text-sm text-muted-foreground">
           AI so khớp CV bạn chọn với các tin công khai bạn chưa ứng tuyển (tối đa 20 tin mới nhất) và xếp hạng theo mức phù hợp.
         </p>
         <RecommendClient cvs={cvs} />
