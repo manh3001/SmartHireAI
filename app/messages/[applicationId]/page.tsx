@@ -5,6 +5,8 @@ import prisma from "@/lib/db/prisma";
 import Navbar from "@/components/Navbar";
 import { STATUS_LABELS, type ApplicationStatus } from "@/lib/applications/status";
 import { isThreadParticipant } from "@/lib/messages/access";
+import { Badge } from "@/components/ui/badge";
+import CompanyAvatar from "@/components/CompanyAvatar";
 import MessageComposer from "./MessageComposer";
 
 export const dynamic = "force-dynamic";
@@ -42,31 +44,32 @@ export default async function MessagesPage({
   const backHref = iAmCandidate ? "/applications" : `/jobs/${app.job.id}/applicants/${applicationId}`;
 
   return (
-    <div className="flex min-h-full flex-col bg-slate-50">
+    <div className="flex min-h-full flex-col bg-muted/20">
       <Navbar />
       <main className="mx-auto w-full max-w-2xl flex-1 p-6">
-        <Link href={backHref} className="text-sm text-blue-600 hover:underline">← Quay lại</Link>
+        <Link href={backHref} className="text-sm text-primary hover:underline">← Quay lại</Link>
         <div className="mt-2 flex items-start justify-between gap-2">
-          <div>
-            <h1 className="text-lg font-semibold text-blue-700">{otherName}</h1>
-            <p className="text-sm text-slate-500">{app.job.title || "(chưa có tiêu đề)"}</p>
+          <div className="flex items-center gap-2">
+            <CompanyAvatar name={otherName} className="h-9 w-9 text-xs" />
+            <div>
+              <h1 className="text-lg font-semibold text-foreground">{otherName}</h1>
+              <p className="text-sm text-muted-foreground">{app.job.title || "(chưa có tiêu đề)"}</p>
+            </div>
           </div>
-          <span className="rounded-full bg-blue-100 px-2.5 py-0.5 text-xs font-medium text-blue-700">
-            {STATUS_LABELS[app.status as ApplicationStatus]}
-          </span>
+          <Badge>{STATUS_LABELS[app.status as ApplicationStatus]}</Badge>
         </div>
 
         <div className="mt-4 grid gap-2">
           {app.messages.length === 0 && (
-            <p className="py-8 text-center text-sm text-slate-400">Chưa có tin nhắn nào. Hãy bắt đầu cuộc trò chuyện.</p>
+            <p className="py-8 text-center text-sm text-muted-foreground">Chưa có tin nhắn nào. Hãy bắt đầu cuộc trò chuyện.</p>
           )}
           {app.messages.map((m) => {
             const mine = m.senderId === userId;
             return (
               <div key={m.id} className={mine ? "flex justify-end" : "flex justify-start"}>
-                <div className={`max-w-[80%] rounded-lg px-3 py-2 text-sm ${mine ? "bg-blue-600 text-white" : "border border-slate-200 bg-white text-slate-700"}`}>
+                <div className={`max-w-[80%] rounded-lg px-3 py-2 text-sm ${mine ? "bg-primary text-primary-foreground" : "border border-border bg-card text-foreground"}`}>
                   <p className="whitespace-pre-wrap">{m.body}</p>
-                  <p className={`mt-1 text-[10px] ${mine ? "text-blue-100" : "text-slate-400"}`}>
+                  <p className={`mt-1 text-[10px] ${mine ? "text-primary-foreground/70" : "text-muted-foreground"}`}>
                     {m.sender.name} · {new Date(m.createdAt).toLocaleString("vi-VN")}
                   </p>
                 </div>
