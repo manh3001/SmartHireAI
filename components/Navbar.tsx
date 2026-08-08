@@ -34,12 +34,18 @@ export default async function Navbar() {
               <Link href="/jobs" className="text-sm font-medium text-muted-foreground hover:text-foreground sm:hidden">
                 Việc làm
               </Link>
+              <Link href="/companies" className="text-sm font-medium text-muted-foreground hover:text-foreground sm:hidden">
+                Công ty
+              </Link>
               <div className="hidden items-center gap-2 sm:flex">
                 <Link href="/dashboard" className="text-sm font-medium text-muted-foreground hover:text-foreground">
                   Bảng điều khiển
                 </Link>
                 <Link href="/jobs" className="text-sm font-medium text-muted-foreground hover:text-foreground">
                   Việc làm
+                </Link>
+                <Link href="/companies" className="text-sm font-medium text-muted-foreground hover:text-foreground">
+                  Công ty
                 </Link>
                 {session!.user!.role === "ADMIN" && (
                   <Link href="/admin" className="text-sm font-medium text-muted-foreground hover:text-foreground">
