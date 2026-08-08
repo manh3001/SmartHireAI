@@ -7,6 +7,7 @@ import { auth } from "@/auth";
 import { cvSchema } from "./schema";
 import { normalizeCv } from "./normalize";
 import type { CvInput } from "./types";
+import { normalizeTemplate, type CvTemplate } from "./templates";
 
 async function requireUserId(): Promise<string> {
   const session = await auth();
@@ -38,6 +39,7 @@ export async function deleteCv(formData: FormData): Promise<void> {
 export async function saveCv(
   cvId: string,
   input: CvInput,
+  template?: CvTemplate,
 ): Promise<{ ok: boolean; error?: string }> {
   const userId = await requireUserId();
 
@@ -56,7 +58,7 @@ export async function saveCv(
   await prisma.$transaction(async (tx) => {
     await tx.cV.update({
       where: { id: cvId },
-      data: { title: data.title || "CV chưa đặt tên" },
+      data: { title: data.title || "CV chưa đặt tên", template: normalizeTemplate(template) },
     });
     await tx.profile.upsert({
       where: { cvId },
