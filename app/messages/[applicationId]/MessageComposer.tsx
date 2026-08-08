@@ -33,7 +33,7 @@ export default function MessageComposer({ applicationId }: { applicationId: stri
         rows={2}
         maxLength={2000}
         placeholder="Nhập tin nhắn..."
-        className="flex-1 rounded-md border border-slate-200 bg-white px-3 py-2 text-sm"
+        className="flex-1 rounded-md border border-input bg-background px-3 py-2 text-sm"
       />
       <Button onClick={onSend} disabled={sending || !body.trim()} className="self-end">
         {sending ? "Đang gửi..." : "Gửi"}

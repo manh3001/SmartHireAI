@@ -23,12 +23,12 @@ export default async function CompanyEditPage() {
   });
 
   return (
-    <div className="flex min-h-full flex-col bg-slate-50">
+    <div className="flex min-h-full flex-col bg-muted/20">
       <Navbar />
       <main className="mx-auto w-full max-w-2xl flex-1 p-6">
-        <Link href="/dashboard" className="text-sm text-blue-600 hover:underline">← Về dashboard</Link>
+        <Link href="/dashboard" className="text-sm text-primary hover:underline">← Về dashboard</Link>
         <Card className="mt-3">
-          <CardHeader><CardTitle className="text-blue-700">Hồ sơ công ty</CardTitle></CardHeader>
+          <CardHeader><CardTitle className="text-foreground">Hồ sơ công ty</CardTitle></CardHeader>
           <CardContent>
             <form action={upsertCompanyProfile} className="grid gap-3">
               <div><Label>Tên công ty</Label>

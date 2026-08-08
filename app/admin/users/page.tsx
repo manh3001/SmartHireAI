@@ -19,10 +19,10 @@ export default async function AdminUsersPage() {
 
   return (
     <div>
-      <h1 className="mb-4 text-2xl font-bold text-slate-900">Người dùng ({users.length})</h1>
-      <div className="overflow-x-auto rounded-lg border border-slate-200 bg-white">
+      <h1 className="mb-4 text-2xl font-bold text-foreground">Người dùng ({users.length})</h1>
+      <div className="overflow-x-auto rounded-lg border border-border bg-card">
         <table className="w-full text-sm">
-          <thead className="bg-slate-50 text-left text-xs text-slate-500">
+          <thead className="bg-muted text-left text-xs text-muted-foreground">
             <tr>
               <th className="p-3">Email</th>
               <th className="p-3">Tên</th>
@@ -34,19 +34,19 @@ export default async function AdminUsersPage() {
           </thead>
           <tbody>
             {users.map((u) => (
-              <tr key={u.id} className="border-t border-slate-100">
-                <td className="p-3 text-slate-700">{u.email}</td>
-                <td className="p-3 text-slate-700">{u.name}</td>
-                <td className="p-3 text-slate-600">{ROLE_LABELS[u.role] ?? u.role}</td>
-                <td className="p-3 text-slate-500">{u._count.cvs}/{u._count.jobDescriptions}/{u._count.applications}</td>
-                <td className="p-3 text-slate-400">{new Date(u.createdAt).toLocaleDateString("vi-VN")}</td>
+              <tr key={u.id} className="border-t border-border">
+                <td className="p-3 text-foreground">{u.email}</td>
+                <td className="p-3 text-foreground">{u.name}</td>
+                <td className="p-3 text-muted-foreground">{ROLE_LABELS[u.role] ?? u.role}</td>
+                <td className="p-3 text-muted-foreground">{u._count.cvs}/{u._count.jobDescriptions}/{u._count.applications}</td>
+                <td className="p-3 text-muted-foreground">{new Date(u.createdAt).toLocaleDateString("vi-VN")}</td>
                 <td className="p-3 text-right">
                   {u.role !== "ADMIN" && (
                     <form action={deleteUserAsAdmin}>
                       <input type="hidden" name="id" value={u.id} />
                       <ConfirmSubmit
                         message={`Xoá user ${u.email}? Toàn bộ dữ liệu liên quan sẽ bị xoá.`}
-                        className="text-xs font-medium text-red-600 hover:underline"
+                        className="text-xs font-medium text-destructive hover:underline"
                       >
                         Xoá
                       </ConfirmSubmit>

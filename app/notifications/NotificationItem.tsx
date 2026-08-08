@@ -32,11 +32,11 @@ export default function NotificationItem({
       onClick={onClick}
       disabled={pending}
       className={`w-full rounded-lg border p-3 text-left text-sm transition-colors ${
-        read ? "border-slate-200 bg-white" : "border-blue-200 bg-blue-50"
-      } hover:border-blue-300`}
+        read ? "border-border bg-card" : "border-primary/30 bg-primary/5"
+      } hover:border-primary/40`}
     >
-      <p className={read ? "text-slate-600" : "font-medium text-slate-800"}>{message}</p>
-      <p className="mt-1 text-[11px] text-slate-400">{time}</p>
+      <p className={read ? "text-muted-foreground" : "font-medium text-foreground"}>{message}</p>
+      <p className="mt-1 text-[11px] text-muted-foreground">{time}</p>
     </button>
   );
 }
