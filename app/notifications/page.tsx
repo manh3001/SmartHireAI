@@ -20,16 +20,16 @@ export default async function NotificationsPage() {
   const hasUnread = notifications.some((n) => !n.read);
 
   return (
-    <div className="flex min-h-full flex-col bg-slate-50">
+    <div className="flex min-h-full flex-col bg-muted/20">
       <Navbar />
       <main className="mx-auto w-full max-w-2xl flex-1 p-6">
         <div className="mb-4 flex items-center justify-between">
-          <h1 className="text-xl font-semibold text-blue-700">Thông báo</h1>
+          <h1 className="text-xl font-semibold text-foreground">Thông báo</h1>
           {hasUnread && <MarkAllButton />}
         </div>
         {notifications.length === 0 ? (
           <Card className="border-dashed">
-            <CardContent className="py-10 text-center text-sm text-slate-500">Chưa có thông báo nào.</CardContent>
+            <CardContent className="py-10 text-center text-sm text-muted-foreground">Chưa có thông báo nào.</CardContent>
           </Card>
         ) : (
           <div className="grid gap-2">
