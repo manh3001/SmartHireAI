@@ -5,6 +5,7 @@ import Link from "next/link";
 import { toast } from "sonner";
 import { saveCv } from "@/lib/cv/actions";
 import type { CvInput } from "@/lib/cv/types";
+import { CV_TEMPLATES, type CvTemplate } from "@/lib/cv/templates";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -15,11 +16,14 @@ import CvPreview from "@/components/cv/CvPreview";
 export default function CvEditor({
   cvId,
   initial,
+  initialTemplate,
 }: {
   cvId: string;
   initial: CvInput;
+  initialTemplate: CvTemplate;
 }) {
   const [cv, setCv] = useState<CvInput>(initial);
+  const [template, setTemplate] = useState<CvTemplate>(initialTemplate);
   const [pending, startTransition] = useTransition();
   const [mobileTab, setMobileTab] = useState<"edit" | "preview">("edit");
 
@@ -50,7 +54,7 @@ export default function CvEditor({
 
   function onSave() {
     startTransition(async () => {
-      const res = await saveCv(cvId, cv);
+      const res = await saveCv(cvId, cv, template);
       if (res.ok) toast.success("Đã lưu CV");
       else toast.error(res.error ?? "Lưu thất bại");
     });
@@ -69,6 +73,23 @@ export default function CvEditor({
             <Button size="sm" onClick={onSave} disabled={pending}>{pending ? "Đang lưu..." : "Lưu"}</Button>
           </div>
         </div>
+      </div>
+
+      {/* Bộ chọn mẫu CV */}
+      <div className="mx-auto flex max-w-6xl flex-wrap items-center gap-2 px-4 pt-3">
+        <span className="text-sm text-muted-foreground">Mẫu CV:</span>
+        {CV_TEMPLATES.map((t) => (
+          <Button
+            key={t.id}
+            type="button"
+            size="sm"
+            variant={template === t.id ? "default" : "outline"}
+            onClick={() => setTemplate(t.id)}
+            title={t.description}
+          >
+            {t.label}
+          </Button>
+        ))}
       </div>
 
       {/* Tab chỉ hiện trên mobile */}
@@ -209,7 +230,7 @@ export default function CvEditor({
         {/* Cột phải: xem trước sống */}
         <div className={mobileTab === "edit" ? "hidden lg:block" : "block"}>
           <div className="lg:sticky lg:top-20">
-            <CvPreview cv={cv} />
+            <CvPreview cv={cv} template={template} />
           </div>
         </div>
       </div>
