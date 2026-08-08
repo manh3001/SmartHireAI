@@ -33,4 +33,13 @@ describe("CvDocument", () => {
     // PDF co noi dung dang ke (khong rong)
     expect(buffer.length).toBeGreaterThan(2000);
   });
+
+  it.each(["classic", "modern", "sidebar"] as const)(
+    "render mẫu %s ra PDF hợp lệ",
+    async (tpl) => {
+      const buffer = await renderToBuffer(<CvDocument cv={sample} template={tpl} />);
+      expect(buffer.subarray(0, 5).toString("latin1")).toBe("%PDF-");
+      expect(buffer.length).toBeGreaterThan(2000);
+    },
+  );
 });
