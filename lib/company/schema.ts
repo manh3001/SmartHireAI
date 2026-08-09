@@ -9,7 +9,6 @@ export const companySchema = z.object({
   description: z.string(),
   website: httpUrlOrBlank,
   location: z.string(),
-  logoUrl: httpUrlOrBlank,
 });
 
 export type CompanyInput = z.infer<typeof companySchema>;

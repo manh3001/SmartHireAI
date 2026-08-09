@@ -6,7 +6,6 @@ const base = {
   description: "Công ty công nghệ",
   website: "https://acme.vn",
   location: "Hà Nội",
-  logoUrl: "https://acme.vn/logo.png",
 };
 
 describe("companySchema", () => {
@@ -15,7 +14,7 @@ describe("companySchema", () => {
   });
 
   it("chấp nhận khi chỉ có tên (các trường khác rỗng)", () => {
-    const r = companySchema.safeParse({ name: "ACME", description: "", website: "", location: "", logoUrl: "" });
+    const r = companySchema.safeParse({ name: "ACME", description: "", website: "", location: "" });
     expect(r.success).toBe(true);
   });
 
@@ -29,12 +28,6 @@ describe("companySchema", () => {
     const r = companySchema.safeParse({ ...base, website: "javascript:alert(1)" });
     expect(r.success).toBe(true);
     if (r.success) expect(r.data.website).toBe("");
-  });
-
-  it("preserve http:// URLs in logoUrl", () => {
-    const r = companySchema.safeParse({ ...base, logoUrl: "http://x/logo.png" });
-    expect(r.success).toBe(true);
-    if (r.success) expect(r.data.logoUrl).toBe("http://x/logo.png");
   });
 
   it("preserve https:// URLs in website", () => {
