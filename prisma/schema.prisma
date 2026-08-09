@@ -37,6 +37,8 @@ model CV {
   user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
   title       String       @default("CV chưa đặt tên")
   template    String       @default("classic")
+  accent      String       @default("indigo")
+  font        String       @default("roboto")
   profile     Profile?
   experiences Experience[]
   educations  Education[]
