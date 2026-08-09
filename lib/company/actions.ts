@@ -20,6 +20,21 @@ export async function upsertCompanyProfile(formData: FormData): Promise<void> {
   });
   if (!parsed.success) redirect("/company/edit");
 
+  const removeLogo = formData.get("removeLogo") === "1";
+  const logo = formData.get("logo");
+
+  let logoBytes: Buffer | null = null;
+  let logoMime: string | null = null;
+
+  if (!removeLogo && logo instanceof File && logo.size > 0) {
+    const check = validateLogo({ type: logo.type, size: logo.size });
+    if (!check.ok) {
+      redirect("/company/edit?error=" + encodeURIComponent(check.error));
+    }
+    logoBytes = Buffer.from(await logo.arrayBuffer());
+    logoMime = logo.type;
+  }
+
   const profile = await prisma.companyProfile.upsert({
     where: { userId: session.user.id },
     create: { userId: session.user.id, ...parsed.data },
@@ -27,25 +42,17 @@ export async function upsertCompanyProfile(formData: FormData): Promise<void> {
     select: { id: true },
   });
 
-  const removeLogo = formData.get("removeLogo") === "1";
-  const logo = formData.get("logo");
-
   if (removeLogo) {
     await prisma.companyProfile.update({
       where: { id: profile.id },
       data: { logoData: null, logoMime: null, logoUrl: "" },
     });
-  } else if (logo instanceof File && logo.size > 0) {
-    const check = validateLogo({ type: logo.type, size: logo.size });
-    if (!check.ok) {
-      redirect("/company/edit?error=" + encodeURIComponent(check.error));
-    }
-    const bytes = Buffer.from(await logo.arrayBuffer());
+  } else if (logoBytes) {
     await prisma.companyProfile.update({
       where: { id: profile.id },
       data: {
-        logoData: bytes,
-        logoMime: logo.type,
+        logoData: new Uint8Array(logoBytes),
+        logoMime,
         logoUrl: "/api/company/" + profile.id + "/logo?v=" + Date.now(),
       },
     });
