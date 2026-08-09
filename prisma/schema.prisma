@@ -298,6 +298,7 @@ model JobAlert {
   employmentType  EmploymentType?
   experienceLevel ExperienceLevel?
   salaryMillions  Int?
+  emailEnabled    Boolean          @default(true)
   createdAt       DateTime         @default(now())
 
   @@index([userId])
