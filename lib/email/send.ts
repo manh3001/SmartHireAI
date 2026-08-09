@@ -20,8 +20,10 @@ export async function sendEmail(msg: {
       },
       body: JSON.stringify({ from, to: msg.to, subject: msg.subject, html: msg.html }),
     });
+    if (!res.ok) console.warn(`[email] Resend trả về HTTP ${res.status}`);
     return { ok: res.ok };
-  } catch {
+  } catch (err) {
+    console.warn("[email] Gửi email thất bại:", err);
     return { ok: false };
   }
 }
