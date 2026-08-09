@@ -2,6 +2,10 @@ import path from "path";
 import { Document, Page, Text, View, StyleSheet, Font } from "@react-pdf/renderer";
 import type { CvInput } from "@/lib/cv/types";
 import type { CvTemplate } from "@/lib/cv/templates";
+import { normalizeAccent, accentById, type AccentDef } from "@/lib/cv/accents";
+import { normalizeFont, fontById } from "@/lib/cv/fonts";
+import type { CvAccent } from "@/lib/cv/accents";
+import type { CvFont } from "@/lib/cv/fonts";
 import { dateRange, contactLine, eduSubLine } from "@/lib/cv/cv-format";
 
 Font.register({
@@ -11,37 +15,53 @@ Font.register({
     { src: path.join(process.cwd(), "lib/pdf/fonts/Roboto-Bold.ttf"), fontWeight: "bold" },
   ],
 });
-
-const ACCENT = "#4f46e5";
-
-const s = StyleSheet.create({
-  page: { fontFamily: "Roboto", fontSize: 11, color: "#111" },
-  pad: { padding: 40 },
-  name: { fontSize: 22, fontWeight: "bold" },
-  headline: { fontSize: 12, color: "#555", marginBottom: 2 },
-  contact: { fontSize: 10, color: "#555", marginBottom: 12 },
-  sectionTitle: { fontSize: 13, fontWeight: "bold", marginTop: 14, marginBottom: 6, borderBottom: "1 solid #ccc", paddingBottom: 2 },
-  itemTitle: { fontWeight: "bold" },
-  itemSub: { color: "#555", fontSize: 10, marginBottom: 2 },
-  text: { marginBottom: 4, lineHeight: 1.4 },
-  skillRow: { marginBottom: 2 },
-  modernHeader: { backgroundColor: ACCENT, padding: 28 },
-  modernName: { fontSize: 22, fontWeight: "bold", color: "#fff" },
-  modernHeadline: { fontSize: 12, color: "#e0e7ff", marginTop: 2 },
-  modernContact: { fontSize: 10, color: "#e0e7ff", marginTop: 6 },
-  modernBody: { padding: 32, paddingTop: 20 },
-  modernSectionTitle: { fontSize: 13, fontWeight: "bold", color: ACCENT, marginTop: 14, marginBottom: 6 },
-  row: { flexDirection: "row" },
-  sbLeft: { width: "34%", backgroundColor: "#eef2ff", padding: 20 },
-  sbRight: { width: "66%", padding: 24 },
-  sbName: { fontSize: 18, fontWeight: "bold" },
-  sbHeadline: { fontSize: 11, color: "#555", marginBottom: 8 },
-  sbLeftTitle: { fontSize: 11, fontWeight: "bold", color: ACCENT, marginTop: 14, marginBottom: 4 },
-  sbLeftText: { fontSize: 10, color: "#333", marginBottom: 3, lineHeight: 1.3 },
-  sbRightTitle: { fontSize: 13, fontWeight: "bold", color: ACCENT, marginTop: 12, marginBottom: 6 },
+Font.register({
+  family: "Be Vietnam Pro",
+  fonts: [
+    { src: path.join(process.cwd(), "lib/pdf/fonts/BeVietnamPro-Regular.ttf") },
+    { src: path.join(process.cwd(), "lib/pdf/fonts/BeVietnamPro-Bold.ttf"), fontWeight: "bold" },
+  ],
+});
+Font.register({
+  family: "Lora",
+  fonts: [
+    { src: path.join(process.cwd(), "lib/pdf/fonts/Lora-Regular.ttf") },
+    { src: path.join(process.cwd(), "lib/pdf/fonts/Lora-Bold.ttf"), fontWeight: "bold" },
+  ],
 });
 
-function ExperienceItems({ cv }: { cv: CvInput }) {
+function makeStyles(accent: AccentDef, fontFamily: string) {
+  return StyleSheet.create({
+    page: { fontFamily, fontSize: 11, color: "#111" },
+    pad: { padding: 40 },
+    name: { fontSize: 22, fontWeight: "bold" },
+    headline: { fontSize: 12, color: "#555", marginBottom: 2 },
+    contact: { fontSize: 10, color: "#555", marginBottom: 12 },
+    sectionTitle: { fontSize: 13, fontWeight: "bold", marginTop: 14, marginBottom: 6, borderBottom: "1 solid #ccc", paddingBottom: 2 },
+    itemTitle: { fontWeight: "bold" },
+    itemSub: { color: "#555", fontSize: 10, marginBottom: 2 },
+    text: { marginBottom: 4, lineHeight: 1.4 },
+    skillRow: { marginBottom: 2 },
+    modernHeader: { backgroundColor: accent.hex, padding: 28 },
+    modernName: { fontSize: 22, fontWeight: "bold", color: "#fff" },
+    modernHeadline: { fontSize: 12, color: accent.onDark, marginTop: 2 },
+    modernContact: { fontSize: 10, color: accent.onDark, marginTop: 6 },
+    modernBody: { padding: 32, paddingTop: 20 },
+    modernSectionTitle: { fontSize: 13, fontWeight: "bold", color: accent.hex, marginTop: 14, marginBottom: 6 },
+    row: { flexDirection: "row" },
+    sbLeft: { width: "34%", backgroundColor: accent.soft, padding: 20 },
+    sbRight: { width: "66%", padding: 24 },
+    sbName: { fontSize: 18, fontWeight: "bold" },
+    sbHeadline: { fontSize: 11, color: "#555", marginBottom: 8 },
+    sbLeftTitle: { fontSize: 11, fontWeight: "bold", color: accent.hex, marginTop: 14, marginBottom: 4 },
+    sbLeftText: { fontSize: 10, color: "#333", marginBottom: 3, lineHeight: 1.3 },
+    sbRightTitle: { fontSize: 13, fontWeight: "bold", color: accent.hex, marginTop: 12, marginBottom: 6 },
+  });
+}
+
+type CvStyles = ReturnType<typeof makeStyles>;
+
+function ExperienceItems({ cv, s }: { cv: CvInput; s: CvStyles }) {
   return (
     <>
       {cv.experiences.map((e, i) => (
@@ -54,7 +74,7 @@ function ExperienceItems({ cv }: { cv: CvInput }) {
     </>
   );
 }
-function EducationItems({ cv }: { cv: CvInput }) {
+function EducationItems({ cv, s }: { cv: CvInput; s: CvStyles }) {
   return (
     <>
       {cv.educations.map((e, i) => (
@@ -66,7 +86,7 @@ function EducationItems({ cv }: { cv: CvInput }) {
     </>
   );
 }
-function ProjectItems({ cv }: { cv: CvInput }) {
+function ProjectItems({ cv, s }: { cv: CvInput; s: CvStyles }) {
   return (
     <>
       {cv.projects.map((pr, i) => (
@@ -80,7 +100,7 @@ function ProjectItems({ cv }: { cv: CvInput }) {
     </>
   );
 }
-function SkillLines({ cv }: { cv: CvInput }) {
+function SkillLines({ cv, s }: { cv: CvInput; s: CvStyles }) {
   return (
     <>
       {cv.skills.map((sk, i) => (
@@ -90,7 +110,7 @@ function SkillLines({ cv }: { cv: CvInput }) {
   );
 }
 
-function ClassicPage({ cv }: { cv: CvInput }) {
+function ClassicPage({ cv, s }: { cv: CvInput; s: CvStyles }) {
   const p = cv.profile;
   const contact = contactLine(p.email, p.phone);
   return (
@@ -99,15 +119,15 @@ function ClassicPage({ cv }: { cv: CvInput }) {
       {p.headline ? <Text style={s.headline}>{p.headline}</Text> : null}
       {contact ? <Text style={s.contact}>{contact}</Text> : null}
       {p.summary ? <Text style={s.text}>{p.summary}</Text> : null}
-      {cv.experiences.length > 0 && (<View><Text style={s.sectionTitle}>Kinh nghiệm làm việc</Text><ExperienceItems cv={cv} /></View>)}
-      {cv.educations.length > 0 && (<View><Text style={s.sectionTitle}>Học vấn</Text><EducationItems cv={cv} /></View>)}
-      {cv.skills.length > 0 && (<View><Text style={s.sectionTitle}>Kỹ năng</Text><SkillLines cv={cv} /></View>)}
-      {cv.projects.length > 0 && (<View><Text style={s.sectionTitle}>Dự án</Text><ProjectItems cv={cv} /></View>)}
+      {cv.experiences.length > 0 && (<View><Text style={s.sectionTitle}>Kinh nghiệm làm việc</Text><ExperienceItems cv={cv} s={s} /></View>)}
+      {cv.educations.length > 0 && (<View><Text style={s.sectionTitle}>Học vấn</Text><EducationItems cv={cv} s={s} /></View>)}
+      {cv.skills.length > 0 && (<View><Text style={s.sectionTitle}>Kỹ năng</Text><SkillLines cv={cv} s={s} /></View>)}
+      {cv.projects.length > 0 && (<View><Text style={s.sectionTitle}>Dự án</Text><ProjectItems cv={cv} s={s} /></View>)}
     </Page>
   );
 }
 
-function ModernPage({ cv }: { cv: CvInput }) {
+function ModernPage({ cv, s }: { cv: CvInput; s: CvStyles }) {
   const p = cv.profile;
   const contact = contactLine(p.email, p.phone);
   return (
@@ -119,16 +139,16 @@ function ModernPage({ cv }: { cv: CvInput }) {
       </View>
       <View style={s.modernBody}>
         {p.summary ? <Text style={s.text}>{p.summary}</Text> : null}
-        {cv.experiences.length > 0 && (<View><Text style={s.modernSectionTitle}>Kinh nghiệm làm việc</Text><ExperienceItems cv={cv} /></View>)}
-        {cv.educations.length > 0 && (<View><Text style={s.modernSectionTitle}>Học vấn</Text><EducationItems cv={cv} /></View>)}
-        {cv.skills.length > 0 && (<View><Text style={s.modernSectionTitle}>Kỹ năng</Text><SkillLines cv={cv} /></View>)}
-        {cv.projects.length > 0 && (<View><Text style={s.modernSectionTitle}>Dự án</Text><ProjectItems cv={cv} /></View>)}
+        {cv.experiences.length > 0 && (<View><Text style={s.modernSectionTitle}>Kinh nghiệm làm việc</Text><ExperienceItems cv={cv} s={s} /></View>)}
+        {cv.educations.length > 0 && (<View><Text style={s.modernSectionTitle}>Học vấn</Text><EducationItems cv={cv} s={s} /></View>)}
+        {cv.skills.length > 0 && (<View><Text style={s.modernSectionTitle}>Kỹ năng</Text><SkillLines cv={cv} s={s} /></View>)}
+        {cv.projects.length > 0 && (<View><Text style={s.modernSectionTitle}>Dự án</Text><ProjectItems cv={cv} s={s} /></View>)}
       </View>
     </Page>
   );
 }
 
-function SidebarPage({ cv }: { cv: CvInput }) {
+function SidebarPage({ cv, s }: { cv: CvInput; s: CvStyles }) {
   const p = cv.profile;
   return (
     <Page style={s.page}>
@@ -150,19 +170,32 @@ function SidebarPage({ cv }: { cv: CvInput }) {
         </View>
         <View style={s.sbRight}>
           {p.summary ? <Text style={s.text}>{p.summary}</Text> : null}
-          {cv.experiences.length > 0 && (<View><Text style={s.sbRightTitle}>Kinh nghiệm làm việc</Text><ExperienceItems cv={cv} /></View>)}
-          {cv.educations.length > 0 && (<View><Text style={s.sbRightTitle}>Học vấn</Text><EducationItems cv={cv} /></View>)}
-          {cv.projects.length > 0 && (<View><Text style={s.sbRightTitle}>Dự án</Text><ProjectItems cv={cv} /></View>)}
+          {cv.experiences.length > 0 && (<View><Text style={s.sbRightTitle}>Kinh nghiệm làm việc</Text><ExperienceItems cv={cv} s={s} /></View>)}
+          {cv.educations.length > 0 && (<View><Text style={s.sbRightTitle}>Học vấn</Text><EducationItems cv={cv} s={s} /></View>)}
+          {cv.projects.length > 0 && (<View><Text style={s.sbRightTitle}>Dự án</Text><ProjectItems cv={cv} s={s} /></View>)}
         </View>
       </View>
     </Page>
   );
 }
 
-export function CvDocument({ cv, template = "classic" }: { cv: CvInput; template?: CvTemplate }) {
+export function CvDocument({
+  cv,
+  template = "classic",
+  accent = "indigo",
+  font = "roboto",
+}: {
+  cv: CvInput;
+  template?: CvTemplate;
+  accent?: CvAccent;
+  font?: CvFont;
+}) {
+  const a = accentById(normalizeAccent(accent));
+  const family = fontById(normalizeFont(font)).pdfFamily;
+  const s = makeStyles(a, family);
   return (
     <Document>
-      {template === "modern" ? <ModernPage cv={cv} /> : template === "sidebar" ? <SidebarPage cv={cv} /> : <ClassicPage cv={cv} />}
+      {template === "modern" ? <ModernPage cv={cv} s={s} /> : template === "sidebar" ? <SidebarPage cv={cv} s={s} /> : <ClassicPage cv={cv} s={s} />}
     </Document>
   );
 }

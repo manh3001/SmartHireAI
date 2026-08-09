@@ -42,4 +42,17 @@ describe("CvDocument", () => {
       expect(buffer.length).toBeGreaterThan(2000);
     },
   );
+
+  it.each([
+    { template: "modern", accent: "rose", font: "lora" },
+    { template: "sidebar", accent: "emerald", font: "bevietnam" },
+    { template: "classic", accent: "amber", font: "bevietnam" },
+  ] as const)(
+    "render với accent+font (%o) ra PDF hợp lệ",
+    async ({ template, accent, font }) => {
+      const buffer = await renderToBuffer(<CvDocument cv={sample} template={template} accent={accent} font={font} />);
+      expect(buffer.subarray(0, 5).toString("latin1")).toBe("%PDF-");
+      expect(buffer.length).toBeGreaterThan(2000);
+    },
+  );
 });
