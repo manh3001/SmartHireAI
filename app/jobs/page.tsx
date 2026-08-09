@@ -48,6 +48,14 @@ export default async function JobsPage({
   });
 
   const isCandidate = session.user.role === "CANDIDATE";
+  const savedJobIds = isCandidate
+    ? (
+        await prisma.savedJob.findMany({
+          where: { userId: session.user.id },
+          select: { jobId: true },
+        })
+      ).map((s) => s.jobId)
+    : [];
 
   return (
     <div className="flex min-h-full flex-col bg-muted/20">
@@ -82,7 +90,7 @@ export default async function JobsPage({
                   : "Chưa có tin tuyển dụng nào."}
               </div>
             ) : (
-              <JobsBrowser jobs={jobs} />
+              <JobsBrowser jobs={jobs} savedJobIds={savedJobIds} isCandidate={isCandidate} />
             )}
           </div>
         </div>

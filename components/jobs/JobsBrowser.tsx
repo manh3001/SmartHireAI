@@ -3,11 +3,25 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import JobCard, { type JobCardData } from "@/components/JobCard";
 import JobDetail from "@/components/jobs/JobDetail";
+import SaveJobButton from "@/app/jobs/SaveJobButton";
 
-export default function JobsBrowser({ jobs }: { jobs: JobCardData[] }) {
+export default function JobsBrowser({
+  jobs,
+  savedJobIds = [],
+  isCandidate = false,
+}: {
+  jobs: JobCardData[];
+  savedJobIds?: string[];
+  isCandidate?: boolean;
+}) {
   const router = useRouter();
   const [selectedId, setSelectedId] = useState<string | null>(jobs[0]?.id ?? null);
   const selected = jobs.find((j) => j.id === selectedId) ?? jobs[0] ?? null;
+  const savedSet = new Set(savedJobIds);
+
+  function saveSlot(id: string) {
+    return isCandidate ? <SaveJobButton jobId={id} initialSaved={savedSet.has(id)} /> : undefined;
+  }
 
   return (
     <div className="grid gap-4 lg:grid-cols-[minmax(0,22rem)_1fr]">
@@ -17,12 +31,17 @@ export default function JobsBrowser({ jobs }: { jobs: JobCardData[] }) {
           <div key={j.id}>
             {/* Mobile: link trang chi tiết */}
             <div className="lg:hidden">
-              <JobCard job={j} href={`/jobs/${j.id}`} />
+              <JobCard job={j} href={`/jobs/${j.id}`} saveSlot={saveSlot(j.id)} />
             </div>
             {/* Desktop: chọn để xem pane phải */}
-            <button type="button" onClick={() => setSelectedId(j.id)} className="hidden w-full text-left lg:block">
-              <JobCard job={j} selected={j.id === selectedId} />
-            </button>
+            <div className="hidden lg:block">
+              <JobCard
+                job={j}
+                selected={j.id === selectedId}
+                onSelect={() => setSelectedId(j.id)}
+                saveSlot={saveSlot(j.id)}
+              />
+            </div>
           </div>
         ))}
       </div>

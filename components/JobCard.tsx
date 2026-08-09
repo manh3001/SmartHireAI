@@ -24,11 +24,13 @@ export default function JobCard({
   href,
   selected = false,
   saveSlot,
+  onSelect,
 }: {
   job: JobCardData;
   href?: string;
   selected?: boolean;
   saveSlot?: React.ReactNode;
+  onSelect?: () => void;
 }) {
   const inner = (
     <div
@@ -58,9 +60,17 @@ export default function JobCard({
     </div>
   );
 
+  const clickable = onSelect ? (
+    <button type="button" onClick={onSelect} className="block w-full text-left">{inner}</button>
+  ) : href ? (
+    <Link href={href}>{inner}</Link>
+  ) : (
+    inner
+  );
+
   return (
     <div className="relative">
-      {href ? <Link href={href}>{inner}</Link> : inner}
+      {clickable}
       {saveSlot && <div className="absolute right-3 top-3">{saveSlot}</div>}
     </div>
   );
