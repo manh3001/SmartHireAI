@@ -3,6 +3,8 @@ import { redirect, notFound } from "next/navigation";
 import prisma from "@/lib/db/prisma";
 import type { CvInput } from "@/lib/cv/types";
 import { normalizeTemplate } from "@/lib/cv/templates";
+import { normalizeAccent } from "@/lib/cv/accents";
+import { normalizeFont } from "@/lib/cv/fonts";
 import CvEditor from "./CvEditor";
 
 export default async function CvPage({
@@ -57,5 +59,13 @@ export default async function CvPage({
     })),
   };
 
-  return <CvEditor cvId={cv.id} initial={initial} initialTemplate={normalizeTemplate(cv.template)} />;
+  return (
+    <CvEditor
+      cvId={cv.id}
+      initial={initial}
+      initialTemplate={normalizeTemplate(cv.template)}
+      initialAccent={normalizeAccent(cv.accent)}
+      initialFont={normalizeFont(cv.font)}
+    />
+  );
 }

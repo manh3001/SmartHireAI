@@ -4,6 +4,8 @@ import { auth } from "@/auth";
 import { CvDocument } from "@/lib/pdf/CvDocument";
 import type { CvInput } from "@/lib/cv/types";
 import { normalizeTemplate } from "@/lib/cv/templates";
+import { normalizeAccent } from "@/lib/cv/accents";
+import { normalizeFont } from "@/lib/cv/fonts";
 
 export const runtime = "nodejs";
 
@@ -51,7 +53,14 @@ export async function GET(
     })),
   };
 
-  const buffer = await renderToBuffer(<CvDocument cv={data} template={normalizeTemplate(cv.template)} />);
+  const buffer = await renderToBuffer(
+    <CvDocument
+      cv={data}
+      template={normalizeTemplate(cv.template)}
+      accent={normalizeAccent(cv.accent)}
+      font={normalizeFont(cv.font)}
+    />,
+  );
   const safeTitle = (cv.title || "cv").replace(/[^a-zA-Z0-9-_]+/g, "_");
 
   return new Response(new Uint8Array(buffer), {

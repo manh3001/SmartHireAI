@@ -6,6 +6,8 @@ import { toast } from "sonner";
 import { saveCv } from "@/lib/cv/actions";
 import type { CvInput } from "@/lib/cv/types";
 import { CV_TEMPLATES, type CvTemplate } from "@/lib/cv/templates";
+import { CV_ACCENTS, type CvAccent } from "@/lib/cv/accents";
+import { CV_FONTS, type CvFont } from "@/lib/cv/fonts";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -17,13 +19,19 @@ export default function CvEditor({
   cvId,
   initial,
   initialTemplate,
+  initialAccent,
+  initialFont,
 }: {
   cvId: string;
   initial: CvInput;
   initialTemplate: CvTemplate;
+  initialAccent: CvAccent;
+  initialFont: CvFont;
 }) {
   const [cv, setCv] = useState<CvInput>(initial);
   const [template, setTemplate] = useState<CvTemplate>(initialTemplate);
+  const [accent, setAccent] = useState<CvAccent>(initialAccent);
+  const [font, setFont] = useState<CvFont>(initialFont);
   const [pending, startTransition] = useTransition();
   const [mobileTab, setMobileTab] = useState<"edit" | "preview">("edit");
 
@@ -54,7 +62,7 @@ export default function CvEditor({
 
   function onSave() {
     startTransition(async () => {
-      const res = await saveCv(cvId, cv, template);
+      const res = await saveCv(cvId, cv, template, accent, font);
       if (res.ok) toast.success("Đã lưu CV");
       else toast.error(res.error ?? "Lưu thất bại");
     });
@@ -88,6 +96,38 @@ export default function CvEditor({
             title={t.description}
           >
             {t.label}
+          </Button>
+        ))}
+      </div>
+
+      {/* Bộ chọn màu nhấn */}
+      <div className="mx-auto flex max-w-6xl flex-wrap items-center gap-2 px-4 pt-3">
+        <span className="text-sm text-muted-foreground">Màu nhấn:</span>
+        {CV_ACCENTS.map((a) => (
+          <button
+            key={a.id}
+            type="button"
+            title={a.label}
+            aria-label={a.label}
+            onClick={() => setAccent(a.id)}
+            className={`h-6 w-6 rounded-full border-2 ${accent === a.id ? "border-foreground" : "border-transparent"}`}
+            style={{ backgroundColor: a.hex }}
+          />
+        ))}
+      </div>
+
+      {/* Bộ chọn font */}
+      <div className="mx-auto flex max-w-6xl flex-wrap items-center gap-2 px-4 pt-3">
+        <span className="text-sm text-muted-foreground">Font:</span>
+        {CV_FONTS.map((f) => (
+          <Button
+            key={f.id}
+            type="button"
+            size="sm"
+            variant={font === f.id ? "default" : "outline"}
+            onClick={() => setFont(f.id)}
+          >
+            {f.label}
           </Button>
         ))}
       </div>
@@ -230,7 +270,7 @@ export default function CvEditor({
         {/* Cột phải: xem trước sống */}
         <div className={mobileTab === "edit" ? "hidden lg:block" : "block"}>
           <div className="lg:sticky lg:top-20">
-            <CvPreview cv={cv} template={template} />
+            <CvPreview cv={cv} template={template} accent={accent} font={font} />
           </div>
         </div>
       </div>
