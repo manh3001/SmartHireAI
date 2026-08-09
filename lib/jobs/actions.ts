@@ -6,6 +6,7 @@ import prisma from "@/lib/db/prisma";
 import { auth } from "@/auth";
 import { jobSchema } from "./schema";
 import { parseSalaryInput } from "./salary";
+import { notifyMatchingAlerts } from "./alert-notify";
 
 export async function createJobDescription(formData: FormData): Promise<void> {
   const session = await auth();
@@ -27,7 +28,7 @@ export async function createJobDescription(formData: FormData): Promise<void> {
   });
   if (!parsed.success) redirect("/jobs/new");
 
-  await prisma.jobDescription.create({
+  const job = await prisma.jobDescription.create({
     data: {
       userId: session.user.id,
       title: parsed.data.title,
@@ -44,6 +45,22 @@ export async function createJobDescription(formData: FormData): Promise<void> {
       isPublic: true,
     },
   });
+
+  await notifyMatchingAlerts({
+    id: job.id,
+    userId: job.userId,
+    title: job.title,
+    company: job.company,
+    rawText: job.rawText,
+    location: job.location,
+    skills: job.skills,
+    category: job.category,
+    employmentType: job.employmentType,
+    experienceLevel: job.experienceLevel,
+    salaryMin: job.salaryMin,
+    salaryMax: job.salaryMax,
+  });
+
   redirect("/dashboard");
 }
 
