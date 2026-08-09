@@ -12,6 +12,8 @@ import { buildJobsWhere } from "@/lib/jobs/job-query";
 import { isJobCategory } from "@/lib/jobs/job-categories";
 import JobFilters from "@/components/jobs/JobFilters";
 import JobsBrowser from "@/components/jobs/JobsBrowser";
+import { criteriaFromFilter } from "@/lib/jobs/alerts";
+import SaveAlertButton from "@/components/jobs/SaveAlertButton";
 
 export default async function JobsPage({
   searchParams,
@@ -53,9 +55,19 @@ export default async function JobsPage({
       <main className="mx-auto w-full max-w-6xl flex-1 p-4 sm:p-6">
         <h1 className="mb-4 text-2xl font-bold text-foreground">Tin tuyển dụng</h1>
         {isCandidate && (
-          <div className="mb-4 flex gap-4 text-sm">
+          <div className="mb-4 flex flex-wrap items-center gap-4 text-sm">
             <Link href="/jobs/saved" className="text-primary hover:underline">Tin đã lưu</Link>
             <Link href="/jobs/recommendations" className="text-primary hover:underline">Gợi ý việc cho tôi</Link>
+            <Link href="/jobs/alerts" className="text-primary hover:underline">Thông báo đã lưu</Link>
+            <SaveAlertButton
+              criteria={criteriaFromFilter({
+                term,
+                employmentType: typeFilter,
+                experienceLevel: levelFilter,
+                salaryMillions: salaryFilter,
+                category: categoryFilter,
+              })}
+            />
           </div>
         )}
         <div className="grid gap-4 lg:grid-cols-[minmax(0,16rem)_1fr]">
