@@ -29,6 +29,7 @@ model User {
   companyProfile  CompanyProfile?
   messages        Message[]
   notifications   Notification[]
+  jobAlerts       JobAlert[]
 }
 
 model CV {
@@ -283,4 +284,19 @@ model Notification {
   createdAt DateTime @default(now())
 
   @@index([userId, read])
+}
+
+model JobAlert {
+  id              String           @id @default(cuid())
+  userId          String
+  user            User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  label           String           @default("")
+  term            String?
+  category        String?
+  employmentType  EmploymentType?
+  experienceLevel ExperienceLevel?
+  salaryMillions  Int?
+  createdAt       DateTime         @default(now())
+
+  @@index([userId])
 }
