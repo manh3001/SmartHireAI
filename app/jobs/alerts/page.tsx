@@ -7,6 +7,7 @@ import { criteriaToQuery, type AlertCriteria } from "@/lib/jobs/alerts";
 import type { JobCategory } from "@/lib/jobs/job-categories";
 import type { EmploymentType, ExperienceLevel } from "@/lib/jobs/job-fields";
 import DeleteAlertButton from "@/components/jobs/DeleteAlertButton";
+import AlertEmailToggle from "@/components/jobs/AlertEmailToggle";
 
 export default async function JobAlertsPage() {
   const session = await auth();
@@ -48,7 +49,10 @@ export default async function JobAlertsPage() {
                       Xem việc khớp →
                     </Link>
                   </div>
-                  <DeleteAlertButton id={a.id} />
+                  <div className="flex items-center gap-3">
+                    <AlertEmailToggle id={a.id} enabled={a.emailEnabled} />
+                    <DeleteAlertButton id={a.id} />
+                  </div>
                 </li>
               );
             })}

@@ -59,3 +59,11 @@ export async function deleteJobAlert(id: string): Promise<void> {
   await prisma.jobAlert.deleteMany({ where: { id, userId } });
   revalidatePath("/jobs/alerts");
 }
+
+export async function setAlertEmail(id: string, enabled: boolean): Promise<void> {
+  const session = await auth();
+  const userId = session?.user?.id;
+  if (!userId) return;
+  await prisma.jobAlert.updateMany({ where: { id, userId }, data: { emailEnabled: enabled } });
+  revalidatePath("/jobs/alerts");
+}
