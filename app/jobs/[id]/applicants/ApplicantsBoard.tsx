@@ -63,7 +63,7 @@ export default function ApplicantsBoard({
               key={status}
               onDragOver={(e) => e.preventDefault()}
               onDrop={() => onDrop(status)}
-              className="rounded-lg border-border bg-card border p-2"
+              className="rounded-lg border border-border bg-card p-2"
             >
               <div className="mb-2 flex items-center justify-between px-1">
                 <span className="text-sm font-semibold text-foreground">{STATUS_LABELS[status]}</span>
@@ -75,7 +75,7 @@ export default function ApplicantsBoard({
                     key={c.id}
                     draggable
                     onDragStart={() => setDragId(c.id)}
-                    className="cursor-grab rounded-md border-border bg-muted/40 border p-2 text-sm active:cursor-grabbing"
+                    className="cursor-grab rounded-md border border-border bg-muted/40 p-2 text-sm active:cursor-grabbing"
                   >
                     <div className="flex items-center gap-2">
                       <CompanyAvatar name={c.candidateName} className="h-7 w-7 rounded-lg text-[10px]" />
@@ -103,7 +103,7 @@ export default function ApplicantsBoard({
       </div>
 
       {withdrawn.length > 0 && (
-        <div className="mt-4 rounded-lg border-border bg-card border p-3">
+        <div className="mt-4 rounded-lg border border-border bg-card p-3">
           <p className="mb-2 text-sm font-semibold text-muted-foreground">
             Đã rút ({withdrawn.length})
           </p>

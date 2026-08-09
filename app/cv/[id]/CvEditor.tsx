@@ -138,7 +138,7 @@ export default function CvEditor({
         <Button variant={mobileTab === "preview" ? "default" : "outline"} size="sm" onClick={() => setMobileTab("preview")}>Xem trước</Button>
       </div>
 
-      <div className="mx-auto grid max-w-6xl gap-6 p-4 lg:grid-cols-2 lg:p-6">
+      <div className="mx-auto grid max-w-6xl gap-6 p-4 pb-16 lg:grid-cols-2 lg:p-6 lg:pb-6">
         {/* Cột trái: form (ẩn trên mobile khi đang xem preview) */}
         <div className={mobileTab === "preview" ? "hidden lg:block" : "block"}>
           <Input
