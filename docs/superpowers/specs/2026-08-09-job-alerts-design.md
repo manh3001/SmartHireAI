@@ -33,7 +33,6 @@ model JobAlert {
   label           String           @default("")
   term            String?
   category        String?
-  location        String?
   employmentType  EmploymentType?
   experienceLevel ExperienceLevel?
   salaryMillions  Int?
@@ -45,7 +44,9 @@ model JobAlert {
 
 Thêm quan hệ vào `model User`: `jobAlerts JobAlert[]`.
 
-Các cột tiêu chí ánh xạ 1-1 với `JobsFilter` (cộng `location` để lọc riêng, vì `buildJobsWhere` hiện chỉ khớp location qua `term`). `label` là nhãn gợi nhớ, tự sinh từ tiêu chí nếu rỗng.
+Các cột tiêu chí ánh xạ 1-1 với `JobsFilter`. `label` là nhãn gợi nhớ, tự sinh từ tiêu chí nếu rỗng.
+
+> **Ghi chú triển khai (chốt khi viết plan):** bỏ trường `location` riêng — `/jobs` không có bộ lọc location độc lập (location chỉ tìm qua `term`), mà alert chỉ tạo từ bộ lọc `/jobs`, nên `location` không bao giờ được set. `matchesAlert` vẫn khớp location qua `term` (contains trên `job.location`). Do đó `AlertCriteria` ≡ `JobsFilter`.
 
 ### 2. Logic khớp thuần (`lib/jobs/alerts.ts`)
 
@@ -53,7 +54,6 @@ Các cột tiêu chí ánh xạ 1-1 với `JobsFilter` (cộng `location` để 
 export type AlertCriteria = {
   term?: string;
   category?: JobCategory;
-  location?: string;
   employmentType?: EmploymentType;
   experienceLevel?: ExperienceLevel;
   salaryMillions?: number | null;
@@ -69,8 +69,8 @@ export type MatchableJob = {
   category: string | null;
   employmentType: EmploymentType | null;
   experienceLevel: ExperienceLevel | null;
+  salaryMin: number | null;
   salaryMax: number | null;
-  salaryNegotiable: boolean;
 };
 
 export function matchesAlert(job: MatchableJob, c: AlertCriteria): boolean;
@@ -83,7 +83,7 @@ export function criteriaToQuery(c: AlertCriteria): Record<string, string>; // d�
 - `term`: contains không phân biệt hoa/thường trên `title | company | rawText | location | skills` (y ngữ nghĩa nhánh OR của `buildJobsWhere`).
 - `category` / `employmentType` / `experienceLevel`: so bằng đúng.
 - `location`: contains không phân biệt hoa/thường trên `job.location` (khớp riêng, độc lập với `term`).
-- `salaryMillions` (ngưỡng "từ"): khớp khi `job.salaryMax != null && job.salaryMax >= salaryMillions * 1_000_000` **HOẶC** `job.salaryNegotiable === true` (soi theo `salaryWhere`).
+- `salaryMillions` (ngưỡng "từ"): soi **đúng theo `salaryWhere`** — khớp khi `job.salaryMax != null && job.salaryMax >= salaryMillions * 1_000_000` **HOẶC** (`job.salaryMax == null && job.salaryMin != null && job.salaryMin >= salaryMillions * 1_000_000`). KHÔNG dùng `salaryNegotiable`, để đồng nhất với trang duyệt `/jobs`.
 
 **`alertLabel`** — sinh nhãn tiếng Việt gọn nối bằng " · " (ví dụ `"React · Hà Nội · Toàn thời gian"`, dùng nhãn ngành/loại hình/cấp bậc tiếng Việt sẵn có). Rỗng hết → `"Tất cả việc làm"`.
 
@@ -129,7 +129,7 @@ Gọi trong `createJobDescription` ngay sau khi `prisma.jobDescription.create` t
 
 ## Kiểm thử
 
-- **Unit (thuần):** `alerts.test.ts` — `matchesAlert` cho từng tiêu chí (khớp/không), kết hợp AND, rỗng = match-all, salary theo `salaryMax`/`salaryNegotiable`; `alertLabel` (có/không tiêu chí); `criteriaFromFilter`; `criteriaToQuery`.
+- **Unit (thuần):** `alerts.test.ts` — `matchesAlert` cho từng tiêu chí (khớp/không), kết hợp AND, rỗng = match-all, salary theo `salaryMax`/`salaryMin` (soi `salaryWhere`); `alertLabel` (có/không tiêu chí); `criteriaFromFilter`; `criteriaToQuery`.
 - **Không** unit-test component/route/server action (theo quy ước dự án).
 - `npm run lint` + `npm run build` phải xanh.
 - Kiểm thử tay trên trình duyệt (user tự chạy): lưu alert ở `/jobs`, đăng tin khớp bằng tài khoản NTD, xác nhận ứng viên nhận thông báo + toast; xóa alert.
