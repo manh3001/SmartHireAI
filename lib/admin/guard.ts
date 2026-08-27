@@ -1,10 +1,10 @@
 import { redirect } from "next/navigation";
+import { roleAccess } from "@/lib/auth/session";
 
 type SessionLike = { user?: { role?: string } | null } | null;
 
 export function adminAccess(session: SessionLike): "ok" | "login" | "forbidden" {
-  if (!session?.user) return "login";
-  return session.user.role === "ADMIN" ? "ok" : "forbidden";
+  return roleAccess(session, "ADMIN");
 }
 
 // Dùng trong app/admin/layout.tsx và mọi server action quản trị.
