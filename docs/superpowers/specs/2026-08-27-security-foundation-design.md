@@ -9,7 +9,7 @@
 **Mục tiêu**: chuẩn hoá và lấp các lỗ hổng bảo mật nền tảng hiện có, đạt mức "nói được khi phỏng vấn" và an toàn thực tế ở quy mô portfolio/production nhỏ, mà không phá vỡ cơ chế đang đúng.
 
 **Vấn đề hiện tại (đã khảo sát code)**:
-- Không có `middleware.ts` → không có bảo vệ route tập trung; mỗi page/action tự kiểm tra.
+- `proxy.ts` (Next 16 đổi tên từ `middleware.ts`) hiện chỉ bảo vệ `/dashboard` → thiếu bảo vệ route tập trung cho các route riêng tư khác; mỗi page/action tự kiểm tra. Lưu ý: Next 16 chạy proxy trên **Node.js runtime** mặc định → bcrypt/Prisma trong `auth.ts` không còn là rào cản edge.
 - Guard rải rác: pattern `auth()` + check role + `redirect` lặp lại nhiều nơi; chỉ có `requireAdmin` là helper (`lib/admin/guard.ts`).
 - Rate limiter in-memory (`lib/ai/rate-limit.ts`, `Map`): chỉ đúng trong 1 instance, reset khi cold-start, và **chỉ áp cho AI**. `register`/`login` không bị giới hạn → brute-force / credential-stuffing / spam.
 - `next.config.ts` trống → thiếu security headers (CSP, HSTS, X-Frame-Options, nosniff, Referrer-Policy, Permissions-Policy).
@@ -20,12 +20,13 @@
 ## 2. Kiến trúc — 3 lớp phòng thủ (defence-in-depth)
 
 ```
-Request → [1] middleware.ts            security headers + route protection (edge, mọi request)
-        → [2] lib/auth/session.ts      guard tập trung cho Server Actions/pages (requireUser/requireRole)
-        → [3] lib/security/ratelimit.ts Upstash Redis, áp cho login/register/AI/mutation nhạy cảm
+Request → [0] next.config.ts headers()   security headers tĩnh (mọi response)
+        → [1] proxy.ts                    route protection (Node runtime, Next 16)
+        → [2] lib/auth/session.ts         guard tập trung cho Server Actions/pages (requireUser/requireRole)
+        → [3] lib/security/ratelimit.ts   Upstash Redis, áp cho login/register/AI/mutation nhạy cảm
 ```
 
-Nguyên tắc: **không xoá cơ chế đang đúng** (ownership check theo `userId`, `requireAdmin`). Middleware KHÔNG thay guard trong server action — cả hai cùng tồn tại (defence-in-depth).
+Nguyên tắc: **không xoá cơ chế đang đúng** (ownership check theo `userId`, `requireAdmin`). Proxy KHÔNG thay guard trong server action — doc Next 16 cảnh báo Server Function là POST tới route dùng nó, proxy matcher loại trừ path sẽ bỏ qua nó → cả hai cùng tồn tại (defence-in-depth).
 
 ## 3. Security headers & CSP
 
@@ -42,9 +43,9 @@ Thêm `async headers()` vào `next.config.ts`, áp mọi route. Chuỗi CSP sinh
 
 Trade-off ghi rõ: chấp nhận `style-src 'unsafe-inline'` vì Tailwind v4 + inline style; `script-src 'unsafe-eval'` chỉ ở dev.
 
-## 4. `middleware.ts` — bảo vệ route tập trung
+## 4. `proxy.ts` — bảo vệ route tập trung
 
-- File `middleware.ts` ở gốc, dùng `auth` của Auth.js v5 (edge-compatible).
+- Mở rộng `proxy.ts` sẵn có ở gốc (Next 16, Node runtime), dùng wrapper `auth((req)=>...)` của Auth.js v5.
 - **Matcher**: bỏ qua `_next`, static assets, `/api/auth`, file ảnh.
 - Bảng khai báo thuần `routeRules` (path prefix → yêu cầu: `authed` | role) trong `lib/auth/route-rules.ts`, test được.
 - **Route riêng tư** (`/dashboard`, `/cv`, `/jobs/new`, `/applications`, `/messages`, `/notifications`, `/company`, `/admin`): chưa login → redirect `/login?callbackUrl=...`.
