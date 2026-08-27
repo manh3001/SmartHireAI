@@ -1,13 +1,22 @@
 import { auth } from "@/auth";
+import { NextResponse } from "next/server";
+import { routeDecision } from "@/lib/auth/route-rules";
 
 export default auth((req) => {
-  const isLoggedIn = !!req.auth;
-  const isProtected = req.nextUrl.pathname.startsWith("/dashboard");
-  if (isProtected && !isLoggedIn) {
-    return Response.redirect(new URL("/login", req.nextUrl));
+  const decision = routeDecision(req.nextUrl.pathname, req.auth);
+
+  if (decision === "login") {
+    const url = new URL("/login", req.nextUrl);
+    url.searchParams.set("callbackUrl", req.nextUrl.pathname);
+    return NextResponse.redirect(url);
   }
+  if (decision === "forbidden") {
+    return NextResponse.redirect(new URL("/dashboard", req.nextUrl));
+  }
+  // allow -> không trả gì, request đi tiếp
 });
 
 export const config = {
-  matcher: ["/dashboard/:path*"],
+  // Bỏ qua api (tự guard), static, image, favicon
+  matcher: ["/((?!api|_next/static|_next/image|favicon.ico).*)"],
 };
