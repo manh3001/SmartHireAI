@@ -3,7 +3,7 @@
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import prisma from "@/lib/db/prisma";
-import { auth } from "@/auth";
+import { requireUser } from "@/lib/auth/session";
 import { cvSchema } from "./schema";
 import { normalizeCv } from "./normalize";
 import type { CvInput } from "./types";
@@ -12,10 +12,8 @@ import { normalizeAccent, type CvAccent } from "./accents";
 import { normalizeFont, type CvFont } from "./fonts";
 
 async function requireUserId(): Promise<string> {
-  const session = await auth();
-  const userId = session?.user?.id;
-  if (!userId) redirect("/login");
-  return userId;
+  const session = await requireUser();
+  return session.user.id;
 }
 
 export async function createCv(): Promise<void> {

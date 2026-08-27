@@ -86,7 +86,7 @@ Mở **http://localhost:3000**.
 | `RESEND_API_KEY` | ❌ | API key Resend để gửi email thông báo; bỏ trống thì chỉ in log, không gửi thật |
 | `EMAIL_FROM` | ❌ | Địa chỉ gửi email (mặc định `SmartHire <onboarding@resend.dev>`) |
 | `UPSTASH_REDIS_REST_URL` | ❌ | URL Upstash Redis cho rate-limit dùng chung; bỏ trống → fallback in-memory (hợp dev/test, không đúng với nhiều instance) |
-| `UPSTASH_REDIS_REST_TOKEN` | ❌ | Token xác thực Upstash Redis; bỏ trống cùng với URL → fallback in-memory |
+| `UPSTASH_REDIS_REST_TOKEN` | ❌ | Token xác thực Upstash Redis; bỏ trống → fallback in-memory (chỉ đúng trong 1 instance / hợp dev-test, không đúng với nhiều instance) |
 
 ### Cấp quyền quản trị
 
