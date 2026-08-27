@@ -3,15 +3,13 @@
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import prisma from "@/lib/db/prisma";
-import { auth } from "@/auth";
+import { requireUser, requireRole } from "@/lib/auth/session";
 import { jobSchema } from "./schema";
 import { parseSalaryInput } from "./salary";
 import { notifyMatchingAlerts } from "./alert-notify";
 
 export async function createJobDescription(formData: FormData): Promise<void> {
-  const session = await auth();
-  if (!session?.user?.id) redirect("/login");
-  if (session.user.role !== "RECRUITER") redirect("/dashboard");
+  const session = await requireRole("RECRUITER");
 
   const parsed = jobSchema.safeParse({
     title: String(formData.get("title") ?? "").trim(),
@@ -65,8 +63,7 @@ export async function createJobDescription(formData: FormData): Promise<void> {
 }
 
 export async function deleteJobDescription(formData: FormData): Promise<void> {
-  const session = await auth();
-  if (!session?.user?.id) redirect("/login");
+  const session = await requireUser();
   const id = String(formData.get("id") ?? "");
   await prisma.jobDescription.deleteMany({ where: { id, userId: session.user.id } });
   revalidatePath("/dashboard");

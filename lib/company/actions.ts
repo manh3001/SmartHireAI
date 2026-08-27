@@ -3,14 +3,12 @@
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import prisma from "@/lib/db/prisma";
-import { auth } from "@/auth";
+import { requireRole } from "@/lib/auth/session";
 import { companySchema } from "./schema";
 import { validateLogo } from "./logo";
 
 export async function upsertCompanyProfile(formData: FormData): Promise<void> {
-  const session = await auth();
-  if (!session?.user?.id) redirect("/login");
-  if (session.user.role !== "RECRUITER") redirect("/dashboard");
+  const session = await requireRole("RECRUITER");
 
   const parsed = companySchema.safeParse({
     name: String(formData.get("name") ?? "").trim(),
