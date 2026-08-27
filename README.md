@@ -30,6 +30,7 @@ Sàn tuyển dụng 2 chiều tích hợp **AI**: ứng viên tạo CV có cấu
 **Chung**
 - 💬 Nhắn tin trực tiếp giữa ứng viên và nhà tuyển dụng trong từng đơn
 - 🔔 Thông báo + **cập nhật realtime** (badge, danh sách thông báo, tin nhắn tự làm mới, toast — bằng polling nhẹ, phù hợp serverless)
+- 🔒 Bảo vệ route tập trung (`proxy.ts`), security headers (CSP/HSTS…), rate-limit đăng nhập/đăng ký/AI, yêu cầu độ mạnh mật khẩu
 
 ---
 
@@ -82,6 +83,10 @@ Mở **http://localhost:3000**.
 | `DATABASE_URL` | ✅ | Chuỗi kết nối PostgreSQL, ví dụ `postgresql://user:pass@host/db?sslmode=require` |
 | `AUTH_SECRET` | ✅ | Khóa bí mật cho Auth.js — sinh bằng `npx auth secret` |
 | `GEMINI_API_KEY` | ✅* | API key Gemini. *Bắt buộc để các tính năng AI hoạt động; phần còn lại của app vẫn chạy nếu thiếu |
+| `RESEND_API_KEY` | ❌ | API key Resend để gửi email thông báo; bỏ trống thì chỉ in log, không gửi thật |
+| `EMAIL_FROM` | ❌ | Địa chỉ gửi email (mặc định `SmartHire <onboarding@resend.dev>`) |
+| `UPSTASH_REDIS_REST_URL` | ❌ | URL Upstash Redis cho rate-limit dùng chung; bỏ trống → fallback in-memory (hợp dev/test, không đúng với nhiều instance) |
+| `UPSTASH_REDIS_REST_TOKEN` | ❌ | Token xác thực Upstash Redis; bỏ trống cùng với URL → fallback in-memory |
 
 ### Cấp quyền quản trị
 
