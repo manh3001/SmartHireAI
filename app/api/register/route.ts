@@ -2,9 +2,19 @@ import { NextResponse } from "next/server";
 import prisma from "@/lib/db/prisma";
 import { registerUser } from "@/lib/auth/register";
 import { hashPassword } from "@/lib/auth/password";
+import { checkRateLimit } from "@/lib/security/ratelimit";
+import { getClientIp } from "@/lib/security/ip";
 
 export async function POST(req: Request) {
   try {
+    const ip = getClientIp(req);
+    if (!(await checkRateLimit("register", ip))) {
+      return NextResponse.json(
+        { error: "Bạn thao tác quá nhiều lần, vui lòng thử lại sau" },
+        { status: 429 },
+      );
+    }
+
     const body = await req.json();
     const result = await registerUser(body, {
       findByEmail: (email) =>

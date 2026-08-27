@@ -7,6 +7,7 @@ import { messageSchema } from "./schema";
 import { isThreadParticipant } from "./access";
 import { createNotification } from "@/lib/notifications/create";
 import { newMessageNotification } from "@/lib/notifications/messages";
+import { checkRateLimit } from "@/lib/security/ratelimit";
 
 export async function sendMessage(
   applicationId: string,
@@ -15,6 +16,9 @@ export async function sendMessage(
   const session = await auth();
   const userId = session?.user?.id;
   if (!userId) return { ok: false, error: "Chưa đăng nhập" };
+
+  if (!(await checkRateLimit("mutation", userId)))
+    return { ok: false, error: "Bạn gửi quá nhanh, vui lòng chờ một chút" };
 
   const app = await prisma.application.findUnique({
     where: { id: applicationId },

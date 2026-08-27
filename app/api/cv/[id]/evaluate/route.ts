@@ -2,13 +2,11 @@ import { NextResponse } from "next/server";
 import prisma from "@/lib/db/prisma";
 import { auth } from "@/auth";
 import { runCvEvaluation, type CvEvaluationDeps } from "@/lib/ai/evaluate";
-import { createRateLimiter } from "@/lib/ai/rate-limit";
+import { checkRateLimit } from "@/lib/security/ratelimit";
 import { loadCvInput } from "@/lib/cv/load";
 import { requestEvaluation } from "@/lib/ai/request-evaluation";
 
 export const runtime = "nodejs";
-
-const limiter = createRateLimiter({ max: 5, windowMs: 60000 });
 
 export async function POST(
   req: Request,
@@ -21,9 +19,9 @@ export async function POST(
   }
   const userId = session.user.id;
 
-  if (!limiter.check(userId, Date.now())) {
+  if (!(await checkRateLimit("ai", userId))) {
     return NextResponse.json(
-      { error: "Bạn đánh giá quá nhanh, vui lòng thử lại sau một phút" },
+      { error: "Bạn đánh giá quá nhanh, vui lòng thử lại sau" },
       { status: 429 },
     );
   }

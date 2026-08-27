@@ -3,13 +3,11 @@ import prisma from "@/lib/db/prisma";
 import { getAiClient, AI_MODEL } from "@/lib/ai/client";
 import { buildChatSystemPrompt } from "@/lib/ai/chat";
 import type { EvaluationResult } from "@/lib/ai/schema";
-import { createRateLimiter } from "@/lib/ai/rate-limit";
+import { checkRateLimit } from "@/lib/security/ratelimit";
 import type { CvInput } from "@/lib/cv/types";
 import type { ChatCompletionMessageParam } from "openai/resources/chat/completions";
 
 export const runtime = "nodejs";
-
-const limiter = createRateLimiter({ max: 20, windowMs: 60000 });
 
 export async function POST(
   req: Request,
@@ -22,7 +20,7 @@ export async function POST(
   }
   const userId = session.user.id;
 
-  if (!limiter.check(userId, Date.now())) {
+  if (!(await checkRateLimit("ai", userId))) {
     return new Response("Bạn nhắn quá nhanh, vui lòng chờ một chút", { status: 429 });
   }
 

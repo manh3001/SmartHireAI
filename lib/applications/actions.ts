@@ -13,11 +13,8 @@ import { loadCvInput } from "@/lib/cv/load";
 import { requestEvaluation } from "@/lib/ai/request-evaluation";
 import { buildEvaluationPrompt } from "@/lib/ai/prompt";
 import { composeJdText } from "@/lib/jobs/job-fields";
-import { createRateLimiter } from "@/lib/ai/rate-limit";
+import { checkRateLimit } from "@/lib/security/ratelimit";
 import type { EvaluationResult } from "@/lib/ai/schema";
-
-const previewLimiter = createRateLimiter({ max: 5, windowMs: 60000 });
-const submitLimiter = createRateLimiter({ max: 5, windowMs: 60000 });
 
 export async function previewMatch(
   jobId: string,
@@ -31,7 +28,7 @@ export async function previewMatch(
   if (session.user.role !== "CANDIDATE")
     return { ok: false, error: "Chỉ ứng viên mới xem điểm phù hợp" };
 
-  if (!previewLimiter.check(userId, Date.now()))
+  if (!(await checkRateLimit("ai", userId)))
     return { ok: false, error: "Bạn thao tác quá nhanh, thử lại sau một phút" };
 
   const job = await prisma.jobDescription.findFirst({
@@ -68,7 +65,7 @@ export async function submitApplication(input: {
   if (session.user.role !== "CANDIDATE")
     return { ok: false, error: "Chỉ ứng viên mới được ứng tuyển" };
 
-  if (!submitLimiter.check(userId, Date.now()))
+  if (!(await checkRateLimit("mutation", userId)))
     return { ok: false, error: "Bạn thao tác quá nhanh, thử lại sau một phút" };
 
   const parsed = applySchema.safeParse({

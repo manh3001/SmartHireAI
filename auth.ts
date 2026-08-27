@@ -2,6 +2,8 @@ import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import prisma from "@/lib/db/prisma";
 import { verifyPassword } from "@/lib/auth/password";
+import { checkRateLimit } from "@/lib/security/ratelimit";
+import { getClientIp } from "@/lib/security/ip";
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   session: { strategy: "jwt" },
@@ -9,16 +11,23 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   providers: [
     Credentials({
       credentials: { email: {}, password: {} },
-      authorize: async (creds) => {
+      authorize: async (creds, request) => {
         const email = creds?.email as string | undefined;
         const password = creds?.password as string | undefined;
         if (!email || !password) return null;
 
+        const ip = getClientIp(request as Request | undefined);
+        const ok = await checkRateLimit("login", `${ip}:${email}`);
+        if (!ok) {
+          console.warn("[auth] login bị rate-limit:", email);
+          return null; // trả lỗi đồng nhất, không tiết lộ bị khoá
+        }
+
         const user = await prisma.user.findUnique({ where: { email } });
         if (!user) return null;
 
-        const ok = await verifyPassword(password, user.passwordHash);
-        if (!ok) return null;
+        const valid = await verifyPassword(password, user.passwordHash);
+        if (!valid) return null;
 
         return { id: user.id, email: user.email, name: user.name, role: user.role };
       },
