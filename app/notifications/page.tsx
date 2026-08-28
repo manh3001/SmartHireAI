@@ -1,8 +1,9 @@
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
+import { Bell } from "lucide-react";
 import prisma from "@/lib/db/prisma";
 import Navbar from "@/components/Navbar";
-import { Card, CardContent } from "@/components/ui/card";
+import { EmptyState } from "@/components/ui/empty-state";
 import NotificationItem from "./NotificationItem";
 import MarkAllButton from "./MarkAllButton";
 
@@ -28,9 +29,11 @@ export default async function NotificationsPage() {
           {hasUnread && <MarkAllButton />}
         </div>
         {notifications.length === 0 ? (
-          <Card className="border-dashed">
-            <CardContent className="py-10 text-center text-sm text-muted-foreground">Chưa có thông báo nào.</CardContent>
-          </Card>
+          <EmptyState
+            icon={<Bell className="h-10 w-10" />}
+            title="Không có thông báo mới"
+            description="Các cập nhật về đơn ứng tuyển sẽ xuất hiện ở đây."
+          />
         ) : (
           <div className="grid gap-2">
             {notifications.map((n) => (

@@ -11,6 +11,7 @@ import RecruiterStats from "./RecruiterStats";
 import CandidateStats from "./CandidateStats";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { EmptyState } from "@/components/ui/empty-state";
 
 export default async function DashboardPage() {
   const session = await auth();
@@ -47,11 +48,16 @@ export default async function DashboardPage() {
           <RecruiterStats userId={session.user.id} />
           <div className="flex flex-col gap-3">
             {jobs.length === 0 && (
-              <Card className="border-dashed">
-                <CardContent className="py-10 text-center text-muted-foreground">
-                  Chưa có tin nào. Bấm “Đăng JD” để đăng tin tuyển dụng.
-                </CardContent>
-              </Card>
+              <EmptyState
+                icon={<Briefcase className="h-10 w-10" />}
+                title="Chưa có tin tuyển dụng nào"
+                description={'Bấm "Đăng JD" để đăng tin tuyển dụng đầu tiên.'}
+                action={
+                  <Link href="/jobs/new" className={buttonVariants()}>
+                    <Plus className="mr-1 h-4 w-4" /> Đăng JD
+                  </Link>
+                }
+              />
             )}
             {jobs.map((j) => (
               <Card key={j.id} className="border-border">
@@ -104,11 +110,11 @@ export default async function DashboardPage() {
         <CandidateStats userId={session.user.id} />
         <div className="flex flex-col gap-3">
           {cvs.length === 0 && (
-            <Card className="border-dashed">
-              <CardContent className="py-10 text-center text-muted-foreground">
-                Chưa có CV nào. Bấm “Tạo CV mới” để bắt đầu.
-              </CardContent>
-            </Card>
+            <EmptyState
+              icon={<FileText className="h-10 w-10" />}
+              title="Chưa có CV nào"
+              description={'Bấm "Tạo CV mới" để tạo CV đầu tiên của bạn.'}
+            />
           )}
           {cvs.map((cv) => (
             <Card key={cv.id} className="border-border transition-colors hover:border-primary/40 hover:bg-muted/40">

@@ -1,10 +1,13 @@
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 import Link from "next/link";
+import { Bookmark } from "lucide-react";
 import prisma from "@/lib/db/prisma";
 import Navbar from "@/components/Navbar";
 import JobCard from "@/components/JobCard";
 import SaveJobButton from "../SaveJobButton";
+import { EmptyState } from "@/components/ui/empty-state";
+import { buttonVariants } from "@/components/ui/button";
 
 export const dynamic = "force-dynamic";
 
@@ -35,7 +38,16 @@ export default async function SavedJobsPage() {
         <h1 className="mb-4 mt-2 text-2xl font-bold text-foreground">Tin đã lưu</h1>
         <div className="flex flex-col gap-3">
           {saved.length === 0 && (
-            <div className="rounded-2xl border border-dashed border-border p-10 text-center text-muted-foreground">Bạn chưa lưu tin nào.</div>
+            <EmptyState
+              icon={<Bookmark className="h-10 w-10" />}
+              title="Chưa lưu tin nào"
+              description="Lưu tin yêu thích để xem lại sau."
+              action={
+                <Link href="/jobs" className={buttonVariants({ variant: "outline", size: "sm" })}>
+                  Tìm việc ngay →
+                </Link>
+              }
+            />
           )}
           {saved.map(({ job: j }) => (
             <JobCard

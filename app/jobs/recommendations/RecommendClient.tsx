@@ -2,12 +2,14 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { FileText } from "lucide-react";
 import { toast } from "sonner";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import SaveJobButton from "../SaveJobButton";
 import ScoreBadge from "@/components/ScoreBadge";
 import { recommendJobs } from "@/lib/jobs/recommend-actions";
 import type { RecommendationItem } from "@/lib/jobs/recommendations";
+import { EmptyState } from "@/components/ui/empty-state";
 
 export default function RecommendClient({
   cvs,
@@ -36,9 +38,16 @@ export default function RecommendClient({
 
   if (cvs.length === 0) {
     return (
-      <p className="mt-4 text-sm text-muted-foreground">
-        Bạn chưa có CV nào. Hãy tạo CV trước ở bảng điều khiển rồi quay lại.
-      </p>
+      <EmptyState
+        icon={<FileText className="h-10 w-10" />}
+        title="Chưa có CV nào"
+        description="Hãy tạo CV trước để nhận gợi ý việc làm phù hợp."
+        action={
+          <Link href="/dashboard" className={buttonVariants({ variant: "outline", size: "sm" })}>
+            Tạo CV →
+          </Link>
+        }
+      />
     );
   }
 

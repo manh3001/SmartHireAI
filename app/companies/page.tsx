@@ -1,9 +1,13 @@
+import Link from "next/link";
+import { Building2 } from "lucide-react";
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 import prisma from "@/lib/db/prisma";
 import Navbar from "@/components/Navbar";
 import CompanyCard from "@/components/companies/CompanyCard";
 import { rankCompanies, type CompanyDirInput } from "@/lib/company/directory";
+import { EmptyState } from "@/components/ui/empty-state";
+import { buttonVariants } from "@/components/ui/button";
 
 export const dynamic = "force-dynamic";
 
@@ -64,11 +68,18 @@ export default async function CompaniesPage({
         </form>
 
         {ranked.length === 0 ? (
-          <div className="mt-6 rounded-lg border border-dashed border-border py-12 text-center text-muted-foreground">
-            {term
-              ? `Không tìm thấy công ty khớp "${term}".`
-              : "Chưa có công ty nào đang tuyển."}
-          </div>
+          <EmptyState
+            icon={<Building2 className="h-10 w-10" />}
+            title={term ? `Không tìm thấy công ty khớp "${term}"` : "Chưa có công ty nào đang tuyển"}
+            description={term ? "Thử từ khoá khác." : undefined}
+            action={
+              term ? (
+                <Link href="/companies" className={buttonVariants({ variant: "outline", size: "sm" })}>
+                  Xoá tìm kiếm
+                </Link>
+              ) : undefined
+            }
+          />
         ) : (
           <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {ranked.map((c) => (
