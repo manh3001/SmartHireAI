@@ -1,10 +1,13 @@
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 import Link from "next/link";
+import { Briefcase } from "lucide-react";
 import prisma from "@/lib/db/prisma";
 import Navbar from "@/components/Navbar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { buttonVariants } from "@/components/ui/button";
+import { EmptyState } from "@/components/ui/empty-state";
 import {
   STATUS_LABELS,
   canWithdraw,
@@ -41,10 +44,16 @@ export default async function MyApplicationsPage() {
       <main className="mx-auto w-full max-w-3xl flex-1 p-6">
         <h1 className="text-xl font-semibold text-foreground">Ứng tuyển của tôi</h1>
         {applications.length === 0 ? (
-          <p className="mt-4 text-sm text-muted-foreground">
-            Bạn chưa ứng tuyển tin nào.{" "}
-            <Link href="/jobs" className="text-primary hover:underline">Xem tin tuyển dụng</Link>
-          </p>
+          <EmptyState
+            icon={<Briefcase className="h-10 w-10" />}
+            title="Chưa có đơn ứng tuyển nào"
+            description="Tìm việc làm phù hợp và nộp đơn đầu tiên của bạn."
+            action={
+              <Link href="/jobs" className={buttonVariants({ variant: "outline", size: "sm" })}>
+                Tìm việc ngay →
+              </Link>
+            }
+          />
         ) : (
           <div className="mt-4 grid gap-3">
             {applications.map((a) => (
