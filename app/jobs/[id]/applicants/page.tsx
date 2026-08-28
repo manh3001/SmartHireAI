@@ -1,9 +1,11 @@
 import { auth } from "@/auth";
 import { redirect, notFound } from "next/navigation";
 import Link from "next/link";
+import { Users } from "lucide-react";
 import prisma from "@/lib/db/prisma";
 import Navbar from "@/components/Navbar";
 import ApplicantsBoard, { type ApplicantCard } from "./ApplicantsBoard";
+import { EmptyState } from "@/components/ui/empty-state";
 import type { ApplicationStatus } from "@/lib/applications/status";
 
 export const dynamic = "force-dynamic";
@@ -62,7 +64,11 @@ export default async function ApplicantsPage({
           🔎 Sàng lọc AI
         </Link>
         {initial.length === 0 ? (
-          <p className="mt-4 text-sm text-muted-foreground">Chưa có ai ứng tuyển tin này.</p>
+          <EmptyState
+            icon={<Users className="h-10 w-10" />}
+            title="Chưa có ứng viên nào"
+            description="Ứng viên sẽ xuất hiện ở đây khi họ nộp đơn vào tin này."
+          />
         ) : (
           <ApplicantsBoard jobId={id} initial={initial} />
         )}

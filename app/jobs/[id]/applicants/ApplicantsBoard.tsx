@@ -4,7 +4,6 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { toast } from "sonner";
-import { Users } from "lucide-react";
 import {
   BOARD_STATUSES,
   STATUS_LABELS,
@@ -13,7 +12,6 @@ import {
 import { changeStatus } from "@/lib/applications/actions";
 import CompanyAvatar from "@/components/CompanyAvatar";
 import ScoreBadge from "@/components/ScoreBadge";
-import { EmptyState } from "@/components/ui/empty-state";
 
 export type ApplicantCard = {
   id: string;
@@ -57,73 +55,42 @@ export default function ApplicantsBoard({
 
   return (
     <>
-      {cards.length === 0 && withdrawn.length === 0 ? (
-        <EmptyState
-          icon={<Users className="h-10 w-10" />}
-          title="Chưa có ứng viên nào"
-          description="Ứng viên sẽ xuất hiện ở đây khi họ nộp đơn vào tin này."
-        />
-      ) : (
-        <>
-          <div className="mt-4 grid grid-flow-col gap-3 overflow-x-auto pb-2 [grid-auto-columns:minmax(220px,1fr)]">
-            {BOARD_STATUSES.map((status) => {
-              const col = cards.filter((c) => c.status === status);
-              return (
-                <div
-                  key={status}
-                  onDragOver={(e) => e.preventDefault()}
-                  onDrop={() => onDrop(status)}
-                  className="rounded-lg border border-border bg-card p-2"
-                >
-                  <div className="mb-2 flex items-center justify-between px-1">
-                    <span className="text-sm font-semibold text-foreground">{STATUS_LABELS[status]}</span>
-                    <span className="text-xs text-muted-foreground">{col.length}</span>
-                  </div>
-                  <div className="grid gap-2">
-                    {col.map((c) => (
-                      <div
-                        key={c.id}
-                        draggable
-                        onDragStart={() => setDragId(c.id)}
-                        className="cursor-grab rounded-md border border-border bg-muted/40 p-2 text-sm active:cursor-grabbing"
-                      >
-                        <div className="flex items-center gap-2">
-                          <CompanyAvatar name={c.candidateName} className="h-7 w-7 rounded-lg text-[10px]" />
-                          <p className="font-medium text-foreground">{c.candidateName}</p>
-                        </div>
-                        {c.score !== null && (
-                          <div className="mt-1"><ScoreBadge score={c.score} /></div>
-                        )}
-                        {c.coverLetter && (
-                          <p className="mt-1 line-clamp-3 text-xs text-muted-foreground">{c.coverLetter}</p>
-                        )}
-                        <Link
-                          href={`/jobs/${jobId}/applicants/${c.id}`}
-                          draggable={false}
-                          className="mt-1 inline-block text-xs text-primary hover:underline"
-                        >
-                          Xem chi tiết →
-                        </Link>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-
-          {withdrawn.length > 0 && (
-            <div className="mt-4 rounded-lg border border-border bg-card p-3">
-              <p className="mb-2 text-sm font-semibold text-muted-foreground">
-                Đã rút ({withdrawn.length})
-              </p>
-              <div className="grid gap-1">
-                {withdrawn.map((c) => (
-                  <div key={c.id} className="flex items-center justify-between text-sm text-muted-foreground">
-                    <span>{c.candidateName}</span>
+      <div className="mt-4 grid grid-flow-col gap-3 overflow-x-auto pb-2 [grid-auto-columns:minmax(220px,1fr)]">
+        {BOARD_STATUSES.map((status) => {
+          const col = cards.filter((c) => c.status === status);
+          return (
+            <div
+              key={status}
+              onDragOver={(e) => e.preventDefault()}
+              onDrop={() => onDrop(status)}
+              className="rounded-lg border border-border bg-card p-2"
+            >
+              <div className="mb-2 flex items-center justify-between px-1">
+                <span className="text-sm font-semibold text-foreground">{STATUS_LABELS[status]}</span>
+                <span className="text-xs text-muted-foreground">{col.length}</span>
+              </div>
+              <div className="grid gap-2">
+                {col.map((c) => (
+                  <div
+                    key={c.id}
+                    draggable
+                    onDragStart={() => setDragId(c.id)}
+                    className="cursor-grab rounded-md border border-border bg-muted/40 p-2 text-sm active:cursor-grabbing"
+                  >
+                    <div className="flex items-center gap-2">
+                      <CompanyAvatar name={c.candidateName} className="h-7 w-7 rounded-lg text-[10px]" />
+                      <p className="font-medium text-foreground">{c.candidateName}</p>
+                    </div>
+                    {c.score !== null && (
+                      <div className="mt-1"><ScoreBadge score={c.score} /></div>
+                    )}
+                    {c.coverLetter && (
+                      <p className="mt-1 line-clamp-3 text-xs text-muted-foreground">{c.coverLetter}</p>
+                    )}
                     <Link
                       href={`/jobs/${jobId}/applicants/${c.id}`}
-                      className="text-xs text-primary hover:underline"
+                      draggable={false}
+                      className="mt-1 inline-block text-xs text-primary hover:underline"
                     >
                       Xem chi tiết →
                     </Link>
@@ -131,8 +98,29 @@ export default function ApplicantsBoard({
                 ))}
               </div>
             </div>
-          )}
-        </>
+          );
+        })}
+      </div>
+
+      {withdrawn.length > 0 && (
+        <div className="mt-4 rounded-lg border border-border bg-card p-3">
+          <p className="mb-2 text-sm font-semibold text-muted-foreground">
+            Đã rút ({withdrawn.length})
+          </p>
+          <div className="grid gap-1">
+            {withdrawn.map((c) => (
+              <div key={c.id} className="flex items-center justify-between text-sm text-muted-foreground">
+                <span>{c.candidateName}</span>
+                <Link
+                  href={`/jobs/${jobId}/applicants/${c.id}`}
+                  className="text-xs text-primary hover:underline"
+                >
+                  Xem chi tiết →
+                </Link>
+              </div>
+            ))}
+          </div>
+        </div>
       )}
     </>
   );
