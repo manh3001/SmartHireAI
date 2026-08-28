@@ -1,8 +1,9 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
+import { revalidateTag } from "next/cache";
 import prisma from "@/lib/db/prisma";
 import { auth } from "@/auth";
+import { CACHE_TAGS } from "@/lib/cache/tags";
 
 export async function toggleSaveJob(
   jobId: string,
@@ -33,7 +34,6 @@ export async function toggleSaveJob(
     saved = true;
   }
 
-  revalidatePath("/jobs");
-  revalidatePath("/jobs/saved");
+  revalidateTag(CACHE_TAGS.jobs, "max");
   return { ok: true, saved };
 }

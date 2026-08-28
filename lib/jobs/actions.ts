@@ -1,7 +1,8 @@
 "use server";
 
 import { redirect } from "next/navigation";
-import { revalidatePath } from "next/cache";
+import { revalidateTag } from "next/cache";
+import { CACHE_TAGS } from "@/lib/cache/tags";
 import prisma from "@/lib/db/prisma";
 import { requireUser, requireRole } from "@/lib/auth/session";
 import { jobSchema } from "./schema";
@@ -66,5 +67,5 @@ export async function deleteJobDescription(formData: FormData): Promise<void> {
   const session = await requireUser();
   const id = String(formData.get("id") ?? "");
   await prisma.jobDescription.deleteMany({ where: { id, userId: session.user.id } });
-  revalidatePath("/dashboard");
+  revalidateTag(CACHE_TAGS.dashboard, "max");
 }

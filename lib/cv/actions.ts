@@ -1,7 +1,8 @@
 "use server";
 
 import { redirect } from "next/navigation";
-import { revalidatePath } from "next/cache";
+import { revalidateTag } from "next/cache";
+import { CACHE_TAGS } from "@/lib/cache/tags";
 import prisma from "@/lib/db/prisma";
 import { requireUser } from "@/lib/auth/session";
 import { cvSchema } from "./schema";
@@ -33,7 +34,7 @@ export async function deleteCv(formData: FormData): Promise<void> {
   const userId = await requireUserId();
   const id = String(formData.get("id") ?? "");
   await prisma.cV.deleteMany({ where: { id, userId } });
-  revalidatePath("/dashboard");
+  revalidateTag(CACHE_TAGS.dashboard, "max");
 }
 
 export async function saveCv(
@@ -94,7 +95,7 @@ export async function saveCv(
     });
   });
 
-  revalidatePath(`/cv/${cvId}`);
-  revalidatePath("/dashboard");
+  revalidateTag(CACHE_TAGS.cv, "max");
+  revalidateTag(CACHE_TAGS.dashboard, "max");
   return { ok: true };
 }

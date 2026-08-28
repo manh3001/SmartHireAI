@@ -1,6 +1,7 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
+import { revalidateTag } from "next/cache";
+import { CACHE_TAGS } from "@/lib/cache/tags";
 import prisma from "@/lib/db/prisma";
 import { auth } from "@/auth";
 import { applySchema } from "./schema";
@@ -165,8 +166,8 @@ export async function submitApplication(input: {
   );
 
   if (outcome.ok) {
-    revalidatePath("/applications");
-    revalidatePath(`/jobs/${input.jobId}`);
+    revalidateTag(CACHE_TAGS.applications, "max");
+    revalidateTag(CACHE_TAGS.jobs, "max");
   }
   if (outcome.ok && job) {
     try {
@@ -215,7 +216,7 @@ export async function withdrawApplication(
       },
     }),
   ]);
-  revalidatePath("/applications");
+  revalidateTag(CACHE_TAGS.applications, "max");
   return { ok: true };
 }
 
@@ -261,7 +262,7 @@ export async function changeStatus(
     { applicationId, recruiterId: userId, toStatus, note },
     deps,
   );
-  if (outcome.ok) revalidatePath("/applications");
+  if (outcome.ok) revalidateTag(CACHE_TAGS.applications, "max");
   if (outcome.ok) {
     try {
       const app = await prisma.application.findUnique({

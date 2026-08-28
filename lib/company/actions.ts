@@ -1,7 +1,8 @@
 "use server";
 
 import { redirect } from "next/navigation";
-import { revalidatePath } from "next/cache";
+import { revalidateTag } from "next/cache";
+import { CACHE_TAGS } from "@/lib/cache/tags";
 import { put, del } from "@vercel/blob";
 import prisma from "@/lib/db/prisma";
 import { requireRole } from "@/lib/auth/session";
@@ -59,6 +60,6 @@ export async function upsertCompanyProfile(formData: FormData): Promise<void> {
     });
   }
 
-  revalidatePath("/company/edit");
+  revalidateTag(CACHE_TAGS.company, "max");
   redirect("/dashboard");
 }

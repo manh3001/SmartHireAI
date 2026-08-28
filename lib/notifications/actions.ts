@@ -1,8 +1,9 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
+import { revalidateTag } from "next/cache";
 import prisma from "@/lib/db/prisma";
 import { auth } from "@/auth";
+import { CACHE_TAGS } from "@/lib/cache/tags";
 
 export async function markNotificationRead(id: string): Promise<void> {
   const session = await auth();
@@ -12,7 +13,7 @@ export async function markNotificationRead(id: string): Promise<void> {
     where: { id, userId },
     data: { read: true },
   });
-  revalidatePath("/notifications");
+  revalidateTag(CACHE_TAGS.notifications, "max");
 }
 
 export async function markAllNotificationsRead(): Promise<void> {
@@ -23,5 +24,5 @@ export async function markAllNotificationsRead(): Promise<void> {
     where: { userId, read: false },
     data: { read: true },
   });
-  revalidatePath("/notifications");
+  revalidateTag(CACHE_TAGS.notifications, "max");
 }
