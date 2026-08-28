@@ -20,6 +20,7 @@ Sàn tuyển dụng 2 chiều tích hợp **AI**: ứng viên tạo CV có cấu
 - 💬 Chatbot tư vấn nghề nghiệp có ngữ cảnh CV
 - 🔎 Khám phá việc làm, 🎯 gợi ý việc phù hợp, 💾 lưu tin
 - 📨 Ứng tuyển và theo dõi trạng thái đơn
+- 🔍 Tìm kiếm nâng cao: pg_trgm (chịu lỗi chính tả + không dấu), phân trang "Xem thêm", facet counts theo bộ lọc
 
 **Nhà tuyển dụng**
 - 🧾 Đăng tin tuyển dụng có cấu trúc (mức lương, loại hình, cấp bậc…)
@@ -70,6 +71,10 @@ cp .env.example .env
 # 3. Đẩy schema Prisma lên database
 npm run db:push
 
+# 3b. Tạo index tìm kiếm (pg_trgm) và dữ liệu mẫu
+npm run db:search   # extensions + GIN trigram index (idempotent)
+npm run db:seed     # ~1000 tin + 60 công ty mẫu (idempotent; user *@seed.example)
+
 # 4. Chạy dev server
 npm run dev
 ```
@@ -106,6 +111,8 @@ npm run make-admin -- your@email.com
 | `npm run build` | Build production |
 | `npm start` | Chạy bản production đã build |
 | `npm run db:push` | Đồng bộ schema Prisma lên database |
+| `npm run db:search` | Tạo extension pg_trgm và GIN trigram index tìm kiếm (idempotent) |
+| `npm run db:seed` | Tạo ~1000 tin mẫu + 60 công ty, user *@seed.example (idempotent) |
 | `npm run make-admin -- <email>` | Cấp quyền ADMIN cho một tài khoản |
 | `npm test` | Chạy toàn bộ test (Vitest) |
 | `npm run test:watch` | Chạy test ở chế độ watch |
