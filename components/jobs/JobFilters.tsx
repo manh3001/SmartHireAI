@@ -4,10 +4,11 @@ import {
 } from "@/lib/jobs/job-fields";
 import { SALARY_FILTER_STEPS } from "@/lib/jobs/salary";
 import { JOB_CATEGORIES } from "@/lib/jobs/job-categories";
+import type { FacetCounts } from "@/lib/jobs/search";
 
 type Defaults = { q?: string; type?: string; level?: string; salary?: string; category?: string };
 
-export default function JobFilters({ defaults }: { defaults: Defaults }) {
+export default function JobFilters({ defaults, facets: _facets }: { defaults: Defaults; facets?: FacetCounts }) {
   const sel = "w-full rounded-md border border-input bg-background px-3 py-2 text-sm";
   return (
     <form method="get" className="space-y-3 rounded-2xl border border-border bg-card p-4">

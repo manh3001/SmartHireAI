@@ -8,12 +8,13 @@ import {
   EXPERIENCE_LEVELS,
 } from "@/lib/jobs/job-fields";
 import { SALARY_FILTER_STEPS } from "@/lib/jobs/salary";
-import { buildJobsWhere } from "@/lib/jobs/job-query";
 import { isJobCategory } from "@/lib/jobs/job-categories";
 import JobFilters from "@/components/jobs/JobFilters";
 import JobsBrowser from "@/components/jobs/JobsBrowser";
 import { criteriaFromFilter } from "@/lib/jobs/alerts";
 import SaveAlertButton from "@/components/jobs/SaveAlertButton";
+import { searchJobs, jobFacets } from "@/lib/jobs/search";
+import type { JobCardData } from "@/components/JobCard";
 
 export default async function JobsPage({
   searchParams,
@@ -31,21 +32,17 @@ export default async function JobsPage({
   const salaryFilter = SALARY_FILTER_STEPS.includes(salaryNum as never) ? salaryNum : null;
   const categoryFilter = isJobCategory(category) ? category : undefined;
 
-  const jobs = await prisma.jobDescription.findMany({
-    where: buildJobsWhere({
-      term,
-      employmentType: typeFilter,
-      experienceLevel: levelFilter,
-      salaryMillions: salaryFilter,
-      category: categoryFilter,
-    }),
-    orderBy: { createdAt: "desc" },
-    select: {
-      id: true, title: true, company: true, rawText: true, createdAt: true,
-      location: true, employmentType: true, experienceLevel: true, skills: true,
-      salaryMin: true, salaryMax: true, salaryNegotiable: true,
-    },
-  });
+  const filterInput = {
+    term,
+    employmentType: typeFilter,
+    experienceLevel: levelFilter,
+    salaryMillions: salaryFilter,
+    category: categoryFilter,
+  };
+  const [{ items: jobs, nextCursor }, facets] = await Promise.all([
+    searchJobs({ ...filterInput, limit: 20 }),
+    jobFacets(filterInput),
+  ]);
 
   const isCandidate = session.user.role === "CANDIDATE";
   const savedJobIds = isCandidate
@@ -80,7 +77,7 @@ export default async function JobsPage({
         )}
         <div className="grid gap-4 lg:grid-cols-[minmax(0,16rem)_1fr]">
           <aside className="lg:sticky lg:top-20 lg:self-start">
-            <JobFilters defaults={{ q: term, type: typeFilter, level: levelFilter, salary: salary ?? "", category: categoryFilter }} />
+            <JobFilters defaults={{ q: term, type: typeFilter, level: levelFilter, salary: salary ?? "", category: categoryFilter }} facets={facets} />
           </aside>
           <div>
             {jobs.length === 0 ? (
@@ -90,7 +87,13 @@ export default async function JobsPage({
                   : "Chưa có tin tuyển dụng nào."}
               </div>
             ) : (
-              <JobsBrowser jobs={jobs} savedJobIds={savedJobIds} isCandidate={isCandidate} />
+              <JobsBrowser
+                jobs={jobs as JobCardData[]}
+                initialCursor={nextCursor}
+                searchInput={{ ...filterInput, limit: 20 }}
+                savedJobIds={savedJobIds}
+                isCandidate={isCandidate}
+              />
             )}
           </div>
         </div>
