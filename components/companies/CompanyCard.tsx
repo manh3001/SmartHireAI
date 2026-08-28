@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import type { CompanyDirItem } from "@/lib/company/directory";
 import CompanyAvatar from "@/components/CompanyAvatar";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
@@ -10,8 +11,13 @@ export default function CompanyCard({ company }: { company: CompanyDirItem }) {
         <CardHeader>
           <div className="flex items-center gap-3">
             {company.logoUrl ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img src={company.logoUrl} alt={company.name} className="h-12 w-12 rounded-lg object-cover" />
+              <Image
+                src={company.logoUrl}
+                alt={company.name}
+                width={48}
+                height={48}
+                className="h-12 w-12 rounded-lg object-cover"
+              />
             ) : (
               <CompanyAvatar name={company.name} className="h-12 w-12" />
             )}

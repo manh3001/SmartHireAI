@@ -1,6 +1,7 @@
 import { auth } from "@/auth";
 import { redirect, notFound } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 import prisma from "@/lib/db/prisma";
 import Navbar from "@/components/Navbar";
 import CompanyAvatar from "@/components/CompanyAvatar";
@@ -46,8 +47,13 @@ export default async function CompanyPage({
           <CardHeader>
             <div className="flex items-center gap-4">
               {company.logoUrl ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img src={company.logoUrl} alt={company.name} className="h-14 w-14 rounded-lg object-cover" />
+                <Image
+                  src={company.logoUrl}
+                  alt={company.name}
+                  width={56}
+                  height={56}
+                  className="h-14 w-14 rounded-lg object-cover"
+                />
               ) : (
                 <CompanyAvatar name={company.name} className="h-14 w-14 text-lg" />
               )}
