@@ -8,6 +8,7 @@
     "start": "cross-env NODE_OPTIONS=--dns-result-order=ipv4first next start",
     "db:push": "cross-env NODE_OPTIONS=--dns-result-order=ipv4first prisma db push",
     "db:search": "cross-env NODE_OPTIONS=--dns-result-order=ipv4first prisma db execute --file prisma/search-setup.sql --schema prisma/schema.prisma",
+    "db:seed": "cross-env NODE_OPTIONS=--dns-result-order=ipv4first npx tsx scripts/seed.ts",
     "make-admin": "cross-env NODE_OPTIONS=--dns-result-order=ipv4first node scripts/make-admin.ts",
     "lint": "eslint",
     "test": "vitest run",
@@ -37,6 +38,7 @@
     "zod": "^4.4.3"
   },
   "devDependencies": {
+    "@faker-js/faker": "^10.6.0",
     "@tailwindcss/postcss": "^4",
     "@types/bcryptjs": "^2.4.6",
     "@types/node": "^20",
@@ -49,6 +51,7 @@
     "jsdom": "^29.1.1",
     "prisma": "^6.19.3",
     "tailwindcss": "^4",
+    "tsx": "^4.23.12",
     "typescript": "^5",
     "vitest": "^4.1.10"
   }
