@@ -8,6 +8,11 @@ import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 
 async function main() {
+  if (!process.env.BLOB_READ_WRITE_TOKEN) {
+    console.error("Error: BLOB_READ_WRITE_TOKEN is not set. Check .env.local.");
+    process.exit(1);
+  }
+
   const companies = await prisma.companyProfile.findMany({
     where: { logoData: { not: null } },
     select: { id: true, logoData: true, logoMime: true, logoUrl: true },

@@ -13,11 +13,16 @@ export async function GET(
     select: { logoData: true, logoMime: true, logoUrl: true },
   });
 
-  if (profile?.logoUrl?.includes("vercel-storage.com")) {
-    return new Response(null, {
-      status: 301,
-      headers: { Location: profile.logoUrl },
-    });
+  if (profile?.logoUrl) {
+    try {
+      const parsed = new URL(profile.logoUrl);
+      if (parsed.hostname.endsWith(".public.blob.vercel-storage.com")) {
+        return new Response(null, {
+          status: 301,
+          headers: { Location: profile.logoUrl },
+        });
+      }
+    } catch { /* not a valid URL, fall through to legacy path */ }
   }
 
   if (!profile?.logoData || !profile.logoMime || !isLogoMime(profile.logoMime)) {
