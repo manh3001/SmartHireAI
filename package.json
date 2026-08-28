@@ -12,7 +12,8 @@
     "make-admin": "cross-env NODE_OPTIONS=--dns-result-order=ipv4first node scripts/make-admin.ts",
     "lint": "eslint",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "db:migrate-logos": "npx tsx scripts/migrate-logos.ts"
   },
   "dependencies": {
     "@base-ui/react": "^1.6.0",
@@ -20,6 +21,7 @@
     "@react-pdf/renderer": "^4.5.1",
     "@upstash/ratelimit": "^2.0.8",
     "@upstash/redis": "^1.38.3",
+    "@vercel/blob": "^2.8.0",
     "bcryptjs": "^3.0.3",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
