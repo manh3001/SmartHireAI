@@ -4,7 +4,7 @@ import type { SearchCursor } from "./cursor";
 export type SearchQueryInput = JobFilterInput & { cursor?: SearchCursor | null; limit: number };
 
 const COLS =
-  `id, title, company, "rawText", "createdAt", location, "employmentType", "experienceLevel", skills, "salaryMin", "salaryMax", "salaryNegotiable"`;
+  `id, title, company, "rawText", "createdAt", location, "employmentType", "experienceLevel", skills, "salaryMin", "salaryMax", "salaryNegotiable", category`;
 
 export function buildSearchSql(input: SearchQueryInput): { sql: string; params: unknown[] } {
   const params: unknown[] = [];

@@ -10,7 +10,7 @@ import type { EmploymentType, ExperienceLevel } from "./job-fields";
 export type JobRow = {
   id: string; title: string; company: string; rawText: string; createdAt: Date;
   location: string | null; employmentType: EmploymentType | null; experienceLevel: ExperienceLevel | null;
-  skills: string; salaryMin: number | null; salaryMax: number | null; salaryNegotiable: boolean;
+  skills: string; salaryMin: number | null; salaryMax: number | null; salaryNegotiable: boolean; category: string | null;
 };
 
 export type FacetCounts = {
