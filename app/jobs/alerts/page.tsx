@@ -1,6 +1,7 @@
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 import Link from "next/link";
+import { Bell } from "lucide-react";
 import prisma from "@/lib/db/prisma";
 import Navbar from "@/components/Navbar";
 import { criteriaToQuery, type AlertCriteria } from "@/lib/jobs/alerts";
@@ -8,6 +9,8 @@ import type { JobCategory } from "@/lib/jobs/job-categories";
 import type { EmploymentType, ExperienceLevel } from "@/lib/jobs/job-fields";
 import DeleteAlertButton from "@/components/jobs/DeleteAlertButton";
 import AlertEmailToggle from "@/components/jobs/AlertEmailToggle";
+import { EmptyState } from "@/components/ui/empty-state";
+import { buttonVariants } from "@/components/ui/button";
 
 export default async function JobAlertsPage() {
   const session = await auth();
@@ -27,9 +30,16 @@ export default async function JobAlertsPage() {
           <Link href="/jobs" className="text-sm text-primary hover:underline">← Về tin tuyển dụng</Link>
         </div>
         {alerts.length === 0 ? (
-          <div className="rounded-2xl border border-dashed border-border p-10 text-center text-muted-foreground">
-            Chưa có thông báo nào. Vào <Link href="/jobs" className="text-primary hover:underline">Tin tuyển dụng</Link>, chọn bộ lọc rồi bấm &quot;Lưu bộ lọc làm thông báo&quot;.
-          </div>
+          <EmptyState
+            icon={<Bell className="h-10 w-10" />}
+            title="Chưa có thông báo nào"
+            description='Vào Tin tuyển dụng, chọn bộ lọc rồi bấm "Lưu bộ lọc làm thông báo".'
+            action={
+              <Link href="/jobs" className={buttonVariants({ variant: "outline", size: "sm" })}>
+                Về Tin tuyển dụng →
+              </Link>
+            }
+          />
         ) : (
           <ul className="space-y-3">
             {alerts.map((a) => {

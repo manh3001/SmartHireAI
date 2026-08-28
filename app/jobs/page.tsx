@@ -1,6 +1,7 @@
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 import Link from "next/link";
+import { Search } from "lucide-react";
 import prisma from "@/lib/db/prisma";
 import Navbar from "@/components/Navbar";
 import {
@@ -15,6 +16,8 @@ import { criteriaFromFilter } from "@/lib/jobs/alerts";
 import SaveAlertButton from "@/components/jobs/SaveAlertButton";
 import { searchJobs, jobFacets } from "@/lib/jobs/search";
 import type { JobCardData } from "@/components/JobCard";
+import { EmptyState } from "@/components/ui/empty-state";
+import { buttonVariants } from "@/components/ui/button";
 
 export default async function JobsPage({
   searchParams,
@@ -81,11 +84,18 @@ export default async function JobsPage({
           </aside>
           <div>
             {jobs.length === 0 ? (
-              <div className="rounded-2xl border border-dashed border-border p-10 text-center text-muted-foreground">
-                {term || typeFilter || levelFilter || salaryFilter || categoryFilter
-                  ? "Không tìm thấy tin nào khớp bộ lọc."
-                  : "Chưa có tin tuyển dụng nào."}
-              </div>
+              <EmptyState
+                icon={<Search className="h-10 w-10" />}
+                title="Không tìm thấy tin nào"
+                description="Thử thay đổi từ khoá hoặc xoá bộ lọc."
+                action={
+                  (term || typeFilter || levelFilter || salaryFilter || categoryFilter) ? (
+                    <Link href="/jobs" className={buttonVariants({ variant: "outline", size: "sm" })}>
+                      Xoá bộ lọc
+                    </Link>
+                  ) : undefined
+                }
+              />
             ) : (
               <JobsBrowser
                 jobs={jobs as JobCardData[]}
