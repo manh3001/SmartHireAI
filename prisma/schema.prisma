@@ -30,6 +30,7 @@ model User {
   messages        Message[]
   notifications   Notification[]
   jobAlerts       JobAlert[]
+  pushSubscriptions PushSubscription[]
 }
 
 model CV {
@@ -300,6 +301,18 @@ model JobAlert {
   salaryMillions  Int?
   emailEnabled    Boolean          @default(true)
   createdAt       DateTime         @default(now())
+
+  @@index([userId])
+}
+
+model PushSubscription {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  endpoint  String   @unique
+  p256dh    String
+  auth      String
+  createdAt DateTime @default(now())
 
   @@index([userId])
 }
