@@ -1,5 +1,10 @@
 import { test, expect, type Page } from "@playwright/test";
 
+// Rate-limiter note: globalSetup pre-registers 2 users (candidate + recruiter).
+// These 3 tests register 2 more (login and logout tests share 1, register test uses 1).
+// Total: ~4 of the 5 registrations/hour budget. Running e2e twice in the same hour
+// will exhaust the limit. Restart the dev server to reset in-memory state.
+
 function unique() {
   return `test-${Date.now()}-${Math.random().toString(36).slice(2)}`;
 }

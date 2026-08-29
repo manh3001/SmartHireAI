@@ -2,7 +2,9 @@ import { chromium, type FullConfig } from "@playwright/test";
 import * as fs from "fs";
 import * as path from "path";
 
-const BASE_URL = "http://localhost:3000";
+// Rate-limiter budget: this setup uses 2 of the 5 registrations/hour (in-memory).
+// auth.spec.ts uses ~2 more. Total per run: ~4. Restart dev server to reset between runs.
+
 const STATE_DIR = path.join(__dirname, ".auth");
 
 function unique() {
@@ -50,6 +52,7 @@ async function registerAndSaveState(
 }
 
 export default async function globalSetup(_config: FullConfig) {
+  const BASE_URL = _config.projects[0]?.use?.baseURL ?? "http://localhost:3000";
   if (!fs.existsSync(STATE_DIR)) {
     fs.mkdirSync(STATE_DIR, { recursive: true });
   }
