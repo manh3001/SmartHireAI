@@ -29,30 +29,31 @@ async function registerAndSaveState(
   page: import("@playwright/test").Page,
   role: "CANDIDATE" | "RECRUITER",
   stateFile: string,
+  baseURL: string,
 ) {
   const email = `${unique()}@e2e.test`;
   const password = "password123";
 
-  await page.goto(`${BASE_URL}/register`);
+  await page.goto(`${baseURL}/register`);
   await waitForHydration(page);
   await page.fill('[name="name"]', `E2E ${role}`);
   await page.fill('[name="email"]', email);
   await page.fill('[name="password"]', password);
   await page.selectOption('[name="role"]', role);
   await page.click('button[type="submit"]');
-  await page.waitForURL(`${BASE_URL}/login`, { timeout: 30000 });
+  await page.waitForURL(`${baseURL}/login`, { timeout: 30000 });
 
   await waitForHydration(page);
   await page.fill('[name="email"]', email);
   await page.fill('[name="password"]', password);
   await page.click('button[type="submit"]');
-  await page.waitForURL(`${BASE_URL}/dashboard`, { timeout: 30000 });
+  await page.waitForURL(`${baseURL}/dashboard`, { timeout: 30000 });
 
   await page.context().storageState({ path: stateFile });
 }
 
 export default async function globalSetup(_config: FullConfig) {
-  const BASE_URL = _config.projects[0]?.use?.baseURL ?? "http://localhost:3000";
+  const baseURL = _config.projects[0]?.use?.baseURL ?? "http://localhost:3000";
   if (!fs.existsSync(STATE_DIR)) {
     fs.mkdirSync(STATE_DIR, { recursive: true });
   }
@@ -66,6 +67,7 @@ export default async function globalSetup(_config: FullConfig) {
       candidatePage,
       "CANDIDATE",
       path.join(STATE_DIR, "candidate.json"),
+      baseURL,
     );
     await candidatePage.close();
 
@@ -75,6 +77,7 @@ export default async function globalSetup(_config: FullConfig) {
       recruiterPage,
       "RECRUITER",
       path.join(STATE_DIR, "recruiter.json"),
+      baseURL,
     );
     await recruiterPage.close();
   } finally {

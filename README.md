@@ -2,7 +2,7 @@
 
 A full-stack, two-sided recruitment platform with AI assistance. Candidates build structured CVs, export to PDF, and get AI-scored compatibility with job descriptions. Recruiters post structured listings, screen applicants with AI, and communicate directly with candidates.
 
-> Personal portfolio project — demonstrating end-to-end production engineering across 6 upgrade phases (A–F).
+> Personal portfolio project — production-grade engineering from auth to CI/CD.
 
 [![CI](https://github.com/manh3001/SmartHireAI/actions/workflows/ci.yml/badge.svg)](https://github.com/manh3001/SmartHireAI/actions/workflows/ci.yml)
 
@@ -197,7 +197,6 @@ public/sw.js               Service Worker (Web Push)
 e2e/                       Playwright specs
 scripts/                   Utility scripts (make-admin, seed, migrate-logos)
 .github/workflows/         GitHub Actions CI
-docs/superpowers/          Design specs & implementation plans (phases A–F)
 ```
 
 ---
@@ -218,7 +217,7 @@ docs/superpowers/          Design specs & implementation plans (phases A–F)
 
 Sàn tuyển dụng 2 chiều tích hợp AI: ứng viên tạo CV có cấu trúc, xuất PDF và được AI đánh giá độ phù hợp với JD; nhà tuyển dụng đăng tin có cấu trúc, được AI sàng lọc hồ sơ và trao đổi trực tiếp với ứng viên.
 
-> Dự án portfolio cá nhân — minh hoạ quy trình kỹ thuật đầu-cuối qua 6 giai đoạn nâng cấp (A–F).
+> Dự án portfolio cá nhân — kỹ thuật production từ auth đến CI/CD.
 
 ---
 
@@ -319,8 +318,3 @@ npm run make-admin -- your@email.com
 - **Web Push không hoạt động:** chạy `npx web-push generate-vapid-keys` rồi điền 4 biến `VAPID_*`. Cần HTTPS trên production.
 - **E2E test lỗi khi chạy lần 2 trong cùng 1 giờ:** rate limiter in-memory giới hạn 5 lần đăng ký/giờ — khởi động lại dev server để reset.
 
----
-
-## Tài liệu thiết kế
-
-Spec và kế hoạch triển khai từng giai đoạn (A–F) trong `docs/superpowers/specs/` và `docs/superpowers/plans/`.
