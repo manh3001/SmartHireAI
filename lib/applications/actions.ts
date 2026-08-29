@@ -280,7 +280,7 @@ export async function changeStatus(
           statusChangeNotification(app.job.title || "(chưa có tiêu đề)", STATUS_LABELS[toStatus]),
         );
         if (isEmailTriggerStatus(toStatus)) {
-          await sendStatusChangeEmail({
+          void sendStatusChangeEmail({
             to: app.candidate.email,
             candidateName: app.candidate.name,
             jobTitle: app.job.title || "(chưa có tiêu đề)",

@@ -24,7 +24,8 @@ export default function PushRegistrar() {
 
     void (async () => {
       try {
-        const reg = await navigator.serviceWorker.register("/sw.js");
+        await navigator.serviceWorker.register("/sw.js");
+        const reg = await navigator.serviceWorker.ready;
         const permission = await Notification.requestPermission();
         if (permission !== "granted") {
           localStorage.setItem(LS_KEY, "denied");
