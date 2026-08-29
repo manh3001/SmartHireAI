@@ -1,5 +1,5 @@
 export function buildCsp({ isProd }: { isProd: boolean }): string {
-  const scriptSrc = isProd ? "'self'" : "'self' 'unsafe-eval'";
+  const scriptSrc = isProd ? "'self'" : "'self' 'unsafe-eval' 'unsafe-inline'";
   return [
     "default-src 'self'",
     `script-src ${scriptSrc}`,

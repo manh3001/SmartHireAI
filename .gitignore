@@ -46,3 +46,7 @@ sample-cv-mau.pdf
 
 # Visual brainstorming companion (temp mockups)
 .superpowers/
+
+# Playwright
+/test-results/
+/playwright-report/
