@@ -50,3 +50,4 @@ sample-cv-mau.pdf
 # Playwright
 /test-results/
 /playwright-report/
+/e2e/.auth/
