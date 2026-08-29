@@ -8,8 +8,6 @@ import {
   type NotificationSignal,
 } from "@/lib/notifications/poll-decision";
 
-const POLL_INTERVAL_MS = 12_000;
-
 export default function RealtimeProvider({
   initialUnreadCount,
   initialLatestId,
@@ -26,60 +24,42 @@ export default function RealtimeProvider({
       ? { id: initialLatestId, message: "", link: "" }
       : null,
   });
-  const inFlightRef = useRef(false);
 
-  // Sync pathname to ref without recreating poll interval
+  // Keep pathRef in sync without recreating the EventSource
   useEffect(() => {
     pathRef.current = pathname;
   }, [pathname]);
 
   useEffect(() => {
-    let stopped = false;
-    let timer: ReturnType<typeof setInterval> | null = null;
+    const es = new EventSource("/api/realtime");
 
-    const poll = async () => {
-      if (stopped || inFlightRef.current || document.hidden) return;
-      inFlightRef.current = true;
+    es.onmessage = (event: MessageEvent) => {
+      let data: Partial<NotificationSignal>;
       try {
-        const res = await fetch("/api/realtime", { cache: "no-store" });
-        if (!res.ok) return;
-        const data = await res.json();
-        if (data.authenticated === false) {
-          stopped = true;
-          if (timer) clearInterval(timer);
-          return;
-        }
-        const next: NotificationSignal = {
-          unreadCount: data.unreadCount,
-          latest: data.latest,
-        };
-        if (stopped) return;
-        const action = decidePollAction(prevRef.current, next, pathRef.current);
-        prevRef.current = next;
-        if (action.shouldRefresh) router.refresh();
-        if (action.toast) {
-          const link = action.toast.link;
-          toast(action.toast.message, {
-            action: { label: "Xem", onClick: () => router.push(link) },
-          });
-        }
+        data = JSON.parse(event.data as string);
       } catch {
-        // nuốt lỗi, thử lại chu kỳ sau
-      } finally {
-        inFlightRef.current = false;
+        return;
+      }
+      const next: NotificationSignal = {
+        unreadCount: data.unreadCount ?? 0,
+        latest: data.latest ?? null,
+      };
+      const action = decidePollAction(prevRef.current, next, pathRef.current);
+      prevRef.current = next;
+      if (action.shouldRefresh) router.refresh();
+      if (action.toast) {
+        const link = action.toast.link;
+        toast(action.toast.message, {
+          action: { label: "Xem", onClick: () => router.push(link) },
+        });
       }
     };
 
-    function onVisible() {
-      if (!document.hidden) poll();
-    }
+    // EventSource auto-reconnects on error; no explicit handling needed
+    es.onerror = () => {};
 
-    timer = setInterval(poll, POLL_INTERVAL_MS);
-    document.addEventListener("visibilitychange", onVisible);
     return () => {
-      stopped = true;
-      if (timer) clearInterval(timer);
-      document.removeEventListener("visibilitychange", onVisible);
+      es.close();
     };
   }, [router]);
 

@@ -1,3 +1,5 @@
+import { revalidateTag } from "next/cache";
+import { CACHE_TAGS } from "@/lib/cache/tags";
 import prisma from "@/lib/db/prisma";
 
 export async function createNotification(
@@ -7,4 +9,5 @@ export async function createNotification(
   await prisma.notification.create({
     data: { userId, message: data.message, link: data.link },
   });
+  revalidateTag(CACHE_TAGS.notifications, "max");
 }
