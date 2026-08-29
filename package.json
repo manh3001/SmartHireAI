@@ -19,6 +19,7 @@
     "@base-ui/react": "^1.6.0",
     "@prisma/client": "^6.19.3",
     "@react-pdf/renderer": "^4.5.1",
+    "@sentry/nextjs": "^10.72.0",
     "@upstash/ratelimit": "^2.0.8",
     "@upstash/redis": "^1.38.3",
     "@vercel/blob": "^2.8.0",
