@@ -4,6 +4,7 @@ import { auth, signOut } from "@/auth";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { getNotificationSignal } from "@/lib/notifications/poll";
 import RealtimeProvider from "@/components/RealtimeProvider";
+import PushRegistrar from "@/components/PushRegistrar";
 
 export default async function Navbar() {
   const session = await auth();
@@ -31,6 +32,7 @@ export default async function Navbar() {
                 initialUnreadCount={signal.unreadCount}
                 initialLatestId={signal.latest?.id ?? null}
               />
+              <PushRegistrar />
               <Link href="/jobs" className="text-sm font-medium text-muted-foreground hover:text-foreground sm:hidden">
                 Việc làm
               </Link>
