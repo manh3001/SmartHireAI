@@ -9,6 +9,7 @@ import { APPLICATION_STATUSES, canWithdraw, STATUS_LABELS, type ApplicationStatu
 import { createNotification } from "@/lib/notifications/create";
 import { statusChangeNotification, newApplicationNotification } from "@/lib/notifications/messages";
 import { runApply, type ApplyDeps } from "./apply";
+import { isEmailTriggerStatus, sendStatusChangeEmail } from "@/lib/email/templates/status-change";
 import { runChangeStatus, type ChangeStatusDeps } from "./transition";
 import { loadCvInput } from "@/lib/cv/load";
 import { requestEvaluation } from "@/lib/ai/request-evaluation";
@@ -267,13 +268,26 @@ export async function changeStatus(
     try {
       const app = await prisma.application.findUnique({
         where: { id: applicationId },
-        select: { candidateId: true, job: { select: { title: true } } },
+        select: {
+          candidateId: true,
+          candidate: { select: { email: true, name: true } },
+          job: { select: { title: true, company: true } },
+        },
       });
       if (app) {
         await createNotification(
           app.candidateId,
           statusChangeNotification(app.job.title || "(chưa có tiêu đề)", STATUS_LABELS[toStatus]),
         );
+        if (isEmailTriggerStatus(toStatus)) {
+          await sendStatusChangeEmail({
+            to: app.candidate.email,
+            candidateName: app.candidate.name,
+            jobTitle: app.job.title || "(chưa có tiêu đề)",
+            companyName: app.job.company || "Công ty",
+            status: toStatus,
+          }).catch((e) => console.warn("[status-email]", e));
+        }
       }
     } catch {
       // thông báo lỗi không làm hỏng việc đổi trạng thái
