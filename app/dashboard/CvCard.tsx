@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { FileText, Star, Share2, MoreVertical, Check, Copy } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -25,6 +26,7 @@ type CvCardProps = {
 };
 
 export default function CvCard({ id, title, template, updatedAt, isDefault, shareToken }: CvCardProps) {
+  const router = useRouter();
   const [pending, startTransition] = useTransition();
   const [editing, setEditing] = useState(false);
   const [nameValue, setNameValue] = useState(title);
@@ -46,7 +48,7 @@ export default function CvCard({ id, title, template, updatedAt, isDefault, shar
     if (!editing) { setEditing(true); return; }
     startTransition(async () => {
       const r = await renameCv(id, nameValue);
-      if (r.ok) { setEditing(false); toast.success("Đã đổi tên CV"); }
+      if (r.ok) { setEditing(false); toast.success("Đã đổi tên CV"); router.refresh(); }
       else toast.error(r.error);
     });
   }
@@ -55,7 +57,7 @@ export default function CvCard({ id, title, template, updatedAt, isDefault, shar
     startTransition(async () => {
       const r = await setDefaultCv(id);
       if (!r.ok) toast.error(r.error);
-      else toast.success("Đã đặt làm CV mặc định");
+      else { toast.success("Đã đặt làm CV mặc định"); router.refresh(); }
     });
   }
 
@@ -80,6 +82,7 @@ export default function CvCard({ id, title, template, updatedAt, isDefault, shar
       const r = await deleteCv(fd);
       if (r.ok) {
         toast.success("Đã xóa CV");
+        router.refresh();
       } else {
         toast.error(r.error ?? "Xóa thất bại");
       }

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { CheckCircle, AlertTriangle, XCircle, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { AnalyzeResult } from "@/app/api/cv/[id]/analyze/route";
@@ -35,10 +35,7 @@ export default function CvAnalysis({ cvId }: { cvId: string }) {
     }
   }
 
-  useEffect(() => {
-    analyze();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  // no useEffect — user triggers manually
 
   if (loading) {
     return (
@@ -53,6 +50,17 @@ export default function CvAnalysis({ cvId }: { cvId: string }) {
       <div className="flex flex-col items-center gap-3 py-12">
         <p className="text-sm text-destructive">{error}</p>
         <Button variant="outline" size="sm" onClick={analyze}>Thử lại</Button>
+      </div>
+    );
+  }
+
+  if (!loading && !result && !error) {
+    return (
+      <div className="flex flex-col items-center gap-3 py-12">
+        <p className="text-sm text-muted-foreground text-center px-4">Phân tích CV để nhận gợi ý cải thiện</p>
+        <Button variant="outline" size="sm" onClick={analyze}>
+          <RefreshCw className="mr-2 h-3.5 w-3.5" /> Phân tích ngay
+        </Button>
       </div>
     );
   }
