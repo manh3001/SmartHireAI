@@ -3,6 +3,10 @@ export type ProfileInput = {
   headline: string;
   email: string;
   phone: string;
+  location: string;
+  linkedin: string;
+  github: string;
+  portfolio: string;
   summary: string;
 };
 
@@ -16,9 +20,11 @@ export type ExperienceInput = {
 
 export type EducationInput = {
   school: string;
+  degree: string;
   major: string;
   startDate: string;
   endDate: string;
+  gpa: string;
 };
 
 export type SkillInput = { name: string; level: string };
@@ -30,6 +36,14 @@ export type ProjectInput = {
   link: string;
 };
 
+export type LanguageInput = { name: string; level: string };
+
+export type CertificationInput = {
+  name: string;
+  issuer: string;
+  date: string;
+};
+
 export type CvInput = {
   title: string;
   profile: ProfileInput;
@@ -37,4 +51,6 @@ export type CvInput = {
   educations: EducationInput[];
   skills: SkillInput[];
   projects: ProjectInput[];
+  languages: LanguageInput[];
+  certifications: CertificationInput[];
 };

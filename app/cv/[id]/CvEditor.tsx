@@ -35,10 +35,7 @@ export default function CvEditor({
   const [pending, startTransition] = useTransition();
   const [mobileTab, setMobileTab] = useState<"edit" | "preview">("edit");
 
-  function setProfile<K extends keyof CvInput["profile"]>(
-    key: K,
-    value: string,
-  ) {
+  function setProfile<K extends keyof CvInput["profile"]>(key: K, value: string) {
     setCv((c) => ({ ...c, profile: { ...c.profile, [key]: value } }));
   }
 
@@ -87,14 +84,9 @@ export default function CvEditor({
       <div className="mx-auto flex max-w-6xl flex-wrap items-center gap-2 px-4 pt-3">
         <span className="text-sm text-muted-foreground">Mẫu CV:</span>
         {CV_TEMPLATES.map((t) => (
-          <Button
-            key={t.id}
-            type="button"
-            size="sm"
+          <Button key={t.id} type="button" size="sm"
             variant={template === t.id ? "default" : "outline"}
-            onClick={() => setTemplate(t.id)}
-            title={t.description}
-          >
+            onClick={() => setTemplate(t.id)} title={t.description}>
             {t.label}
           </Button>
         ))}
@@ -104,11 +96,7 @@ export default function CvEditor({
       <div className="mx-auto flex max-w-6xl flex-wrap items-center gap-2 px-4 pt-3">
         <span className="text-sm text-muted-foreground">Màu nhấn:</span>
         {CV_ACCENTS.map((a) => (
-          <button
-            key={a.id}
-            type="button"
-            title={a.label}
-            aria-label={a.label}
+          <button key={a.id} type="button" title={a.label} aria-label={a.label}
             onClick={() => setAccent(a.id)}
             className={`h-6 w-6 rounded-full border-2 ${accent === a.id ? "border-foreground" : "border-transparent"}`}
             style={{ backgroundColor: a.hex }}
@@ -120,26 +108,22 @@ export default function CvEditor({
       <div className="mx-auto flex max-w-6xl flex-wrap items-center gap-2 px-4 pt-3">
         <span className="text-sm text-muted-foreground">Font:</span>
         {CV_FONTS.map((f) => (
-          <Button
-            key={f.id}
-            type="button"
-            size="sm"
+          <Button key={f.id} type="button" size="sm"
             variant={font === f.id ? "default" : "outline"}
-            onClick={() => setFont(f.id)}
-          >
+            onClick={() => setFont(f.id)}>
             {f.label}
           </Button>
         ))}
       </div>
 
-      {/* Tab chỉ hiện trên mobile */}
+      {/* Tab mobile */}
       <div className="mx-auto flex max-w-6xl gap-2 px-4 pt-4 lg:hidden">
         <Button variant={mobileTab === "edit" ? "default" : "outline"} size="sm" onClick={() => setMobileTab("edit")}>Chỉnh sửa</Button>
         <Button variant={mobileTab === "preview" ? "default" : "outline"} size="sm" onClick={() => setMobileTab("preview")}>Xem trước</Button>
       </div>
 
       <div className="mx-auto grid max-w-6xl gap-6 p-4 pb-16 lg:grid-cols-2 lg:p-6 lg:pb-6">
-        {/* Cột trái: form (ẩn trên mobile khi đang xem preview) */}
+        {/* Cột trái: form */}
         <div className={mobileTab === "preview" ? "hidden lg:block" : "block"}>
           <Input
             className="mb-4 text-lg font-semibold"
@@ -156,10 +140,22 @@ export default function CvEditor({
                 <Input value={cv.profile.fullName} onChange={(e) => setProfile("fullName", e.target.value)} /></div>
               <div><Label>Chức danh</Label>
                 <Input value={cv.profile.headline} onChange={(e) => setProfile("headline", e.target.value)} /></div>
-              <div><Label>Email</Label>
-                <Input value={cv.profile.email} onChange={(e) => setProfile("email", e.target.value)} /></div>
-              <div><Label>Điện thoại</Label>
-                <Input value={cv.profile.phone} onChange={(e) => setProfile("phone", e.target.value)} /></div>
+              <div className="grid grid-cols-2 gap-2">
+                <div><Label>Email</Label>
+                  <Input value={cv.profile.email} onChange={(e) => setProfile("email", e.target.value)} /></div>
+                <div><Label>Điện thoại</Label>
+                  <Input value={cv.profile.phone} onChange={(e) => setProfile("phone", e.target.value)} /></div>
+              </div>
+              <div><Label>Địa chỉ / Thành phố</Label>
+                <Input placeholder="TP. Hồ Chí Minh" value={cv.profile.location} onChange={(e) => setProfile("location", e.target.value)} /></div>
+              <div><Label>LinkedIn</Label>
+                <Input placeholder="linkedin.com/in/yourname" value={cv.profile.linkedin} onChange={(e) => setProfile("linkedin", e.target.value)} /></div>
+              <div className="grid grid-cols-2 gap-2">
+                <div><Label>GitHub</Label>
+                  <Input placeholder="github.com/yourname" value={cv.profile.github} onChange={(e) => setProfile("github", e.target.value)} /></div>
+                <div><Label>Portfolio</Label>
+                  <Input placeholder="yoursite.com" value={cv.profile.portfolio} onChange={(e) => setProfile("portfolio", e.target.value)} /></div>
+              </div>
               <div><Label>Giới thiệu bản thân</Label>
                 <Textarea value={cv.profile.summary} onChange={(e) => setProfile("summary", e.target.value)} /></div>
             </CardContent>
@@ -202,20 +198,26 @@ export default function CvEditor({
                 <div key={i} className="grid gap-2 border-b pb-3 last:border-0">
                   <Input placeholder="Trường" value={e.school}
                     onChange={(ev) => setRow<CvInput["educations"][number]>("educations", i, "school", ev.target.value)} />
-                  <Input placeholder="Ngành" value={e.major}
-                    onChange={(ev) => setRow<CvInput["educations"][number]>("educations", i, "major", ev.target.value)} />
-                  <div className="flex gap-2">
+                  <div className="grid grid-cols-2 gap-2">
+                    <Input placeholder="Bằng cấp (Cử nhân, Thạc sĩ...)" value={e.degree}
+                      onChange={(ev) => setRow<CvInput["educations"][number]>("educations", i, "degree", ev.target.value)} />
+                    <Input placeholder="Ngành học" value={e.major}
+                      onChange={(ev) => setRow<CvInput["educations"][number]>("educations", i, "major", ev.target.value)} />
+                  </div>
+                  <div className="grid grid-cols-3 gap-2">
                     <Input placeholder="Từ" value={e.startDate}
                       onChange={(ev) => setRow<CvInput["educations"][number]>("educations", i, "startDate", ev.target.value)} />
                     <Input placeholder="Đến" value={e.endDate}
                       onChange={(ev) => setRow<CvInput["educations"][number]>("educations", i, "endDate", ev.target.value)} />
+                    <Input placeholder="GPA (3.2/4.0)" value={e.gpa}
+                      onChange={(ev) => setRow<CvInput["educations"][number]>("educations", i, "gpa", ev.target.value)} />
                   </div>
                   <Button variant="ghost" size="sm" className="justify-self-start"
                     onClick={() => removeRow("educations", i)}>Xóa</Button>
                 </div>
               ))}
               <Button variant="outline" size="sm" className="justify-self-start"
-                onClick={() => addRow("educations", { school: "", major: "", startDate: "", endDate: "" })}>
+                onClick={() => addRow("educations", { school: "", degree: "", major: "", startDate: "", endDate: "", gpa: "" })}>
                 + Thêm học vấn
               </Button>
             </CardContent>
@@ -237,6 +239,51 @@ export default function CvEditor({
               <Button variant="outline" size="sm" className="justify-self-start"
                 onClick={() => addRow("skills", { name: "", level: "" })}>
                 + Thêm kỹ năng
+              </Button>
+            </CardContent>
+          </Card>
+
+          {/* Languages */}
+          <Card className="mb-4">
+            <CardHeader><CardTitle className="text-foreground">Ngoại ngữ</CardTitle></CardHeader>
+            <CardContent className="grid gap-4">
+              {cv.languages.map((l, i) => (
+                <div key={i} className="flex gap-2">
+                  <Input placeholder="Ngôn ngữ (Tiếng Anh...)" value={l.name}
+                    onChange={(ev) => setRow<CvInput["languages"][number]>("languages", i, "name", ev.target.value)} />
+                  <Input placeholder="Trình độ (B2, IELTS 7.0...)" value={l.level}
+                    onChange={(ev) => setRow<CvInput["languages"][number]>("languages", i, "level", ev.target.value)} />
+                  <Button variant="ghost" size="sm" onClick={() => removeRow("languages", i)}>Xóa</Button>
+                </div>
+              ))}
+              <Button variant="outline" size="sm" className="justify-self-start"
+                onClick={() => addRow("languages", { name: "", level: "" })}>
+                + Thêm ngoại ngữ
+              </Button>
+            </CardContent>
+          </Card>
+
+          {/* Certifications */}
+          <Card className="mb-4">
+            <CardHeader><CardTitle className="text-foreground">Chứng chỉ</CardTitle></CardHeader>
+            <CardContent className="grid gap-4">
+              {cv.certifications.map((c, i) => (
+                <div key={i} className="grid gap-2 border-b pb-3 last:border-0">
+                  <Input placeholder="Tên chứng chỉ (AWS Solutions Architect...)" value={c.name}
+                    onChange={(ev) => setRow<CvInput["certifications"][number]>("certifications", i, "name", ev.target.value)} />
+                  <div className="grid grid-cols-2 gap-2">
+                    <Input placeholder="Tổ chức cấp (Amazon, Google...)" value={c.issuer}
+                      onChange={(ev) => setRow<CvInput["certifications"][number]>("certifications", i, "issuer", ev.target.value)} />
+                    <Input placeholder="Ngày cấp (2024-06)" value={c.date}
+                      onChange={(ev) => setRow<CvInput["certifications"][number]>("certifications", i, "date", ev.target.value)} />
+                  </div>
+                  <Button variant="ghost" size="sm" className="justify-self-start"
+                    onClick={() => removeRow("certifications", i)}>Xóa</Button>
+                </div>
+              ))}
+              <Button variant="outline" size="sm" className="justify-self-start"
+                onClick={() => addRow("certifications", { name: "", issuer: "", date: "" })}>
+                + Thêm chứng chỉ
               </Button>
             </CardContent>
           </Card>
@@ -265,7 +312,7 @@ export default function CvEditor({
               </Button>
             </CardContent>
           </Card>
-        </div>{/* hết cột trái */}
+        </div>
 
         {/* Cột phải: xem trước sống */}
         <div className={mobileTab === "edit" ? "hidden lg:block" : "block"}>

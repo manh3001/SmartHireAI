@@ -5,6 +5,7 @@ import { Button, buttonVariants } from "@/components/ui/button";
 import { getNotificationSignal } from "@/lib/notifications/poll";
 import RealtimeProvider from "@/components/RealtimeProvider";
 import PushRegistrar from "@/components/PushRegistrar";
+import { NavLinks, MobileNavLinks } from "@/components/NavLinks";
 
 export default async function Navbar() {
   const session = await auth();
@@ -33,27 +34,11 @@ export default async function Navbar() {
                 initialLatestId={signal.latest?.id ?? null}
               />
               <PushRegistrar />
-              <Link href="/jobs" className="text-sm font-medium text-muted-foreground hover:text-foreground sm:hidden">
-                Việc làm
-              </Link>
-              <Link href="/companies" className="text-sm font-medium text-muted-foreground hover:text-foreground sm:hidden">
-                Công ty
-              </Link>
+              <div className="flex items-center gap-2 sm:hidden">
+                <MobileNavLinks />
+              </div>
               <div className="hidden items-center gap-2 sm:flex">
-                <Link href="/dashboard" className="text-sm font-medium text-muted-foreground hover:text-foreground">
-                  Bảng điều khiển
-                </Link>
-                <Link href="/jobs" className="text-sm font-medium text-muted-foreground hover:text-foreground">
-                  Việc làm
-                </Link>
-                <Link href="/companies" className="text-sm font-medium text-muted-foreground hover:text-foreground">
-                  Công ty
-                </Link>
-                {session!.user!.role === "ADMIN" && (
-                  <Link href="/admin" className="text-sm font-medium text-muted-foreground hover:text-foreground">
-                    Quản trị
-                  </Link>
-                )}
+                <NavLinks isAdmin={session!.user!.role === "ADMIN"} />
                 <span className="rounded-full bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary">
                   {session!.user!.role === "ADMIN"
                     ? "Quản trị viên"

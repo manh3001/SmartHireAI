@@ -41,11 +41,13 @@ model CV {
   template    String       @default("classic")
   accent      String       @default("indigo")
   font        String       @default("roboto")
-  profile     Profile?
-  experiences Experience[]
-  educations  Education[]
-  skills      Skill[]
-  projects    Project[]
+  profile        Profile?
+  experiences    Experience[]
+  educations     Education[]
+  skills         Skill[]
+  projects       Project[]
+  languages      Language[]
+  certifications Certification[]
   evaluations Evaluation[]
   applications Application[]
   chatSessions ChatSession[]
@@ -54,14 +56,18 @@ model CV {
 }
 
 model Profile {
-  id       String @id @default(cuid())
-  cvId     String @unique
-  cv       CV     @relation(fields: [cvId], references: [id], onDelete: Cascade)
-  fullName String
-  headline String @default("")
-  email    String @default("")
-  phone    String @default("")
-  summary  String @default("")
+  id        String @id @default(cuid())
+  cvId      String @unique
+  cv        CV     @relation(fields: [cvId], references: [id], onDelete: Cascade)
+  fullName  String
+  headline  String @default("")
+  email     String @default("")
+  phone     String @default("")
+  location  String @default("")
+  linkedin  String @default("")
+  github    String @default("")
+  portfolio String @default("")
+  summary   String @default("")
 }
 
 model Experience {
@@ -81,10 +87,31 @@ model Education {
   cvId      String
   cv        CV     @relation(fields: [cvId], references: [id], onDelete: Cascade)
   school    String
+  degree    String @default("")
   major     String @default("")
   startDate String @default("")
   endDate   String @default("")
+  gpa       String @default("")
   order     Int    @default(0)
+}
+
+model Language {
+  id    String @id @default(cuid())
+  cvId  String
+  cv    CV     @relation(fields: [cvId], references: [id], onDelete: Cascade)
+  name  String
+  level String @default("")
+  order Int    @default(0)
+}
+
+model Certification {
+  id     String @id @default(cuid())
+  cvId   String
+  cv     CV     @relation(fields: [cvId], references: [id], onDelete: Cascade)
+  name   String
+  issuer String @default("")
+  date   String @default("")
+  order  Int    @default(0)
 }
 
 model Skill {

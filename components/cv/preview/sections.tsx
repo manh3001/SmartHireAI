@@ -22,7 +22,7 @@ export function EducationList({ cv }: { cv: CvInput }) {
   return (
     <>
       {cv.educations.map((e, i) => {
-        const sub = eduSubLine(e.major, dateRange(e.startDate, e.endDate));
+        const sub = eduSubLine(e.degree ?? "", e.major, dateRange(e.startDate, e.endDate), e.gpa);
         return (
           <div key={i} className="mb-1.5">
             <div className="font-bold">{e.school}</div>
@@ -43,6 +43,33 @@ export function ProjectList({ cv }: { cv: CvInput }) {
           {pr.tech && <div className="text-[10px] text-slate-500">{pr.tech}</div>}
           {pr.description && <p>{pr.description}</p>}
           {pr.link && <div className="text-[10px] text-slate-500">{pr.link}</div>}
+        </div>
+      ))}
+    </>
+  );
+}
+
+export function LanguageList({ cv }: { cv: CvInput }) {
+  return (
+    <>
+      {cv.languages.map((l, i) => (
+        <div key={i}>• {l.name}{l.level ? ` (${l.level})` : ""}</div>
+      ))}
+    </>
+  );
+}
+
+export function CertificationList({ cv }: { cv: CvInput }) {
+  return (
+    <>
+      {cv.certifications.map((c, i) => (
+        <div key={i} className="mb-1.5">
+          <div className="font-bold">{c.name}</div>
+          {(c.issuer || c.date) && (
+            <div className="text-[10px] text-slate-500">
+              {[c.issuer, c.date].filter(Boolean).join(" • ")}
+            </div>
+          )}
         </div>
       ))}
     </>

@@ -1,7 +1,9 @@
 import type {
   CvInput,
+  CertificationInput,
   EducationInput,
   ExperienceInput,
+  LanguageInput,
   ProjectInput,
   SkillInput,
 } from "./types";
@@ -20,6 +22,10 @@ export function normalizeCv(input: CvInput): CvInput {
       headline: t(input.profile.headline),
       email: t(input.profile.email),
       phone: t(input.profile.phone),
+      location: t(input.profile.location ?? ""),
+      linkedin: t(input.profile.linkedin ?? ""),
+      github: t(input.profile.github ?? ""),
+      portfolio: t(input.profile.portfolio ?? ""),
       summary: t(input.profile.summary),
     },
     experiences: input.experiences
@@ -39,9 +45,11 @@ export function normalizeCv(input: CvInput): CvInput {
       .map(
         (e): EducationInput => ({
           school: t(e.school),
+          degree: t(e.degree ?? ""),
           major: t(e.major),
           startDate: t(e.startDate),
           endDate: t(e.endDate),
+          gpa: t(e.gpa ?? ""),
         }),
       )
       .filter((e) => notEmpty([e.school, e.major, e.startDate, e.endDate])),
@@ -58,5 +66,17 @@ export function normalizeCv(input: CvInput): CvInput {
         }),
       )
       .filter((p) => notEmpty([p.name, p.description, p.tech, p.link])),
+    languages: (input.languages ?? [])
+      .map((l): LanguageInput => ({ name: t(l.name), level: t(l.level) }))
+      .filter((l) => notEmpty([l.name])),
+    certifications: (input.certifications ?? [])
+      .map(
+        (c): CertificationInput => ({
+          name: t(c.name),
+          issuer: t(c.issuer),
+          date: t(c.date),
+        }),
+      )
+      .filter((c) => notEmpty([c.name])),
   };
 }

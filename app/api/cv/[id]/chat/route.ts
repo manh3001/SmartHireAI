@@ -4,7 +4,7 @@ import { getAiClient, AI_MODEL } from "@/lib/ai/client";
 import { buildChatSystemPrompt } from "@/lib/ai/chat";
 import type { EvaluationResult } from "@/lib/ai/schema";
 import { checkRateLimit } from "@/lib/security/ratelimit";
-import type { CvInput } from "@/lib/cv/types";
+import { loadCvInput } from "@/lib/cv/load";
 import type { ChatCompletionMessageParam } from "openai/resources/chat/completions";
 
 export const runtime = "nodejs";
@@ -33,39 +33,8 @@ export async function POST(
   }
   if (!message) return new Response("Tin nhắn rỗng", { status: 400 });
 
-  const cv = await prisma.cV.findFirst({
-    where: { id, userId },
-    include: {
-      profile: true,
-      experiences: { orderBy: { order: "asc" } },
-      educations: { orderBy: { order: "asc" } },
-      skills: { orderBy: { order: "asc" } },
-      projects: { orderBy: { order: "asc" } },
-    },
-  });
-  if (!cv) return new Response("Không tìm thấy CV", { status: 404 });
-
-  const cvInput: CvInput = {
-    title: cv.title,
-    profile: {
-      fullName: cv.profile?.fullName ?? "",
-      headline: cv.profile?.headline ?? "",
-      email: cv.profile?.email ?? "",
-      phone: cv.profile?.phone ?? "",
-      summary: cv.profile?.summary ?? "",
-    },
-    experiences: cv.experiences.map((e) => ({
-      company: e.company, position: e.position,
-      startDate: e.startDate, endDate: e.endDate, description: e.description,
-    })),
-    educations: cv.educations.map((e) => ({
-      school: e.school, major: e.major, startDate: e.startDate, endDate: e.endDate,
-    })),
-    skills: cv.skills.map((s) => ({ name: s.name, level: s.level })),
-    projects: cv.projects.map((p) => ({
-      name: p.name, description: p.description, tech: p.tech, link: p.link,
-    })),
-  };
+  const cvInput = await loadCvInput(id, userId);
+  if (!cvInput) return new Response("Không tìm thấy CV", { status: 404 });
 
   const evalRow = await prisma.evaluation.findFirst({
     where: { cvId: id, userId },

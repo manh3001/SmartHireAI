@@ -4,14 +4,16 @@ import type { CvInput } from "../types";
 
 const base: CvInput = {
   title: "  CV của tôi  ",
-  profile: { fullName: "  Manh  ", headline: "", email: "", phone: "", summary: "" },
+  profile: { fullName: "  Manh  ", headline: "", email: "", phone: "", location: "", linkedin: "", github: "", portfolio: "", summary: "" },
   experiences: [
     { company: "  FPT  ", position: "Dev", startDate: "", endDate: "", description: "" },
     { company: "", position: "", startDate: "", endDate: "", description: "" },
   ],
-  educations: [{ school: "", major: "", startDate: "", endDate: "" }],
+  educations: [{ school: "", degree: "", major: "", startDate: "", endDate: "", gpa: "" }],
   skills: [{ name: "  React  ", level: "" }, { name: "", level: "" }],
   projects: [{ name: "", description: "", tech: "", link: "" }],
+  languages: [],
+  certifications: [],
 };
 
 describe("normalizeCv", () => {

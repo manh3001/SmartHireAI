@@ -93,6 +93,16 @@ export async function saveCv(
     await tx.project.createMany({
       data: data.projects.map((p, i) => ({ ...p, cvId, order: i })),
     });
+
+    await tx.language.deleteMany({ where: { cvId } });
+    await tx.language.createMany({
+      data: data.languages.map((l, i) => ({ ...l, cvId, order: i })),
+    });
+
+    await tx.certification.deleteMany({ where: { cvId } });
+    await tx.certification.createMany({
+      data: data.certifications.map((c, i) => ({ ...c, cvId, order: i })),
+    });
   });
 
   revalidateTag(CACHE_TAGS.cv, "max");

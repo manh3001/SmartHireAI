@@ -8,6 +8,10 @@ export const cvExtractionSchema = z.object({
     headline: z.string(),
     email: z.string(),
     phone: z.string(),
+    location: z.string(),
+    linkedin: z.string(),
+    github: z.string(),
+    portfolio: z.string(),
     summary: z.string(),
   }),
   experiences: z.array(
@@ -22,9 +26,11 @@ export const cvExtractionSchema = z.object({
   educations: z.array(
     z.object({
       school: z.string(),
+      degree: z.string(),
       major: z.string(),
       startDate: z.string(),
       endDate: z.string(),
+      gpa: z.string(),
     }),
   ),
   skills: z.array(z.object({ name: z.string(), level: z.string() })),
@@ -36,9 +42,16 @@ export const cvExtractionSchema = z.object({
       link: z.string(),
     }),
   ),
+  languages: z.array(z.object({ name: z.string(), level: z.string() })),
+  certifications: z.array(
+    z.object({
+      name: z.string(),
+      issuer: z.string(),
+      date: z.string(),
+    }),
+  ),
 });
 
-// Kết quả khớp cấu trúc CvInput.
 export type CvExtraction = CvInput;
 
 export const EXTRACTION_SYSTEM =
@@ -46,8 +59,9 @@ export const EXTRACTION_SYSTEM =
   "Để trống (chuỗi rỗng) cho trường không tìm thấy; KHÔNG bịa thông tin. Giữ nguyên tiếng Việt.";
 
 export function buildExtractionPrompt(text: string): string {
-  return `Trích xuất thông tin từ nội dung CV sau thành JSON đúng cấu trúc (title, profile, experiences, educations, skills, projects).
-Nếu không có thông tin cho một trường, để chuỗi rỗng. Ngày tháng giữ dạng ngắn (vd "2023" hoặc "2023-01").
+  return `Trích xuất thông tin từ nội dung CV sau thành JSON đúng cấu trúc.
+Các trường bắt buộc: title, profile (fullName, headline, email, phone, location, linkedin, github, portfolio, summary), experiences, educations (school, degree, major, startDate, endDate, gpa), skills, projects, languages (name, level), certifications (name, issuer, date).
+Để chuỗi rỗng nếu không có thông tin. Ngày tháng giữ dạng ngắn (vd "2023" hoặc "2023-01").
 
 === NỘI DUNG CV ===
 ${text}`;

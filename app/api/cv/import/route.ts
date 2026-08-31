@@ -93,19 +93,13 @@ export async function POST(req: Request) {
     data: {
       userId,
       title: data.title || "CV nhập từ PDF",
-      profile: {
-        create: {
-          fullName: data.profile.fullName,
-          headline: data.profile.headline,
-          email: data.profile.email,
-          phone: data.profile.phone,
-          summary: data.profile.summary,
-        },
-      },
+      profile: { create: { ...data.profile } },
       experiences: { create: data.experiences.map((e, i) => ({ ...e, order: i })) },
       educations: { create: data.educations.map((e, i) => ({ ...e, order: i })) },
       skills: { create: data.skills.map((s, i) => ({ ...s, order: i })) },
       projects: { create: data.projects.map((p, i) => ({ ...p, order: i })) },
+      languages: { create: data.languages.map((l, i) => ({ ...l, order: i })) },
+      certifications: { create: data.certifications.map((c, i) => ({ ...c, order: i })) },
     },
     select: { id: true },
   });
