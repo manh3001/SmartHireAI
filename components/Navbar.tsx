@@ -35,10 +35,13 @@ export default async function Navbar() {
               />
               <PushRegistrar />
               <div className="flex items-center gap-2 sm:hidden">
-                <MobileNavLinks />
+                <MobileNavLinks isRecruiter={session!.user!.role === "RECRUITER"} />
               </div>
               <div className="hidden items-center gap-2 sm:flex">
-                <NavLinks isAdmin={session!.user!.role === "ADMIN"} />
+                <NavLinks
+                  isAdmin={session!.user!.role === "ADMIN"}
+                  isRecruiter={session!.user!.role === "RECRUITER"}
+                />
                 <span className="rounded-full bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary">
                   {session!.user!.role === "ADMIN"
                     ? "Quản trị viên"

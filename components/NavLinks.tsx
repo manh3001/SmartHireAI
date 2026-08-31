@@ -10,7 +10,7 @@ const links = [
   { href: "/companies", label: "Công ty" },
 ];
 
-export function NavLinks({ isAdmin }: { isAdmin?: boolean }) {
+export function NavLinks({ isAdmin, isRecruiter }: { isAdmin?: boolean; isRecruiter?: boolean }) {
   const pathname = usePathname();
 
   function isActive(href: string) {
@@ -33,6 +33,19 @@ export function NavLinks({ isAdmin }: { isAdmin?: boolean }) {
           {label}
         </Link>
       ))}
+      {isRecruiter && (
+        <Link
+          href="/candidates"
+          className={cn(
+            "text-sm font-medium transition-colors",
+            isActive("/candidates")
+              ? "border-b-2 border-primary pb-0.5 text-primary"
+              : "text-muted-foreground hover:text-foreground",
+          )}
+        >
+          Ứng viên
+        </Link>
+      )}
       {isAdmin && (
         <Link
           href="/admin"
@@ -50,7 +63,7 @@ export function NavLinks({ isAdmin }: { isAdmin?: boolean }) {
   );
 }
 
-export function MobileNavLinks() {
+export function MobileNavLinks({ isRecruiter }: { isRecruiter?: boolean }) {
   const pathname = usePathname();
 
   function isActive(href: string) {
@@ -76,6 +89,19 @@ export function MobileNavLinks() {
           {label}
         </Link>
       ))}
+      {isRecruiter && (
+        <Link
+          href="/candidates"
+          className={cn(
+            "text-sm font-medium transition-colors",
+            isActive("/candidates")
+              ? "border-b-2 border-primary pb-0.5 text-primary"
+              : "text-muted-foreground hover:text-foreground",
+          )}
+        >
+          Ứng viên
+        </Link>
+      )}
     </>
   );
 }
