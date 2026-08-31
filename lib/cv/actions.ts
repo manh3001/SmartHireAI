@@ -65,7 +65,7 @@ export async function setDefaultCv(
   return { ok: true };
 }
 
-export async function deleteCv(formData: FormData): Promise<void> {
+export async function deleteCv(formData: FormData): Promise<{ ok: boolean; error?: string }> {
   const userId = await requireUserId();
   const id = String(formData.get("id") ?? "");
 
@@ -73,18 +73,18 @@ export async function deleteCv(formData: FormData): Promise<void> {
     where: { id, userId },
     select: { id: true, isDefault: true },
   });
-  if (!cv) return;
+  if (!cv) return { ok: false, error: "Không tìm thấy CV" };
 
   if (cv.isDefault) {
     const otherCount = await prisma.cV.count({ where: { userId, id: { not: id } } });
     if (otherCount > 0) {
-      // Không cho xóa CV mặc định khi còn CV khác
-      return;
+      return { ok: false, error: "Hãy đặt CV khác làm mặc định trước khi xóa CV này" };
     }
   }
 
   await prisma.cV.deleteMany({ where: { id, userId } });
   revalidateTag(CACHE_TAGS.dashboard, "max");
+  return { ok: true };
 }
 
 export async function enableShare(
