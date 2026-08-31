@@ -41,6 +41,8 @@ model CV {
   template    String       @default("classic")
   accent      String       @default("indigo")
   font        String       @default("roboto")
+  isDefault   Boolean      @default(false)
+  shareToken  String?      @unique
   profile        Profile?
   experiences    Experience[]
   educations     Education[]
