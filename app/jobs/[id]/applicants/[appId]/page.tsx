@@ -10,6 +10,7 @@ import type { CvInput } from "@/lib/cv/types";
 import CompanyAvatar from "@/components/CompanyAvatar";
 import ScoreBadge from "@/components/ScoreBadge";
 import { Badge } from "@/components/ui/badge";
+import NotesPanel from "@/components/NotesPanel";
 
 export const dynamic = "force-dynamic";
 
@@ -35,6 +36,10 @@ export default async function ApplicantDetailPage({
       events: {
         orderBy: { createdAt: "asc" },
         select: { toStatus: true, createdAt: true },
+      },
+      notes: {
+        orderBy: { createdAt: "asc" },
+        select: { id: true, content: true, createdAt: true },
       },
     },
   });
@@ -97,6 +102,8 @@ export default async function ApplicantDetailPage({
             ))}
           </CardContent>
         </Card>
+
+        <NotesPanel applicationId={app.id} initialNotes={app.notes} />
       </main>
     </div>
   );
