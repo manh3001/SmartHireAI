@@ -3,7 +3,7 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import { FileText, Plus, Briefcase } from "lucide-react";
 import prisma from "@/lib/db/prisma";
-import { createCv, deleteCv } from "@/lib/cv/actions";
+import { createCv } from "@/lib/cv/actions";
 import { deleteJobDescription } from "@/lib/jobs/actions";
 import Navbar from "@/components/Navbar";
 import ImportCvButton from "./ImportCvButton";
@@ -12,6 +12,7 @@ import CandidateStats from "./CandidateStats";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { EmptyState } from "@/components/ui/empty-state";
+import CvCard from "./CvCard";
 
 export default async function DashboardPage() {
   const session = await auth();
@@ -88,9 +89,11 @@ export default async function DashboardPage() {
 
   const cvs = await prisma.cV.findMany({
     where: { userId: session.user.id },
-    orderBy: { updatedAt: "desc" },
-    select: { id: true, title: true, updatedAt: true },
+    orderBy: [{ isDefault: "desc" }, { updatedAt: "desc" }],
+    select: { id: true, title: true, template: true, updatedAt: true, isDefault: true, shareToken: true },
   });
+  const cvCount = cvs.length;
+  const atLimit = cvCount >= 3;
   return (
     <div className="flex min-h-full flex-col bg-muted/20">
       <Navbar />
@@ -102,9 +105,15 @@ export default async function DashboardPage() {
           </div>
           <div className="flex gap-2">
             <ImportCvButton />
-            <form action={createCv}>
-              <Button type="submit"><Plus className="mr-1 h-4 w-4" /> Tạo CV mới</Button>
-            </form>
+            {!atLimit ? (
+              <form action={createCv}>
+                <Button type="submit"><Plus className="mr-1 h-4 w-4" /> Tạo CV mới</Button>
+              </form>
+            ) : (
+              <Button disabled title="Đã đạt giới hạn 3 CV">
+                <Plus className="mr-1 h-4 w-4" /> Tạo CV mới ({cvCount}/3)
+              </Button>
+            )}
           </div>
         </div>
         <CandidateStats userId={session.user.id} />
@@ -117,25 +126,15 @@ export default async function DashboardPage() {
             />
           )}
           {cvs.map((cv) => (
-            <Card key={cv.id} className="border-border transition-colors hover:border-primary/40 hover:bg-muted/40">
-              <CardContent className="flex items-center justify-between py-4">
-                <Link href={`/cv/${cv.id}`} className="flex items-center gap-3">
-                  <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary/10 text-primary">
-                    <FileText className="h-4 w-4" />
-                  </span>
-                  <span>
-                    <span className="block font-medium text-foreground hover:text-primary">{cv.title}</span>
-                    <span className="block text-xs text-muted-foreground">
-                      Cập nhật {new Date(cv.updatedAt).toLocaleDateString("vi-VN")}
-                    </span>
-                  </span>
-                </Link>
-                <form action={deleteCv}>
-                  <input type="hidden" name="id" value={cv.id} />
-                  <Button variant="ghost" size="sm" type="submit" className="text-muted-foreground hover:text-destructive">Xóa</Button>
-                </form>
-              </CardContent>
-            </Card>
+            <CvCard
+              key={cv.id}
+              id={cv.id}
+              title={cv.title}
+              template={cv.template}
+              updatedAt={cv.updatedAt}
+              isDefault={cv.isDefault}
+              shareToken={cv.shareToken}
+            />
           ))}
         </div>
       </main>
