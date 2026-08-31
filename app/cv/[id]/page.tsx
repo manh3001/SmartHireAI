@@ -20,7 +20,7 @@ export default async function CvPage({
     loadCvInput(id, session.user.id),
     prisma.cV.findFirst({
       where: { id, userId: session.user.id },
-      select: { id: true, template: true, accent: true, font: true },
+      select: { id: true, template: true, accent: true, font: true, shareToken: true },
     }),
   ]);
 
@@ -33,6 +33,7 @@ export default async function CvPage({
       initialTemplate={normalizeTemplate(cv.template)}
       initialAccent={normalizeAccent(cv.accent)}
       initialFont={normalizeFont(cv.font)}
+      initialShareToken={cv.shareToken ?? null}
     />
   );
 }

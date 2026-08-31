@@ -3,7 +3,8 @@
 import { useState, useTransition } from "react";
 import Link from "next/link";
 import { toast } from "sonner";
-import { saveCv } from "@/lib/cv/actions";
+import { saveCv, enableShare, disableShare } from "@/lib/cv/actions";
+import { Share2, Copy, Check } from "lucide-react";
 import type { CvInput } from "@/lib/cv/types";
 import { CV_TEMPLATES, type CvTemplate } from "@/lib/cv/templates";
 import { CV_ACCENTS, type CvAccent } from "@/lib/cv/accents";
@@ -21,12 +22,14 @@ export default function CvEditor({
   initialTemplate,
   initialAccent,
   initialFont,
+  initialShareToken,
 }: {
   cvId: string;
   initial: CvInput;
   initialTemplate: CvTemplate;
   initialAccent: CvAccent;
   initialFont: CvFont;
+  initialShareToken: string | null;
 }) {
   const [cv, setCv] = useState<CvInput>(initial);
   const [template, setTemplate] = useState<CvTemplate>(initialTemplate);
@@ -34,6 +37,9 @@ export default function CvEditor({
   const [font, setFont] = useState<CvFont>(initialFont);
   const [pending, startTransition] = useTransition();
   const [mobileTab, setMobileTab] = useState<"edit" | "preview">("edit");
+  const [shareToken, setShareToken] = useState<string | null>(initialShareToken);
+  const [sharePending, startShareTransition] = useTransition();
+  const [copied, setCopied] = useState(false);
 
   function setProfile<K extends keyof CvInput["profile"]>(key: K, value: string) {
     setCv((c) => ({ ...c, profile: { ...c.profile, [key]: value } }));
@@ -65,6 +71,28 @@ export default function CvEditor({
     });
   }
 
+  function onToggleShare() {
+    startShareTransition(async () => {
+      if (shareToken) {
+        const r = await disableShare(cvId);
+        if (r.ok) { setShareToken(null); toast.success("Đã tắt chia sẻ"); }
+        else toast.error(r.error);
+      } else {
+        const r = await enableShare(cvId);
+        if (r.ok && r.token) { setShareToken(r.token); toast.success("Đã bật chia sẻ"); }
+        else toast.error(r.error);
+      }
+    });
+  }
+
+  function onCopyShareUrl() {
+    if (!shareToken) return;
+    const url = `${window.location.origin}/cv/share/${shareToken}`;
+    navigator.clipboard.writeText(url);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  }
+
   return (
     <main className="min-h-full bg-muted/20">
       {/* Thanh hành động dính */}
@@ -75,6 +103,20 @@ export default function CvEditor({
             <Link href={`/cv/${cvId}/chat`} className={buttonVariants({ variant: "outline", size: "sm" })}>Chat tư vấn</Link>
             <Link href={`/cv/${cvId}/evaluate`} className={buttonVariants({ variant: "outline", size: "sm" })}>Đánh giá theo JD</Link>
             <a href={`/api/cv/${cvId}/pdf`} className={buttonVariants({ variant: "outline", size: "sm" })}>Xuất PDF</a>
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={onToggleShare}
+              disabled={sharePending}
+            >
+              <Share2 className="mr-1 h-4 w-4" />
+              {shareToken ? "Tắt chia sẻ" : "Chia sẻ"}
+            </Button>
+            {shareToken && (
+              <Button size="sm" variant="ghost" onClick={onCopyShareUrl} title="Sao chép link">
+                {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
+              </Button>
+            )}
             <Button size="sm" onClick={onSave} disabled={pending}>{pending ? "Đang lưu..." : "Lưu"}</Button>
           </div>
         </div>
