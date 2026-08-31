@@ -70,6 +70,17 @@ describe("renameCv", () => {
       data: { title: "Tên mới" },
     });
   });
+
+  it("uses default title when input is blank", async () => {
+    mockPrisma.cV.findFirst.mockResolvedValue({ id: "cv-1" });
+    mockPrisma.cV.update.mockResolvedValue({});
+    const result = await renameCv("cv-1", "   ");
+    expect(result).toEqual({ ok: true });
+    expect(mockPrisma.cV.update).toHaveBeenCalledWith({
+      where: { id: "cv-1" },
+      data: { title: "CV chưa đặt tên" },
+    });
+  });
 });
 
 describe("setDefaultCv", () => {
