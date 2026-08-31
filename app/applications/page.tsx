@@ -35,6 +35,7 @@ export default async function MyApplicationsPage() {
         orderBy: { createdAt: "asc" },
         select: { toStatus: true, createdAt: true },
       },
+      interview: { select: { scheduledAt: true } },
     },
   });
 
@@ -67,7 +68,14 @@ export default async function MyApplicationsPage() {
                     </CardTitle>
                     <p className="text-sm text-muted-foreground">{a.job.company || "—"}</p>
                   </div>
-                  <Badge>{STATUS_LABELS[a.status as ApplicationStatus]}</Badge>
+                  <div className="flex flex-wrap gap-1">
+                    <Badge>{STATUS_LABELS[a.status as ApplicationStatus]}</Badge>
+                    {a.interview && (
+                      <Badge variant="outline" className="border-primary/30 text-primary text-xs">
+                        Có lịch phỏng vấn
+                      </Badge>
+                    )}
+                  </div>
                 </CardHeader>
                 <CardContent className="grid gap-2 text-sm text-foreground">
                   {a.evaluation && (

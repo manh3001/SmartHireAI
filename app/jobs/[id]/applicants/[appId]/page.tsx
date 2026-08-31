@@ -41,6 +41,14 @@ export default async function ApplicantDetailPage({
         orderBy: { createdAt: "asc" },
         select: { id: true, content: true, createdAt: true },
       },
+      interview: {
+        select: {
+          scheduledAt: true,
+          location: true,
+          meetingLink: true,
+          note: true,
+        },
+      },
     },
   });
   if (!app) notFound();
@@ -73,6 +81,48 @@ export default async function ApplicantDetailPage({
             <CardContent className="text-sm text-foreground">
               <ScoreBadge score={app.evaluation.overallScore} />
               {app.evaluation.summary && <p className="mt-1">{app.evaluation.summary}</p>}
+            </CardContent>
+          </Card>
+        )}
+
+        {app.interview && (
+          <Card className="mt-3">
+            <CardHeader>
+              <CardTitle className="text-foreground">Lịch phỏng vấn</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-1 text-sm text-foreground">
+              <p>
+                <span className="font-medium">Thời gian: </span>
+                {new Date(app.interview.scheduledAt).toLocaleString("vi-VN", {
+                  dateStyle: "medium",
+                  timeStyle: "short",
+                })}
+              </p>
+              {app.interview.location && (
+                <p>
+                  <span className="font-medium">Địa điểm: </span>
+                  {app.interview.location}
+                </p>
+              )}
+              {app.interview.meetingLink && (
+                <p>
+                  <span className="font-medium">Link: </span>
+                  <a
+                    href={app.interview.meetingLink}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-primary hover:underline"
+                  >
+                    {app.interview.meetingLink}
+                  </a>
+                </p>
+              )}
+              {app.interview.note && (
+                <p>
+                  <span className="font-medium">Ghi chú: </span>
+                  {app.interview.note}
+                </p>
+              )}
             </CardContent>
           </Card>
         )}
