@@ -12,6 +12,7 @@ import {
 import { changeStatus } from "@/lib/applications/actions";
 import CompanyAvatar from "@/components/CompanyAvatar";
 import ScoreBadge from "@/components/ScoreBadge";
+import InterviewModal from "@/components/InterviewModal";
 
 export type ApplicantCard = {
   id: string;
@@ -31,6 +32,7 @@ export default function ApplicantsBoard({
   const router = useRouter();
   const [cards, setCards] = useState(initial);
   const [dragId, setDragId] = useState<string | null>(null);
+  const [interviewAppId, setInterviewAppId] = useState<string | null>(null);
 
   async function onDrop(status: ApplicationStatus) {
     const id = dragId;
@@ -38,6 +40,11 @@ export default function ApplicantsBoard({
     if (!id) return;
     const card = cards.find((c) => c.id === id);
     if (!card || card.status === status) return;
+
+    if (status === "INTERVIEW") {
+      setInterviewAppId(id);
+      return;
+    }
 
     const prev = cards;
     setCards((cs) => cs.map((c) => (c.id === id ? { ...c, status } : c)));
@@ -121,6 +128,24 @@ export default function ApplicantsBoard({
             ))}
           </div>
         </div>
+      )}
+
+      {interviewAppId && (
+        <InterviewModal
+          open={true}
+          applicationId={interviewAppId}
+          onClose={() => setInterviewAppId(null)}
+          onSuccess={() => {
+            setCards((cs) =>
+              cs.map((c) =>
+                c.id === interviewAppId ? { ...c, status: "INTERVIEW" as ApplicationStatus } : c,
+              ),
+            );
+            setInterviewAppId(null);
+            toast.success(`Đã chuyển sang "${STATUS_LABELS["INTERVIEW"]}"`);
+            router.refresh();
+          }}
+        />
       )}
     </>
   );
