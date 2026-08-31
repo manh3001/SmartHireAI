@@ -15,6 +15,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import CvPreview from "@/components/cv/CvPreview";
+import CvAnalysis from "@/components/cv/CvAnalysis";
 
 export default function CvEditor({
   cvId,
@@ -36,7 +37,7 @@ export default function CvEditor({
   const [accent, setAccent] = useState<CvAccent>(initialAccent);
   const [font, setFont] = useState<CvFont>(initialFont);
   const [pending, startTransition] = useTransition();
-  const [mobileTab, setMobileTab] = useState<"edit" | "preview">("edit");
+  const [mobileTab, setMobileTab] = useState<"edit" | "preview" | "analyze">("edit");
   const [shareToken, setShareToken] = useState<string | null>(initialShareToken);
   const [sharePending, startShareTransition] = useTransition();
   const [copied, setCopied] = useState(false);
@@ -162,11 +163,12 @@ export default function CvEditor({
       <div className="mx-auto flex max-w-6xl gap-2 px-4 pt-4 lg:hidden">
         <Button variant={mobileTab === "edit" ? "default" : "outline"} size="sm" onClick={() => setMobileTab("edit")}>Chỉnh sửa</Button>
         <Button variant={mobileTab === "preview" ? "default" : "outline"} size="sm" onClick={() => setMobileTab("preview")}>Xem trước</Button>
+        <Button variant={mobileTab === "analyze" ? "default" : "outline"} size="sm" onClick={() => setMobileTab("analyze")}>Phân tích</Button>
       </div>
 
-      <div className="mx-auto grid max-w-6xl gap-6 p-4 pb-16 lg:grid-cols-2 lg:p-6 lg:pb-6">
+      <div className="mx-auto flex max-w-6xl flex-col gap-6 p-4 pb-16 lg:flex-row lg:p-6 lg:pb-6">
         {/* Cột trái: form */}
-        <div className={mobileTab === "preview" ? "hidden lg:block" : "block"}>
+        <div className={`lg:flex-1 ${mobileTab === "preview" || mobileTab === "analyze" ? "hidden lg:block" : "block"}`}>
           <Input
             className="mb-4 text-lg font-semibold"
             value={cv.title}
@@ -356,10 +358,27 @@ export default function CvEditor({
           </Card>
         </div>
 
-        {/* Cột phải: xem trước sống */}
-        <div className={mobileTab === "edit" ? "hidden lg:block" : "block"}>
+        {/* Cột giữa: xem trước sống */}
+        <div className={`lg:flex-1 ${mobileTab === "edit" || mobileTab === "analyze" ? "hidden lg:block" : "block"}`}>
           <div className="lg:sticky lg:top-20">
             <CvPreview cv={cv} template={template} accent={accent} font={font} />
+          </div>
+        </div>
+
+        {/* Panel phân tích - mobile */}
+        {mobileTab === "analyze" && (
+          <div className="lg:hidden">
+            <CvAnalysis cvId={cvId} />
+          </div>
+        )}
+
+        {/* Panel phân tích - desktop (sidebar) */}
+        <div className="hidden lg:block lg:w-72 shrink-0 border-l border-border">
+          <div className="sticky top-14 overflow-y-auto" style={{ maxHeight: "calc(100vh - 56px)" }}>
+            <div className="border-b border-border px-4 py-2.5">
+              <p className="text-sm font-medium text-foreground">Phân tích AI</p>
+            </div>
+            <CvAnalysis cvId={cvId} />
           </div>
         </div>
       </div>
