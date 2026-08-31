@@ -59,16 +59,14 @@ export default function InterviewModal({
     setSaving(true);
     try {
       const scheduledAt = new Date(`${date}T${time}`);
-      const [r1, r2] = await Promise.all([
-        scheduleInterview(applicationId, {
-          scheduledAt,
-          location,
-          meetingLink,
-          note,
-        }),
-        changeStatus(applicationId, "INTERVIEW", ""),
-      ]);
+      const r1 = await scheduleInterview(applicationId, {
+        scheduledAt,
+        location,
+        meetingLink,
+        note,
+      });
       if (!r1.ok) { toast.error(r1.error); return; }
+      const r2 = await changeStatus(applicationId, "INTERVIEW", "");
       if (!r2.ok) { toast.error(r2.error); return; }
       toast.success("Đã lưu lịch phỏng vấn");
       onClose();

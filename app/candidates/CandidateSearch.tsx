@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { Users } from "lucide-react";
+import { MapPin, Users } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -37,7 +37,8 @@ export default function CandidateSearch({
     const params = new URLSearchParams();
     if (q.trim()) params.set("q", q.trim());
     if (exp) params.set("exp", exp);
-    router.push(`/candidates?${params.toString()}`);
+    const qs = params.toString();
+    router.push(qs ? `/candidates?${qs}` : "/candidates");
   }
 
   return (
@@ -99,13 +100,13 @@ export default function CandidateSearch({
                 </div>
                 {c.location && (
                   <p className="mt-2 text-xs text-muted-foreground">
-                    📍 {c.location}
+                    <MapPin className="mr-0.5 inline h-3 w-3" />{c.location}
                   </p>
                 )}
                 {c.skills.length > 0 && (
                   <div className="mt-2 flex flex-wrap gap-1">
                     {c.skills.map((s) => (
-                      <Badge key={s} variant="muted" className="text-xs">
+                      <Badge key={s} variant="skill" className="text-xs">
                         {s}
                       </Badge>
                     ))}
