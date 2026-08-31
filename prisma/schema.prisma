@@ -31,6 +31,7 @@ model User {
   notifications   Notification[]
   jobAlerts       JobAlert[]
   pushSubscriptions PushSubscription[]
+  recruiterNotes  ApplicantNote[] @relation("RecruiterNotes")
 }
 
 model CV {
@@ -243,6 +244,8 @@ model Application {
   evaluation   Evaluation?       @relation(fields: [evaluationId], references: [id], onDelete: SetNull)
   events       ApplicationEvent[]
   messages     Message[]
+  notes        ApplicantNote[]
+  interview    Interview?
   createdAt    DateTime          @default(now())
   updatedAt    DateTime          @updatedAt
 
@@ -257,6 +260,29 @@ model ApplicationEvent {
   toStatus      ApplicationStatus
   note          String            @default("")
   createdAt     DateTime          @default(now())
+}
+
+model ApplicantNote {
+  id            String      @id @default(cuid())
+  applicationId String
+  application   Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  recruiterId   String
+  recruiter     User        @relation("RecruiterNotes", fields: [recruiterId], references: [id], onDelete: Cascade)
+  content       String
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+}
+
+model Interview {
+  id            String      @id @default(cuid())
+  applicationId String      @unique
+  application   Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  scheduledAt   DateTime
+  location      String      @default("")
+  meetingLink   String      @default("")
+  note          String      @default("")
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
 }
 
 model Screening {
