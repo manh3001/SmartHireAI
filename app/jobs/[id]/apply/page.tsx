@@ -30,9 +30,11 @@ export default async function ApplyPage({
 
   const cvs = await prisma.cV.findMany({
     where: { userId: session.user.id },
-    orderBy: { updatedAt: "desc" },
-    select: { id: true, title: true },
+    orderBy: [{ isDefault: "desc" }, { updatedAt: "desc" }],
+    select: { id: true, title: true, isDefault: true },
   });
+
+  const defaultCvId = cvs.find((c) => c.isDefault)?.id ?? cvs[0]?.id ?? "";
 
   return (
     <div className="flex min-h-full flex-col bg-muted/20">
@@ -48,7 +50,7 @@ export default async function ApplyPage({
             <p className="text-sm text-muted-foreground">Chọn CV, xem điểm phù hợp và nộp đơn.</p>
           </CardContent>
         </Card>
-        <ApplyForm jobId={job.id} cvs={cvs} />
+        <ApplyForm jobId={job.id} cvs={cvs} defaultCvId={defaultCvId} />
       </main>
     </div>
   );

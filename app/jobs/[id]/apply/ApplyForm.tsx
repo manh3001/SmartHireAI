@@ -11,12 +11,14 @@ import ScoreBadge from "@/components/ScoreBadge";
 export default function ApplyForm({
   jobId,
   cvs,
+  defaultCvId,
 }: {
   jobId: string;
-  cvs: { id: string; title: string }[];
+  cvs: { id: string; title: string; isDefault: boolean }[];
+  defaultCvId: string;
 }) {
   const router = useRouter();
-  const [cvId, setCvId] = useState(cvs[0]?.id ?? "");
+  const [cvId, setCvId] = useState(defaultCvId);
   const [coverLetter, setCoverLetter] = useState("");
   const [match, setMatch] = useState<{ score: number; summary: string } | null>(null);
   const [previewing, setPreviewing] = useState(false);
