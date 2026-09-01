@@ -35,7 +35,9 @@ export default async function MyApplicationsPage() {
         orderBy: { createdAt: "asc" },
         select: { toStatus: true, createdAt: true },
       },
-      interview: { select: { scheduledAt: true } },
+      interview: {
+        select: { scheduledAt: true, location: true, meetingLink: true, note: true },
+      },
     },
   });
 
@@ -89,6 +91,41 @@ export default async function MyApplicationsPage() {
                       </span>
                     ))}
                   </div>
+                  {a.interview && (
+                    <div className="rounded-md border border-primary/30 bg-primary/5 p-3 text-sm">
+                      <p className="font-medium text-foreground">Lịch phỏng vấn</p>
+                      <p className="mt-1 text-foreground">
+                        {new Date(a.interview.scheduledAt).toLocaleString("vi-VN", {
+                          dateStyle: "medium",
+                          timeStyle: "short",
+                        })}
+                      </p>
+                      {a.interview.location && (
+                        <p className="text-muted-foreground">Địa điểm: {a.interview.location}</p>
+                      )}
+                      {a.interview.meetingLink && (
+                        <p>
+                          <a
+                            href={a.interview.meetingLink}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-primary hover:underline"
+                          >
+                            Link tham gia
+                          </a>
+                        </p>
+                      )}
+                      {a.interview.note && (
+                        <p className="text-muted-foreground">Ghi chú: {a.interview.note}</p>
+                      )}
+                      <a
+                        href={`/api/applications/${a.id}/interview.ics`}
+                        className="mt-2 inline-block text-xs font-medium text-primary hover:underline"
+                      >
+                        + Thêm vào lịch (.ics)
+                      </a>
+                    </div>
+                  )}
                   <div>
                     <Link href={`/messages/${a.id}`} className="text-sm text-primary hover:underline">
                       Nhắn tin
