@@ -2,6 +2,7 @@ import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import prisma from "@/lib/db/prisma";
 import { verifyPassword } from "@/lib/auth/password";
+import { resolveCredentials } from "@/lib/auth/credentials";
 import { checkRateLimit } from "@/lib/security/ratelimit";
 import { getClientIp } from "@/lib/security/ip";
 
@@ -23,13 +24,14 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           return null; // trả lỗi đồng nhất, không tiết lộ bị khoá
         }
 
-        const user = await prisma.user.findUnique({ where: { email } });
-        if (!user) return null;
-
-        const valid = await verifyPassword(password, user.passwordHash);
-        if (!valid) return null;
-
-        return { id: user.id, email: user.email, name: user.name, role: user.role };
+        return resolveCredentials(email, password, {
+          findByEmail: (e) =>
+            prisma.user.findUnique({
+              where: { email: e },
+              select: { id: true, email: true, name: true, role: true, passwordHash: true },
+            }),
+          verify: verifyPassword,
+        });
       },
     }),
   ],
