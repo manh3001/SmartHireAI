@@ -12,6 +12,7 @@ import ScoreBadge from "@/components/ScoreBadge";
 import { Badge } from "@/components/ui/badge";
 import NotesPanel from "@/components/NotesPanel";
 import CancelInterviewButton from "./CancelInterviewButton";
+import ScheduleInterviewButton from "./ScheduleInterviewButton";
 
 export const dynamic = "force-dynamic";
 
@@ -55,6 +56,21 @@ export default async function ApplicantDetailPage({
   if (!app) notFound();
 
   const cv = app.cvSnapshot as unknown as CvInput;
+
+  const iv = app.interview;
+  const interviewInitial = iv
+    ? (() => {
+        const d = new Date(iv.scheduledAt);
+        const pad = (n: number) => String(n).padStart(2, "0");
+        return {
+          date: `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`,
+          time: `${pad(d.getHours())}:${pad(d.getMinutes())}`,
+          location: iv.location,
+          meetingLink: iv.meetingLink,
+          note: iv.note,
+        };
+      })()
+    : undefined;
 
   return (
     <div className="flex min-h-full flex-col bg-muted/20">
@@ -124,9 +140,19 @@ export default async function ApplicantDetailPage({
                   {app.interview.note}
                 </p>
               )}
-              <div className="pt-2">
+              <div className="flex gap-2 pt-2">
+                <ScheduleInterviewButton applicationId={app.id} initial={interviewInitial} />
                 <CancelInterviewButton applicationId={app.id} />
               </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {!app.interview && (
+          <Card className="mt-3">
+            <CardHeader><CardTitle className="text-foreground">Lịch phỏng vấn</CardTitle></CardHeader>
+            <CardContent>
+              <ScheduleInterviewButton applicationId={app.id} />
             </CardContent>
           </Card>
         )}

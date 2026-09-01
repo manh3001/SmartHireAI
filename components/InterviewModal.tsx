@@ -16,9 +16,18 @@ import { toast } from "sonner";
 import { scheduleInterview } from "@/lib/applications/interview";
 import { changeStatus } from "@/lib/applications/actions";
 
+export type InterviewInitial = {
+  date: string;
+  time: string;
+  location: string;
+  meetingLink: string;
+  note: string;
+};
+
 type Props = {
   open: boolean;
   applicationId: string;
+  initial?: InterviewInitial;
   onClose: () => void;
   onSuccess: () => void;
 };
@@ -26,14 +35,16 @@ type Props = {
 export default function InterviewModal({
   open,
   applicationId,
+  initial,
   onClose,
   onSuccess,
 }: Props) {
-  const [date, setDate] = useState("");
-  const [time, setTime] = useState("");
-  const [location, setLocation] = useState("");
-  const [meetingLink, setMeetingLink] = useState("");
-  const [note, setNote] = useState("");
+  const isEdit = !!initial;
+  const [date, setDate] = useState(initial?.date ?? "");
+  const [time, setTime] = useState(initial?.time ?? "");
+  const [location, setLocation] = useState(initial?.location ?? "");
+  const [meetingLink, setMeetingLink] = useState(initial?.meetingLink ?? "");
+  const [note, setNote] = useState(initial?.note ?? "");
   const [saving, setSaving] = useState(false);
 
   async function handleSkip() {
@@ -66,9 +77,11 @@ export default function InterviewModal({
         note,
       });
       if (!r1.ok) { toast.error(r1.error); return; }
-      const r2 = await changeStatus(applicationId, "INTERVIEW", "");
-      if (!r2.ok) { toast.error(r2.error); return; }
-      toast.success("Đã lưu lịch phỏng vấn");
+      if (!isEdit) {
+        const r2 = await changeStatus(applicationId, "INTERVIEW", "");
+        if (!r2.ok) { toast.error(r2.error); return; }
+      }
+      toast.success(isEdit ? "Đã cập nhật lịch phỏng vấn" : "Đã lưu lịch phỏng vấn");
       onClose();
       onSuccess();
     } finally {
@@ -80,7 +93,7 @@ export default function InterviewModal({
     <Dialog open={open} onOpenChange={(v) => !v && onClose()}>
       <DialogContent className="max-w-md">
         <DialogHeader>
-          <DialogTitle>Đặt lịch phỏng vấn (không bắt buộc)</DialogTitle>
+          <DialogTitle>{isEdit ? "Sửa lịch phỏng vấn" : "Đặt lịch phỏng vấn (không bắt buộc)"}</DialogTitle>
         </DialogHeader>
         <div className="grid gap-4 py-2">
           <div className="grid grid-cols-2 gap-2">
@@ -134,9 +147,11 @@ export default function InterviewModal({
           </div>
         </div>
         <DialogFooter className="gap-2">
-          <Button variant="outline" onClick={handleSkip} disabled={saving}>
-            Bỏ qua
-          </Button>
+          {!isEdit && (
+            <Button variant="outline" onClick={handleSkip} disabled={saving}>
+              Bỏ qua
+            </Button>
+          )}
           <Button onClick={handleSave} disabled={saving}>
             {saving ? "Đang lưu..." : "Lưu lịch"}
           </Button>
