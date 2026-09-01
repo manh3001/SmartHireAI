@@ -26,8 +26,15 @@ export default async function PublicProfilePage({ params }: Props) {
         select: {
           name: true,
           cvs: {
-            where: { shareToken: { not: null } },
-            select: { id: true, title: true, template: true, shareToken: true },
+            where: { OR: [{ shareToken: { not: null } }, { isDefault: true }] },
+            select: {
+              id: true,
+              title: true,
+              template: true,
+              shareToken: true,
+              isDefault: true,
+              profile: { select: { headline: true } },
+            },
             orderBy: [{ isDefault: "desc" }, { updatedAt: "desc" }],
           },
         },
@@ -37,12 +44,7 @@ export default async function PublicProfilePage({ params }: Props) {
 
   if (!profile) notFound();
 
-  // Headline từ CV mặc định (query riêng — CV isDefault có thể không phải CV public)
-  const headlineCv = await prisma.cV.findFirst({
-    where: { userId: profile.userId, isDefault: true },
-    select: { profile: { select: { headline: true } } },
-  });
-  const headline = headlineCv?.profile?.headline ?? "";
+  const headline = profile.user.cvs.find((cv) => cv.isDefault)?.profile?.headline ?? "";
 
   const socialLinks = [
     { href: profile.github, icon: LinkIcon, label: "GitHub" },
@@ -51,7 +53,7 @@ export default async function PublicProfilePage({ params }: Props) {
     { href: profile.website, icon: Globe, label: "Website" },
   ].filter((l) => l.href);
 
-  const publicCvs = profile.user.cvs;
+  const publicCvs = profile.user.cvs.filter((cv) => cv.shareToken !== null);
 
   return (
     <div className="flex min-h-full flex-col bg-muted/20">

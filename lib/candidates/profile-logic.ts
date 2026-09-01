@@ -9,7 +9,7 @@ export type ProfileInput = {
 
 export type UpsertProfileDeps = {
   findByUsername: (username: string) => Promise<{ userId: string } | null>;
-  upsertProfile: (userId: string, data: ProfileInput) => Promise<void>;
+  upsertProfile: (userId: string, data: ProfileInput) => Promise<unknown>;
 };
 
 const USERNAME_REGEX = /^[a-z0-9][a-z0-9-]*[a-z0-9]$|^[a-z0-9]$/;

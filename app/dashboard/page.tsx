@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 import Link from "next/link";
@@ -48,7 +49,9 @@ export default async function DashboardPage() {
             </div>
           </div>
           <RecruiterStats userId={session.user.id} />
-          <RecruiterAnalytics userId={session.user.id} />
+          <Suspense fallback={<div className="mb-6 h-48 animate-pulse rounded-xl bg-muted" />}>
+            <RecruiterAnalytics userId={session.user.id} />
+          </Suspense>
           <div className="flex flex-col gap-3">
             {jobs.length === 0 && (
               <EmptyState
