@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import { Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import GoogleSignInButton from "@/components/GoogleSignInButton";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -47,6 +48,12 @@ export default function LoginPage() {
               {loading ? "Đang xử lý..." : "Đăng nhập"}
             </Button>
           </form>
+          <div className="my-4 flex items-center gap-3">
+            <div className="h-px flex-1 bg-border" />
+            <span className="text-xs text-muted-foreground">hoặc</span>
+            <div className="h-px flex-1 bg-border" />
+          </div>
+          <GoogleSignInButton />
           <p className="mt-4 text-center text-sm text-muted-foreground">
             Chưa có tài khoản?{" "}
             <Link href="/register" className="font-medium text-primary hover:underline">Đăng ký</Link>
