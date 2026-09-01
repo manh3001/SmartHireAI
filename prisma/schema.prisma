@@ -282,6 +282,8 @@ model Interview {
   location      String      @default("")
   meetingLink   String      @default("")
   note          String      @default("")
+  outcome       String      @default("")
+  reminderSentAt DateTime?
   createdAt     DateTime    @default(now())
   updatedAt     DateTime    @updatedAt
 }
