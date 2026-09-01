@@ -1,8 +1,10 @@
 import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
+import Google from "next-auth/providers/google";
 import prisma from "@/lib/db/prisma";
 import { verifyPassword } from "@/lib/auth/password";
 import { resolveCredentials } from "@/lib/auth/credentials";
+import { resolveOAuthUser } from "@/lib/auth/oauth";
 import { checkRateLimit } from "@/lib/security/ratelimit";
 import { getClientIp } from "@/lib/security/ip";
 
@@ -34,11 +36,37 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         });
       },
     }),
+    Google({
+      clientId: process.env.GOOGLE_CLIENT_ID,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+    }),
   ],
   callbacks: {
-    jwt({ token, user }) {
-      if (user) {
-        token.id = user.id;
+    async signIn({ account, profile }) {
+      if (account?.provider === "google") {
+        return Boolean(profile?.email); // chặn nếu Google không trả email
+      }
+      return true;
+    },
+    async jwt({ token, user, account, profile }) {
+      if (account?.provider === "google" && profile?.email) {
+        const resolved = await resolveOAuthUser(
+          profile.email as string,
+          (profile.name as string) || (profile.email as string),
+          {
+            findByEmail: (email) =>
+              prisma.user.findUnique({ where: { email }, select: { id: true, role: true } }),
+            createUser: (email, name) =>
+              prisma.user.create({
+                data: { email, name, role: "CANDIDATE" },
+                select: { id: true, role: true },
+              }),
+          },
+        );
+        token.id = resolved.id;
+        token.role = resolved.role;
+      } else if (user) {
+        token.id = (user as { id: string }).id;
         token.role = (user as { role?: "CANDIDATE" | "RECRUITER" | "ADMIN" }).role;
       }
       return token;
