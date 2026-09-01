@@ -10,7 +10,15 @@ const links = [
   { href: "/companies", label: "Công ty" },
 ];
 
-export function NavLinks({ isAdmin, isRecruiter }: { isAdmin?: boolean; isRecruiter?: boolean }) {
+export function NavLinks({
+  isAdmin,
+  isRecruiter,
+  isCandidate,
+}: {
+  isAdmin?: boolean;
+  isRecruiter?: boolean;
+  isCandidate?: boolean;
+}) {
   const pathname = usePathname();
 
   function isActive(href: string) {
@@ -46,6 +54,19 @@ export function NavLinks({ isAdmin, isRecruiter }: { isAdmin?: boolean; isRecrui
           Ứng viên
         </Link>
       )}
+      {isCandidate && (
+        <Link
+          href="/settings/profile"
+          className={cn(
+            "text-sm font-medium transition-colors",
+            isActive("/settings/profile")
+              ? "border-b-2 border-primary pb-0.5 text-primary"
+              : "text-muted-foreground hover:text-foreground",
+          )}
+        >
+          Hồ sơ
+        </Link>
+      )}
       {isAdmin && (
         <Link
           href="/admin"
@@ -63,7 +84,13 @@ export function NavLinks({ isAdmin, isRecruiter }: { isAdmin?: boolean; isRecrui
   );
 }
 
-export function MobileNavLinks({ isRecruiter }: { isRecruiter?: boolean }) {
+export function MobileNavLinks({
+  isRecruiter,
+  isCandidate,
+}: {
+  isRecruiter?: boolean;
+  isCandidate?: boolean;
+}) {
   const pathname = usePathname();
 
   function isActive(href: string) {
@@ -100,6 +127,19 @@ export function MobileNavLinks({ isRecruiter }: { isRecruiter?: boolean }) {
           )}
         >
           Ứng viên
+        </Link>
+      )}
+      {isCandidate && (
+        <Link
+          href="/settings/profile"
+          className={cn(
+            "text-sm font-medium transition-colors",
+            isActive("/settings/profile")
+              ? "border-b-2 border-primary pb-0.5 text-primary"
+              : "text-muted-foreground hover:text-foreground",
+          )}
+        >
+          Hồ sơ
         </Link>
       )}
     </>
