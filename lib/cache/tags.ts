@@ -5,6 +5,7 @@ export const CACHE_TAGS = {
   notifications: "notifications",
   cv: "cv",
   dashboard: "dashboard",
+  candidateProfile: "candidateProfile",
 } as const;
 
 export type CacheTag = (typeof CACHE_TAGS)[keyof typeof CACHE_TAGS];

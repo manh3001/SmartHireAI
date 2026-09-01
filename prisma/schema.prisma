@@ -27,6 +27,7 @@ model User {
   chatSessions    ChatSession[]
   savedJobs       SavedJob[]
   companyProfile  CompanyProfile?
+  candidateProfile CandidateProfile?
   messages        Message[]
   notifications   Notification[]
   jobAlerts       JobAlert[]
@@ -320,6 +321,20 @@ model CompanyProfile {
   logoMime    String?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+}
+
+model CandidateProfile {
+  id        String   @id @default(cuid())
+  userId    String   @unique
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  username  String   @unique
+  bio       String   @default("")
+  github    String   @default("")
+  linkedin  String   @default("")
+  twitter   String   @default("")
+  website   String   @default("")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Message {
