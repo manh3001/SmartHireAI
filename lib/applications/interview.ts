@@ -90,10 +90,15 @@ export async function cancelInterview(
       createNotification(candidateId, { message, link }),
   };
 
-  const outcome = await runCancelInterview(
-    { applicationId, recruiterId: userId, recruiterName: session.user.name ?? "Nhà tuyển dụng" },
-    deps,
-  );
+  let outcome: { ok: boolean; error?: string };
+  try {
+    outcome = await runCancelInterview(
+      { applicationId, recruiterId: userId, recruiterName: session.user.name ?? "Nhà tuyển dụng" },
+      deps,
+    );
+  } catch {
+    return { ok: false, error: "Không tìm thấy lịch phỏng vấn" };
+  }
   if (outcome.ok) revalidateTag(CACHE_TAGS.applications, "max");
   return outcome;
 }
@@ -122,7 +127,12 @@ export async function saveInterviewOutcome(
     },
   };
 
-  const result = await runSaveOutcome({ applicationId, recruiterId: userId, outcome }, deps);
+  let result: { ok: boolean; error?: string };
+  try {
+    result = await runSaveOutcome({ applicationId, recruiterId: userId, outcome }, deps);
+  } catch {
+    return { ok: false, error: "Không tìm thấy lịch phỏng vấn" };
+  }
   if (result.ok) revalidateTag(CACHE_TAGS.applications, "max");
   return result;
 }
