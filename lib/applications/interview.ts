@@ -8,9 +8,11 @@ import { createNotification } from "@/lib/notifications/create";
 import {
   runScheduleInterview,
   runCancelInterview,
+  runSaveOutcome,
   type InterviewData,
   type ScheduleInterviewDeps,
   type CancelInterviewDeps,
+  type SaveOutcomeDeps,
 } from "./interview-logic";
 
 export type { InterviewData };
@@ -94,4 +96,33 @@ export async function cancelInterview(
   );
   if (outcome.ok) revalidateTag(CACHE_TAGS.applications, "max");
   return outcome;
+}
+
+export async function saveInterviewOutcome(
+  applicationId: string,
+  outcome: string,
+): Promise<{ ok: boolean; error?: string }> {
+  const session = await auth();
+  const userId = session?.user?.id;
+  if (!userId) return { ok: false, error: "Chưa đăng nhập" };
+  if (session.user.role !== "RECRUITER")
+    return { ok: false, error: "Chỉ nhà tuyển dụng" };
+
+  const deps: SaveOutcomeDeps = {
+    findApplicationForRecruiter: (appId, recruiterId) =>
+      prisma.application.findFirst({
+        where: { id: appId, job: { userId: recruiterId } },
+        select: { id: true },
+      }),
+    updateOutcome: async (appId, value) => {
+      await prisma.interview.update({
+        where: { applicationId: appId },
+        data: { outcome: value },
+      });
+    },
+  };
+
+  const result = await runSaveOutcome({ applicationId, recruiterId: userId, outcome }, deps);
+  if (result.ok) revalidateTag(CACHE_TAGS.applications, "max");
+  return result;
 }

@@ -13,6 +13,7 @@ import { Badge } from "@/components/ui/badge";
 import NotesPanel from "@/components/NotesPanel";
 import CancelInterviewButton from "./CancelInterviewButton";
 import ScheduleInterviewButton from "./ScheduleInterviewButton";
+import OutcomePanel from "./OutcomePanel";
 
 export const dynamic = "force-dynamic";
 
@@ -49,6 +50,7 @@ export default async function ApplicantDetailPage({
           location: true,
           meetingLink: true,
           note: true,
+          outcome: true,
         },
       },
     },
@@ -140,6 +142,7 @@ export default async function ApplicantDetailPage({
                   {app.interview.note}
                 </p>
               )}
+              <OutcomePanel applicationId={app.id} initialOutcome={app.interview.outcome} />
               <div className="flex gap-2 pt-2">
                 <ScheduleInterviewButton applicationId={app.id} initial={interviewInitial} />
                 <CancelInterviewButton applicationId={app.id} />

@@ -93,3 +93,26 @@ export async function runCancelInterview(
 
   return { ok: true };
 }
+
+export type SaveOutcomeDeps = {
+  findApplicationForRecruiter: (
+    appId: string,
+    recruiterId: string,
+  ) => Promise<{ id: string } | null>;
+  updateOutcome: (applicationId: string, outcome: string) => Promise<void>;
+};
+
+export async function runSaveOutcome(
+  params: { applicationId: string; recruiterId: string; outcome: string },
+  deps: SaveOutcomeDeps,
+): Promise<{ ok: boolean; error?: string }> {
+  const app = await deps.findApplicationForRecruiter(
+    params.applicationId,
+    params.recruiterId,
+  );
+  if (!app) return { ok: false, error: "Không tìm thấy đơn ứng tuyển" };
+
+  const outcome = params.outcome.trim().slice(0, 1000);
+  await deps.updateOutcome(params.applicationId, outcome);
+  return { ok: true };
+}

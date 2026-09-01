@@ -2,8 +2,10 @@ import { describe, it, expect, vi } from "vitest";
 import {
   runScheduleInterview,
   runCancelInterview,
+  runSaveOutcome,
   type ScheduleInterviewDeps,
   type CancelInterviewDeps,
+  type SaveOutcomeDeps,
 } from "../interview-logic";
 
 const mockData = {
@@ -114,5 +116,45 @@ describe("runCancelInterview", () => {
     );
     expect(r).toEqual({ ok: true });
     expect(d.deleteInterview).toHaveBeenCalled();
+  });
+});
+
+function outcomeDeps(over: Partial<SaveOutcomeDeps> = {}): SaveOutcomeDeps {
+  return {
+    findApplicationForRecruiter: vi.fn().mockResolvedValue({ id: "app_1" }),
+    updateOutcome: vi.fn().mockResolvedValue(undefined),
+    ...over,
+  };
+}
+
+describe("runSaveOutcome", () => {
+  it("lưu kết quả (trim)", async () => {
+    const d = outcomeDeps();
+    const r = await runSaveOutcome(
+      { applicationId: "app_1", recruiterId: "r_1", outcome: "  Làm tốt  " },
+      d,
+    );
+    expect(r).toEqual({ ok: true });
+    expect(d.updateOutcome).toHaveBeenCalledWith("app_1", "Làm tốt");
+  });
+
+  it("từ chối nếu không phải chủ job", async () => {
+    const d = outcomeDeps({ findApplicationForRecruiter: vi.fn().mockResolvedValue(null) });
+    const r = await runSaveOutcome(
+      { applicationId: "app_1", recruiterId: "r_1", outcome: "x" },
+      d,
+    );
+    expect(r).toEqual({ ok: false, error: "Không tìm thấy đơn ứng tuyển" });
+    expect(d.updateOutcome).not.toHaveBeenCalled();
+  });
+
+  it("cắt tối đa 1000 ký tự", async () => {
+    const d = outcomeDeps();
+    await runSaveOutcome(
+      { applicationId: "app_1", recruiterId: "r_1", outcome: "a".repeat(1500) },
+      d,
+    );
+    const [, saved] = (d.updateOutcome as ReturnType<typeof vi.fn>).mock.calls[0];
+    expect(saved.length).toBe(1000);
   });
 });
