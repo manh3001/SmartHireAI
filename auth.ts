@@ -44,12 +44,16 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   callbacks: {
     async signIn({ account, profile }) {
       if (account?.provider === "google") {
-        return Boolean(profile?.email); // chặn nếu Google không trả email
+        return Boolean(profile?.email) && (profile as { email_verified?: boolean }).email_verified === true; // chặn nếu Google không trả email hoặc email chưa xác minh
       }
       return true;
     },
     async jwt({ token, user, account, profile }) {
-      if (account?.provider === "google" && profile?.email) {
+      if (
+        account?.provider === "google" &&
+        profile?.email &&
+        (profile as { email_verified?: boolean }).email_verified === true
+      ) {
         const resolved = await resolveOAuthUser(
           profile.email as string,
           (profile.name as string) || (profile.email as string),

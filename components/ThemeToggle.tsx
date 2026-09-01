@@ -4,6 +4,7 @@ import * as React from "react";
 import { Moon, Sun, Monitor } from "lucide-react";
 import { useTheme } from "next-themes";
 import { buttonVariants } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -20,7 +21,7 @@ export default function ThemeToggle() {
   if (!mounted) {
     return (
       <button
-        className={buttonVariants({ variant: "ghost", size: "icon" }) + " h-9 w-9"}
+        className={cn(buttonVariants({ variant: "ghost", size: "icon" }), "h-9 w-9")}
         aria-label="Đổi giao diện"
         disabled
       />
@@ -30,7 +31,7 @@ export default function ThemeToggle() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger
-        className={buttonVariants({ variant: "ghost", size: "icon" }) + " h-9 w-9"}
+        className={cn(buttonVariants({ variant: "ghost", size: "icon" }), "h-9 w-9")}
         aria-label="Đổi giao diện"
       >
         <Sun className="h-5 w-5 dark:hidden" />
