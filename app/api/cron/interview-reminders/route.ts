@@ -47,6 +47,10 @@ export async function GET(req: Request) {
     const message = `Nhắc: phỏng vấn "${item.jobTitle}" vào ${timeStr}`;
     try {
       await createNotification(item.candidateId, { message, link: "/interviews" });
+    } catch {
+      // notify lỗi không chặn recruiter hoặc các mục còn lại
+    }
+    try {
       await createNotification(item.recruiterId, { message, link: "/interviews" });
     } catch {
       // notify lỗi không chặn các mục còn lại
