@@ -8,6 +8,7 @@ import { deleteJobDescription } from "@/lib/jobs/actions";
 import Navbar from "@/components/Navbar";
 import ImportCvButton from "./ImportCvButton";
 import RecruiterStats from "./RecruiterStats";
+import RecruiterAnalytics from "@/components/dashboard/RecruiterAnalytics";
 import CandidateStats from "./CandidateStats";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -47,6 +48,7 @@ export default async function DashboardPage() {
             </div>
           </div>
           <RecruiterStats userId={session.user.id} />
+          <RecruiterAnalytics userId={session.user.id} />
           <div className="flex flex-col gap-3">
             {jobs.length === 0 && (
               <EmptyState
