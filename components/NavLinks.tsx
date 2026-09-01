@@ -54,6 +54,19 @@ export function NavLinks({
           Ứng viên
         </Link>
       )}
+      {(isCandidate || isRecruiter) && (
+        <Link
+          href="/interviews"
+          className={cn(
+            "text-sm font-medium transition-colors",
+            isActive("/interviews")
+              ? "border-b-2 border-primary pb-0.5 text-primary"
+              : "text-muted-foreground hover:text-foreground",
+          )}
+        >
+          Lịch phỏng vấn
+        </Link>
+      )}
       {isCandidate && (
         <Link
           href="/settings/profile"
@@ -127,6 +140,19 @@ export function MobileNavLinks({
           )}
         >
           Ứng viên
+        </Link>
+      )}
+      {(isCandidate || isRecruiter) && (
+        <Link
+          href="/interviews"
+          className={cn(
+            "text-sm font-medium transition-colors",
+            isActive("/interviews")
+              ? "border-b-2 border-primary pb-0.5 text-primary"
+              : "text-muted-foreground hover:text-foreground",
+          )}
+        >
+          Lịch phỏng vấn
         </Link>
       )}
       {isCandidate && (
