@@ -11,6 +11,7 @@ import CompanyAvatar from "@/components/CompanyAvatar";
 import ScoreBadge from "@/components/ScoreBadge";
 import { Badge } from "@/components/ui/badge";
 import NotesPanel from "@/components/NotesPanel";
+import CancelInterviewButton from "./CancelInterviewButton";
 
 export const dynamic = "force-dynamic";
 
@@ -123,6 +124,9 @@ export default async function ApplicantDetailPage({
                   {app.interview.note}
                 </p>
               )}
+              <div className="pt-2">
+                <CancelInterviewButton applicationId={app.id} />
+              </div>
             </CardContent>
           </Card>
         )}

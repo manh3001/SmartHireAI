@@ -1,5 +1,10 @@
 import { describe, it, expect, vi } from "vitest";
-import { runScheduleInterview, type ScheduleInterviewDeps } from "../interview-logic";
+import {
+  runScheduleInterview,
+  runCancelInterview,
+  type ScheduleInterviewDeps,
+  type CancelInterviewDeps,
+} from "../interview-logic";
 
 const mockData = {
   scheduledAt: new Date("2026-09-10T09:00:00"),
@@ -63,5 +68,51 @@ describe("runScheduleInterview", () => {
     );
     const [, msg] = (d.notifyCandidate as ReturnType<typeof vi.fn>).mock.calls[0];
     expect(msg).toContain("10");  // day 10
+  });
+});
+
+function cancelDeps(over: Partial<CancelInterviewDeps> = {}): CancelInterviewDeps {
+  return {
+    findApplicationForRecruiter: vi.fn().mockResolvedValue({ id: "app_1", candidateId: "c_1" }),
+    deleteInterview: vi.fn().mockResolvedValue(undefined),
+    notifyCandidate: vi.fn().mockResolvedValue(undefined),
+    ...over,
+  };
+}
+
+describe("runCancelInterview", () => {
+  it("huỷ + thông báo ứng viên", async () => {
+    const d = cancelDeps();
+    const r = await runCancelInterview(
+      { applicationId: "app_1", recruiterId: "r_1", recruiterName: "NTD A" },
+      d,
+    );
+    expect(r).toEqual({ ok: true });
+    expect(d.deleteInterview).toHaveBeenCalledWith("app_1");
+    expect(d.notifyCandidate).toHaveBeenCalledWith(
+      "c_1",
+      expect.stringContaining("huỷ"),
+      "/applications",
+    );
+  });
+
+  it("từ chối nếu không phải chủ job", async () => {
+    const d = cancelDeps({ findApplicationForRecruiter: vi.fn().mockResolvedValue(null) });
+    const r = await runCancelInterview(
+      { applicationId: "app_1", recruiterId: "r_1", recruiterName: "NTD A" },
+      d,
+    );
+    expect(r).toEqual({ ok: false, error: "Không tìm thấy đơn ứng tuyển" });
+    expect(d.deleteInterview).not.toHaveBeenCalled();
+  });
+
+  it("notify lỗi không làm hỏng kết quả", async () => {
+    const d = cancelDeps({ notifyCandidate: vi.fn().mockRejectedValue(new Error("x")) });
+    const r = await runCancelInterview(
+      { applicationId: "app_1", recruiterId: "r_1", recruiterName: "NTD A" },
+      d,
+    );
+    expect(r).toEqual({ ok: true });
+    expect(d.deleteInterview).toHaveBeenCalled();
   });
 });

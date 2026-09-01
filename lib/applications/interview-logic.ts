@@ -55,3 +55,41 @@ export async function runScheduleInterview(
 
   return { ok: true };
 }
+
+export type CancelInterviewDeps = {
+  findApplicationForRecruiter: (
+    appId: string,
+    recruiterId: string,
+  ) => Promise<{ id: string; candidateId: string } | null>;
+  deleteInterview: (applicationId: string) => Promise<void>;
+  notifyCandidate: (
+    candidateId: string,
+    message: string,
+    link: string,
+  ) => Promise<void>;
+};
+
+export async function runCancelInterview(
+  params: { applicationId: string; recruiterId: string; recruiterName: string },
+  deps: CancelInterviewDeps,
+): Promise<{ ok: boolean; error?: string }> {
+  const app = await deps.findApplicationForRecruiter(
+    params.applicationId,
+    params.recruiterId,
+  );
+  if (!app) return { ok: false, error: "Không tìm thấy đơn ứng tuyển" };
+
+  await deps.deleteInterview(params.applicationId);
+
+  try {
+    await deps.notifyCandidate(
+      app.candidateId,
+      `${params.recruiterName} đã huỷ lịch phỏng vấn`,
+      "/applications",
+    );
+  } catch {
+    // thông báo lỗi không làm hỏng việc huỷ
+  }
+
+  return { ok: true };
+}

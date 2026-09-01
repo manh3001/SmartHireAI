@@ -7,8 +7,10 @@ import prisma from "@/lib/db/prisma";
 import { createNotification } from "@/lib/notifications/create";
 import {
   runScheduleInterview,
+  runCancelInterview,
   type InterviewData,
   type ScheduleInterviewDeps,
+  type CancelInterviewDeps,
 } from "./interview-logic";
 
 export type { InterviewData };
@@ -58,6 +60,36 @@ export async function scheduleInterview(
       recruiterName: session.user.name ?? "Nhà tuyển dụng",
       data,
     },
+    deps,
+  );
+  if (outcome.ok) revalidateTag(CACHE_TAGS.applications, "max");
+  return outcome;
+}
+
+export async function cancelInterview(
+  applicationId: string,
+): Promise<{ ok: boolean; error?: string }> {
+  const session = await auth();
+  const userId = session?.user?.id;
+  if (!userId) return { ok: false, error: "Chưa đăng nhập" };
+  if (session.user.role !== "RECRUITER")
+    return { ok: false, error: "Chỉ nhà tuyển dụng" };
+
+  const deps: CancelInterviewDeps = {
+    findApplicationForRecruiter: (appId, recruiterId) =>
+      prisma.application.findFirst({
+        where: { id: appId, job: { userId: recruiterId } },
+        select: { id: true, candidateId: true },
+      }),
+    deleteInterview: async (appId) => {
+      await prisma.interview.delete({ where: { applicationId: appId } });
+    },
+    notifyCandidate: (candidateId, message, link) =>
+      createNotification(candidateId, { message, link }),
+  };
+
+  const outcome = await runCancelInterview(
+    { applicationId, recruiterId: userId, recruiterName: session.user.name ?? "Nhà tuyển dụng" },
     deps,
   );
   if (outcome.ok) revalidateTag(CACHE_TAGS.applications, "max");
