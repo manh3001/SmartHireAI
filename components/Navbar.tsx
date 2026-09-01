@@ -6,6 +6,7 @@ import { getNotificationSignal } from "@/lib/notifications/poll";
 import RealtimeProvider from "@/components/RealtimeProvider";
 import PushRegistrar from "@/components/PushRegistrar";
 import { NavLinks, MobileNavLinks } from "@/components/NavLinks";
+import ThemeToggle from "@/components/ThemeToggle";
 
 export default async function Navbar() {
   const session = await auth();
@@ -27,6 +28,7 @@ export default async function Navbar() {
           SmartHire
         </Link>
         <nav className="flex items-center gap-2">
+          <ThemeToggle />
           {loggedIn ? (
             <>
               <RealtimeProvider
