@@ -19,6 +19,10 @@ export default function OutcomePanel({
   const [isPending, startTransition] = useTransition();
 
   function handleSave() {
+    if (!value.trim()) {
+      toast.error("Vui lòng nhập kết quả phỏng vấn");
+      return;
+    }
     startTransition(async () => {
       const r = await saveInterviewOutcome(applicationId, value);
       if (r.ok) {

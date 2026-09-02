@@ -60,18 +60,14 @@ export default async function ApplicantDetailPage({
   const cv = app.cvSnapshot as unknown as CvInput;
 
   const iv = app.interview;
+  // Truyền ISO thô; InterviewModal (client) tách ngày/giờ theo múi giờ trình duyệt.
   const interviewInitial = iv
-    ? (() => {
-        const d = new Date(iv.scheduledAt);
-        const pad = (n: number) => String(n).padStart(2, "0");
-        return {
-          date: `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`,
-          time: `${pad(d.getHours())}:${pad(d.getMinutes())}`,
-          location: iv.location,
-          meetingLink: iv.meetingLink,
-          note: iv.note,
-        };
-      })()
+    ? {
+        scheduledAt: new Date(iv.scheduledAt).toISOString(),
+        location: iv.location,
+        meetingLink: iv.meetingLink,
+        note: iv.note,
+      }
     : undefined;
 
   return (

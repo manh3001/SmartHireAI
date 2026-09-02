@@ -17,12 +17,24 @@ import { scheduleInterview } from "@/lib/applications/interview";
 import { changeStatus } from "@/lib/applications/actions";
 
 export type InterviewInitial = {
-  date: string;
-  time: string;
+  /** Thời điểm phỏng vấn dạng ISO (UTC). Tách ngày/giờ ở client theo múi giờ trình duyệt. */
+  scheduledAt: string;
   location: string;
   meetingLink: string;
   note: string;
 };
+
+// Tách ISO thành ngày/giờ theo MÚI GIỜ TRÌNH DUYỆT — khớp cách handleSave dựng
+// `new Date(`${date}T${time}`)` (cũng theo local), tránh lệch khi server TZ ≠ UTC+7.
+function localParts(iso?: string): { date: string; time: string } {
+  if (!iso) return { date: "", time: "" };
+  const d = new Date(iso);
+  const pad = (n: number) => String(n).padStart(2, "0");
+  return {
+    date: `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`,
+    time: `${pad(d.getHours())}:${pad(d.getMinutes())}`,
+  };
+}
 
 type Props = {
   open: boolean;
@@ -40,8 +52,9 @@ export default function InterviewModal({
   onSuccess,
 }: Props) {
   const isEdit = !!initial;
-  const [date, setDate] = useState(initial?.date ?? "");
-  const [time, setTime] = useState(initial?.time ?? "");
+  const initialParts = localParts(initial?.scheduledAt);
+  const [date, setDate] = useState(initialParts.date);
+  const [time, setTime] = useState(initialParts.time);
   const [location, setLocation] = useState(initial?.location ?? "");
   const [meetingLink, setMeetingLink] = useState(initial?.meetingLink ?? "");
   const [note, setNote] = useState(initial?.note ?? "");
