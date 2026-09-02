@@ -33,6 +33,7 @@ model User {
   jobAlerts       JobAlert[]
   pushSubscriptions PushSubscription[]
   recruiterNotes  ApplicantNote[] @relation("RecruiterNotes")
+  companyReviews CompanyReview[]
 }
 
 model CV {
@@ -323,6 +324,22 @@ model CompanyProfile {
   logoMime    String?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+  reviews     CompanyReview[]
+}
+
+model CompanyReview {
+  id        String         @id @default(cuid())
+  companyId String
+  company   CompanyProfile @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  rating    Int
+  comment   String         @default("")
+  createdAt DateTime       @default(now())
+  updatedAt DateTime       @updatedAt
+
+  @@unique([userId, companyId])
+  @@index([companyId])
 }
 
 model CandidateProfile {
