@@ -47,4 +47,9 @@ describe("buildJobPostingJsonLd", () => {
     const ld = buildJobPostingJsonLd({ ...base, employmentType: null }, "u");
     expect(ld.employmentType).toBeUndefined();
   });
+
+  it("giữ minValue khi lương = 0 (khác null)", () => {
+    const ld = buildJobPostingJsonLd({ ...base, salaryMin: 0, salaryMax: null }, "u");
+    expect(ld.baseSalary).toMatchObject({ value: { minValue: 0 } });
+  });
 });

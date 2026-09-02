@@ -38,14 +38,14 @@ export function buildJobPostingJsonLd(
     directApply: true,
   };
   if (job.employmentType) ld.employmentType = employmentTypeToSchema(job.employmentType);
-  if (job.salaryMin || job.salaryMax) {
+  if (job.salaryMin !== null || job.salaryMax !== null) {
     ld.baseSalary = {
       "@type": "MonetaryAmount",
       currency: "VND",
       value: {
         "@type": "QuantitativeValue",
-        ...(job.salaryMin ? { minValue: job.salaryMin } : {}),
-        ...(job.salaryMax ? { maxValue: job.salaryMax } : {}),
+        ...(job.salaryMin !== null ? { minValue: job.salaryMin } : {}),
+        ...(job.salaryMax !== null ? { maxValue: job.salaryMax } : {}),
         unitText: "MONTH",
       },
     };
