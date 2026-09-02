@@ -14,6 +14,8 @@ import { runChangeStatus, type ChangeStatusDeps } from "./transition";
 import { loadCvInput } from "@/lib/cv/load";
 import { requestEvaluation } from "@/lib/ai/request-evaluation";
 import { buildEvaluationPrompt } from "@/lib/ai/prompt";
+import { requestCoverLetter } from "@/lib/ai/request-cover-letter";
+import { buildCoverLetterPrompt } from "@/lib/ai/cover-letter-prompt";
 import { composeJdText } from "@/lib/jobs/job-fields";
 import { checkRateLimit } from "@/lib/security/ratelimit";
 import type { EvaluationResult } from "@/lib/ai/schema";
@@ -51,6 +53,46 @@ export async function previewMatch(
     return { ok: true, score: result.overallScore, summary: result.summary };
   } catch {
     return { ok: false, error: "AI đánh giá thất bại, vui lòng thử lại" };
+  }
+}
+
+export async function generateCoverLetter(
+  jobId: string,
+  cvId: string,
+): Promise<{ ok: true; text: string } | { ok: false; error: string }> {
+  const session = await auth();
+  const userId = session?.user?.id;
+  if (!userId) return { ok: false, error: "Chưa đăng nhập" };
+  if (session.user.role !== "CANDIDATE")
+    return { ok: false, error: "Chỉ ứng viên mới dùng tính năng này" };
+
+  if (!(await checkRateLimit("ai", userId)))
+    return { ok: false, error: "Bạn thao tác quá nhanh, thử lại sau một phút" };
+
+  const job = await prisma.jobDescription.findFirst({
+    where: { id: jobId, isPublic: true },
+    select: {
+      id: true, rawText: true,
+      location: true, employmentType: true, experienceLevel: true, skills: true,
+      salaryMin: true, salaryMax: true, salaryNegotiable: true,
+    },
+  });
+  if (!job) return { ok: false, error: "Không tìm thấy tin tuyển dụng" };
+
+  const cv = await loadCvInput(cvId, userId);
+  if (!cv) return { ok: false, error: "Không tìm thấy CV" };
+
+  try {
+    const text = await requestCoverLetter(
+      buildCoverLetterPrompt(
+        cv,
+        composeJdText(job),
+        cv.profile.fullName || session.user.name || "Ứng viên",
+      ),
+    );
+    return { ok: true, text };
+  } catch {
+    return { ok: false, error: "AI viết thư thất bại, vui lòng thử lại" };
   }
 }
 

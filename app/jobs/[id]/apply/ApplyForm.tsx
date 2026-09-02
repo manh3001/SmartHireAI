@@ -5,8 +5,17 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { previewMatch, submitApplication } from "@/lib/applications/actions";
+import { previewMatch, submitApplication, generateCoverLetter } from "@/lib/applications/actions";
 import ScoreBadge from "@/components/ScoreBadge";
+import { Sparkles } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from "@/components/ui/dialog";
 
 export default function ApplyForm({
   jobId,
@@ -23,6 +32,8 @@ export default function ApplyForm({
   const [match, setMatch] = useState<{ score: number; summary: string } | null>(null);
   const [previewing, setPreviewing] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [generating, setGenerating] = useState(false);
+  const [confirmOpen, setConfirmOpen] = useState(false);
 
   async function onPreview() {
     if (!cvId) return;
@@ -47,6 +58,28 @@ export default function ApplyForm({
     } else {
       toast.error(r.error);
       setSubmitting(false);
+    }
+  }
+
+  async function runGenerate() {
+    if (!cvId) return;
+    setConfirmOpen(false);
+    setGenerating(true);
+    const r = await generateCoverLetter(jobId, cvId);
+    if (r.ok) {
+      setCoverLetter(r.text);
+      toast.success("Đã tạo thư giới thiệu");
+    } else {
+      toast.error(r.error);
+    }
+    setGenerating(false);
+  }
+
+  function onGenerateClick() {
+    if (coverLetter.trim()) {
+      setConfirmOpen(true);
+    } else {
+      runGenerate();
     }
   }
 
@@ -91,7 +124,19 @@ export default function ApplyForm({
           </div>
         )}
 
-        <label className="text-sm font-medium text-foreground">Thư giới thiệu (không bắt buộc)</label>
+        <div className="flex items-center justify-between gap-2">
+          <label className="text-sm font-medium text-foreground">Thư giới thiệu (không bắt buộc)</label>
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={onGenerateClick}
+            disabled={generating || !cvId}
+          >
+            <Sparkles className="h-4 w-4" />
+            {generating ? "Đang viết..." : "Viết thư bằng AI"}
+          </Button>
+        </div>
         <textarea
           value={coverLetter}
           onChange={(e) => setCoverLetter(e.target.value)}
@@ -104,6 +149,24 @@ export default function ApplyForm({
         <Button onClick={onSubmit} disabled={submitting || !cvId} className="justify-self-start">
           {submitting ? "Đang nộp..." : "Nộp đơn"}
         </Button>
+        <Dialog open={confirmOpen} onOpenChange={(v) => !generating && setConfirmOpen(v)}>
+          <DialogContent className="max-w-sm" showCloseButton={false}>
+            <DialogHeader>
+              <DialogTitle>Thay nội dung thư?</DialogTitle>
+              <DialogDescription>
+                Ô thư đang có nội dung. Bản AI sẽ thay thế nội dung hiện tại.
+              </DialogDescription>
+            </DialogHeader>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setConfirmOpen(false)} disabled={generating}>
+                Giữ nguyên
+              </Button>
+              <Button onClick={runGenerate} disabled={generating}>
+                {generating ? "Đang viết..." : "Thay bằng AI"}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </CardContent>
     </Card>
   );

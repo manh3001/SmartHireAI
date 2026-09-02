@@ -6,7 +6,7 @@ Chấm điểm khách quan theo các tiêu chí: kỹ năng khớp, kinh nghiệ
 mức độ đáp ứng yêu cầu. Trả lời hoàn toàn bằng tiếng Việt, đúng cấu trúc JSON được yêu cầu. \
 overallScore là số nguyên 0-100. Với mỗi kỹ năng còn thiếu, giải thích vì sao cần và cách học.`;
 
-function formatCv(cv: CvInput): string {
+export function formatCv(cv: CvInput): string {
   const p = cv.profile;
   const lines: string[] = [];
   lines.push(`Họ tên: ${p.fullName}`);
