@@ -40,6 +40,8 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+tsc-out.txt
+tsc-err.txt
 
 # CV PDF mau (khong commit)
 sample-cv-mau.pdf

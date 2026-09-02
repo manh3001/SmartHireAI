@@ -4,11 +4,13 @@ import type { CvInput } from "@/lib/cv/types";
 
 const cv: CvInput = {
   title: "CV",
-  profile: { fullName: "A", headline: "", email: "", phone: "", summary: "" },
+  profile: { fullName: "A", headline: "", email: "", phone: "", location: "", linkedin: "", github: "", portfolio: "", summary: "" },
   experiences: [],
   educations: [],
   skills: [],
   projects: [],
+  languages: [],
+  certifications: [],
 };
 
 function deps(over: Partial<ApplyDeps> = {}): ApplyDeps {

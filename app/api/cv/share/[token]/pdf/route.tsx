@@ -32,7 +32,7 @@ export async function GET(
     />,
   );
   const safeTitle = (cv.title || "cv").replace(/[^a-zA-Z0-9-_]+/g, "_");
-  return new Response(buffer, {
+  return new Response(new Uint8Array(buffer), {
     headers: {
       "Content-Type": "application/pdf",
       "Content-Disposition": `attachment; filename="${safeTitle}.pdf"`,

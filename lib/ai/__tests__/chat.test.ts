@@ -5,11 +5,13 @@ import type { EvaluationResult } from "../schema";
 
 const cv: CvInput = {
   title: "CV",
-  profile: { fullName: "Nguyễn Văn A", headline: "Frontend Dev", email: "", phone: "", summary: "Yêu code" },
+  profile: { fullName: "Nguyễn Văn A", headline: "Frontend Dev", email: "", phone: "", location: "", linkedin: "", github: "", portfolio: "", summary: "Yêu code" },
   experiences: [{ company: "FPT", position: "Dev", startDate: "2023", endDate: "2024", description: "web" }],
   educations: [],
   skills: [{ name: "React", level: "" }],
   projects: [],
+  languages: [],
+  certifications: [],
 };
 
 const evalResult: EvaluationResult = {

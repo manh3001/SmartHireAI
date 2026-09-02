@@ -322,7 +322,7 @@ async function main() {
     const skills = faker.helpers.arrayElements(SKILLS_BY_CAT[cat.slug] ?? SKILLS_BY_CAT["other"], { min: 3, max: 6 });
     const title = pick(TITLE_BY_CAT[cat.slug] ?? TITLE_BY_CAT["other"]).replace("{s}", skills[0]);
     const owner = pick(recruiters);
-    const expLevel = pick(EXPERIENCE_LEVELS as unknown as string[]);
+    const expLevel = pick(EXPERIENCE_LEVELS);
     const min = faker.number.int({ min: 8, max: 40 }) * MILLION;
     const max = min + faker.number.int({ min: 3, max: 20 }) * MILLION;
 

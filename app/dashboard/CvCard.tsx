@@ -5,8 +5,9 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { FileText, Star, Share2, MoreVertical, Check, Copy } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { buttonVariants } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { cn } from "@/lib/utils";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -125,10 +126,12 @@ export default function CvCard({ id, title, template, updatedAt, isDefault, shar
               </span>
             )}
             <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" className="h-8 w-8" disabled={pending}>
-                  <MoreVertical className="h-4 w-4" />
-                </Button>
+              <DropdownMenuTrigger
+                className={cn(buttonVariants({ variant: "ghost", size: "icon" }), "h-8 w-8")}
+                disabled={pending}
+                aria-label="Tùy chọn CV"
+              >
+                <MoreVertical className="h-4 w-4" />
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
                 <DropdownMenuItem onClick={handleRename}>

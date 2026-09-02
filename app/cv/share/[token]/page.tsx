@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { Mail, Phone, Linkedin, Globe, Download } from "lucide-react";
+import { Mail, Phone, Link2, Globe, Download } from "lucide-react";
 import prisma from "@/lib/db/prisma";
 import { loadCvInput } from "@/lib/cv/load";
 import { normalizeTemplate } from "@/lib/cv/templates";
@@ -76,7 +76,7 @@ export default async function ShareCvPage({
                     rel="noopener noreferrer"
                     className="flex items-center gap-1 hover:text-primary"
                   >
-                    <Linkedin className="h-3.5 w-3.5" /> LinkedIn
+                    <Link2 className="h-3.5 w-3.5" /> LinkedIn
                   </a>
                 )}
                 {profile?.portfolio && (

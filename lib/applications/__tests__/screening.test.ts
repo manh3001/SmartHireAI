@@ -5,8 +5,8 @@ import type { ScreeningResult } from "@/lib/ai/screening-schema";
 
 const cv: CvInput = {
   title: "CV",
-  profile: { fullName: "x", headline: "", email: "", phone: "", summary: "" },
-  experiences: [], educations: [], skills: [], projects: [],
+  profile: { fullName: "x", headline: "", email: "", phone: "", location: "", linkedin: "", github: "", portfolio: "", summary: "" },
+  experiences: [], educations: [], skills: [], projects: [], languages: [], certifications: [],
 };
 
 function applicant(id: string, name: string, score: number | null): ScreeningApplicantInput {

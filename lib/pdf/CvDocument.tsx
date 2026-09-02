@@ -80,7 +80,7 @@ function EducationItems({ cv, s }: { cv: CvInput; s: CvStyles }) {
       {cv.educations.map((e, i) => (
         <View key={i} wrap={false} style={{ marginBottom: 6 }}>
           <Text style={s.itemTitle}>{e.school}</Text>
-          <Text style={s.itemSub}>{eduSubLine(e.major, dateRange(e.startDate, e.endDate))}</Text>
+          <Text style={s.itemSub}>{eduSubLine(e.degree, e.major, dateRange(e.startDate, e.endDate), e.gpa)}</Text>
         </View>
       ))}
     </>

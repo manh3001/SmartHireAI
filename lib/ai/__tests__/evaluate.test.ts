@@ -5,8 +5,8 @@ import type { CvInput } from "@/lib/cv/types";
 
 const cv: CvInput = {
   title: "CV",
-  profile: { fullName: "A", headline: "", email: "", phone: "", summary: "" },
-  experiences: [], educations: [], skills: [], projects: [],
+  profile: { fullName: "A", headline: "", email: "", phone: "", location: "", linkedin: "", github: "", portfolio: "", summary: "" },
+  experiences: [], educations: [], skills: [], projects: [], languages: [], certifications: [],
 };
 
 const result: EvaluationResult = {

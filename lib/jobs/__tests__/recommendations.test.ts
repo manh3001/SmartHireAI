@@ -5,8 +5,8 @@ import type { RecommendationResult } from "@/lib/ai/recommendation-schema";
 
 const cv: CvInput = {
   title: "CV",
-  profile: { fullName: "An", headline: "", email: "", phone: "", summary: "" },
-  experiences: [], educations: [], skills: [], projects: [],
+  profile: { fullName: "An", headline: "", email: "", phone: "", location: "", linkedin: "", github: "", portfolio: "", summary: "" },
+  experiences: [], educations: [], skills: [], projects: [], languages: [], certifications: [],
 };
 
 function job(id: string, title: string): RecommendationJobInput {

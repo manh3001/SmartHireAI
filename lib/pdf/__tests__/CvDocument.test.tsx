@@ -11,18 +11,24 @@ const sample: CvInput = {
     headline: "Kỹ sư phần mềm",
     email: "manh@example.com",
     phone: "0900000000",
+    location: "Hà Nội",
+    linkedin: "",
+    github: "",
+    portfolio: "",
     summary: "Lập trình viên yêu thích xây dựng sản phẩm.",
   },
   experiences: [
     { company: "FPT Software", position: "Lập trình viên", startDate: "2023-01", endDate: "2024-06", description: "Phát triển ứng dụng web." },
   ],
   educations: [
-    { school: "Đại học Bách Khoa", major: "Công nghệ thông tin", startDate: "2019", endDate: "2023" },
+    { school: "Đại học Bách Khoa", degree: "Kỹ sư", major: "Công nghệ thông tin", startDate: "2019", endDate: "2023", gpa: "3.2" },
   ],
   skills: [{ name: "React", level: "Nâng cao" }],
   projects: [
     { name: "Nền tảng CV", description: "Đánh giá CV bằng AI", tech: "Next.js", link: "https://example.com" },
   ],
+  languages: [],
+  certifications: [],
 };
 
 describe("CvDocument", () => {

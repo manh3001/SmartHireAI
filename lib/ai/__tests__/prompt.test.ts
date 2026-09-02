@@ -4,11 +4,13 @@ import type { CvInput } from "@/lib/cv/types";
 
 const cv: CvInput = {
   title: "CV",
-  profile: { fullName: "Nguyễn Văn A", headline: "Dev", email: "", phone: "", summary: "Yêu code" },
+  profile: { fullName: "Nguyễn Văn A", headline: "Dev", email: "", phone: "", location: "", linkedin: "", github: "", portfolio: "", summary: "Yêu code" },
   experiences: [{ company: "FPT", position: "Dev", startDate: "2023", endDate: "2024", description: "Làm web" }],
   educations: [],
   skills: [{ name: "React", level: "" }],
   projects: [],
+  languages: [],
+  certifications: [],
 };
 
 describe("buildEvaluationPrompt", () => {
