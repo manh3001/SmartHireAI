@@ -3,6 +3,7 @@ import Image from "next/image";
 import type { CompanyDirItem } from "@/lib/company/directory";
 import CompanyAvatar from "@/components/CompanyAvatar";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { StarDisplay } from "@/components/companies/StarRating";
 
 export default function CompanyCard({ company }: { company: CompanyDirItem }) {
   return (
@@ -30,9 +31,18 @@ export default function CompanyCard({ company }: { company: CompanyDirItem }) {
           </div>
         </CardHeader>
         <CardContent>
-          <span className="inline-block rounded-full bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary">
-            {company.jobCount} tin đang tuyển
-          </span>
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="inline-block rounded-full bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary">
+              {company.jobCount} tin đang tuyển
+            </span>
+            {company.reviewCount > 0 && (
+              <span className="inline-flex items-center gap-1 text-xs text-muted-foreground">
+                <StarDisplay value={company.rating} className="[&_svg]:h-3.5 [&_svg]:w-3.5" />
+                <span className="font-medium text-foreground">{company.rating.toFixed(1)}</span>
+                <span>({company.reviewCount})</span>
+              </span>
+            )}
+          </div>
           {company.description && (
             <p className="mt-2 line-clamp-2 text-sm text-muted-foreground">{company.description}</p>
           )}
