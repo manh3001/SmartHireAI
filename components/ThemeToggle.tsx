@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 export default function ThemeToggle() {
-  const { setTheme } = useTheme();
+  const { setTheme, theme } = useTheme();
   const [mounted, setMounted] = React.useState(false);
   React.useEffect(() => setMounted(true), []);
 
@@ -34,8 +34,13 @@ export default function ThemeToggle() {
         className={cn(buttonVariants({ variant: "ghost", size: "icon" }), "h-9 w-9")}
         aria-label="Đổi giao diện"
       >
-        <Sun className="h-5 w-5 dark:hidden" />
-        <Moon className="hidden h-5 w-5 dark:block" />
+        {theme === "system" ? (
+          <Monitor className="h-5 w-5" />
+        ) : theme === "dark" ? (
+          <Moon className="h-5 w-5" />
+        ) : (
+          <Sun className="h-5 w-5" />
+        )}
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
         <DropdownMenuItem onClick={() => setTheme("light")}>
