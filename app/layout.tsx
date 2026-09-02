@@ -3,6 +3,7 @@ import { Geist, Geist_Mono, Be_Vietnam_Pro, Lora } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "@/components/ui/sonner";
 import { ThemeProvider } from "@/components/ThemeProvider";
+import { siteUrl } from "@/lib/seo/url";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -27,8 +28,17 @@ const lora = Lora({
 });
 
 export const metadata: Metadata = {
-  title: "Nền tảng CV thông minh",
+  metadataBase: new URL(siteUrl()),
+  title: {
+    default: "SmartHire — Nền tảng CV & tuyển dụng thông minh",
+    template: "%s | SmartHire",
+  },
   description: "Tạo CV, đánh giá bằng AI, tìm việc phù hợp.",
+  openGraph: {
+    siteName: "SmartHire",
+    locale: "vi_VN",
+    type: "website",
+  },
 };
 
 export default function RootLayout({
