@@ -1,5 +1,6 @@
 import { auth } from "@/auth";
-import { redirect, notFound } from "next/navigation";
+import { notFound } from "next/navigation";
+import type { Metadata } from "next";
 import Link from "next/link";
 import prisma from "@/lib/db/prisma";
 import Navbar from "@/components/Navbar";
@@ -8,6 +9,31 @@ import EvaluateFromJob from "./EvaluateFromJob";
 import { composeJdText } from "@/lib/jobs/job-fields";
 import JobDetail from "@/components/jobs/JobDetail";
 import SaveJobButton from "../SaveJobButton";
+import { absoluteUrl } from "@/lib/seo/url";
+import { metaDescription } from "@/lib/seo/job-seo";
+import { buildJobPostingJsonLd } from "@/lib/seo/job-jsonld";
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}): Promise<Metadata> {
+  const { id } = await params;
+  const job = await prisma.jobDescription.findFirst({
+    where: { id, isPublic: true },
+    select: { title: true, company: true, rawText: true },
+  });
+  if (!job) return { title: "Không tìm thấy tin" };
+  const title = `${job.title || "Tin tuyển dụng"} tại ${job.company || "Nhà tuyển dụng"}`;
+  const description = metaDescription(job.rawText);
+  const url = absoluteUrl(`/jobs/${id}`);
+  return {
+    title,
+    description,
+    alternates: { canonical: url },
+    openGraph: { title, description, type: "article", url },
+  };
+}
 
 export default async function JobDetailPage({
   params,
@@ -16,21 +42,20 @@ export default async function JobDetailPage({
 }) {
   const { id } = await params;
   const session = await auth();
-  if (!session?.user?.id) redirect("/login");
 
   const job = await prisma.jobDescription.findFirst({
     where: { id, isPublic: true },
     select: {
       id: true, title: true, company: true, rawText: true, userId: true,
       location: true, employmentType: true, experienceLevel: true, skills: true,
-      salaryMin: true, salaryMax: true, salaryNegotiable: true,
+      salaryMin: true, salaryMax: true, salaryNegotiable: true, createdAt: true,
     },
   });
   if (!job) notFound();
 
-  const isCandidate = session.user.role === "CANDIDATE";
+  const isCandidate = session?.user?.role === "CANDIDATE";
   const isOwnerRecruiter =
-    session.user.role === "RECRUITER" && job.userId === session.user.id;
+    session?.user?.role === "RECRUITER" && job.userId === session.user.id;
   const cvs = isCandidate
     ? await prisma.cV.findMany({
         where: { userId: session.user.id },
@@ -59,6 +84,11 @@ export default async function JobDetailPage({
 
   const actionSlot = (
     <div className="flex flex-wrap gap-3">
+      {!session?.user && (
+        <Link href="/login" className={buttonVariants()}>
+          Đăng nhập để ứng tuyển
+        </Link>
+      )}
       {isCandidate && (
         applied ? (
           <Link href="/applications" className={buttonVariants({ variant: "outline" })}>
@@ -88,6 +118,12 @@ export default async function JobDetailPage({
     <div className="flex min-h-full flex-col bg-muted/20">
       <Navbar />
       <main className="mx-auto w-full max-w-3xl flex-1 p-4 sm:p-6">
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(buildJobPostingJsonLd(job, absoluteUrl(`/jobs/${job.id}`))),
+          }}
+        />
         <Link href="/jobs" className="text-sm text-primary hover:underline">← Về danh sách</Link>
         <div className="mt-3">
           <JobDetail job={job} action={actionSlot} />

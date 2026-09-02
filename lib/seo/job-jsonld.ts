@@ -5,7 +5,7 @@ export type JobPostingInput = {
   title: string;
   company: string;
   rawText: string;
-  location: string;
+  location: string | null;
   employmentType: EmploymentType | null;
   salaryMin: number | null;
   salaryMax: number | null;
