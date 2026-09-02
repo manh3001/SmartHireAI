@@ -42,7 +42,25 @@ export default async function CompaniesPage({
           select: { id: true, userId: true, name: true, description: true, location: true, logoUrl: true },
         });
 
-  const ranked = rankCompanies(companies, countByUserId);
+  const companyIds = companies.map((c) => c.id);
+  const ratingRows =
+    companyIds.length === 0
+      ? []
+      : await prisma.companyReview.groupBy({
+          by: ["companyId"],
+          where: { companyId: { in: companyIds } },
+          _avg: { rating: true },
+          _count: { rating: true },
+        });
+  const ratingByCompanyId: Record<string, { average: number; count: number }> = {};
+  for (const row of ratingRows) {
+    ratingByCompanyId[row.companyId] = {
+      average: Math.round((row._avg.rating ?? 0) * 10) / 10,
+      count: row._count.rating,
+    };
+  }
+
+  const ranked = rankCompanies(companies, countByUserId, ratingByCompanyId);
 
   return (
     <div className="flex min-h-full flex-col bg-muted/20">
