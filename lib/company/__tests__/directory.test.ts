@@ -47,4 +47,18 @@ describe("rankCompanies", () => {
     rankCompanies(companies, { u1: 1, u2: 9 });
     expect(companies).toEqual(copy);
   });
+
+  it("gắn rating/reviewCount theo companyId; mặc định 0 khi thiếu", () => {
+    const companies = [
+      { id: "c1", userId: "u1", name: "A", description: "", location: "", logoUrl: "" },
+      { id: "c2", userId: "u2", name: "B", description: "", location: "", logoUrl: "" },
+    ];
+    const ranked = rankCompanies(companies, { u1: 2, u2: 1 }, { c1: { average: 4.5, count: 3 } });
+    const c1 = ranked.find((c) => c.id === "c1")!;
+    const c2 = ranked.find((c) => c.id === "c2")!;
+    expect(c1.rating).toBe(4.5);
+    expect(c1.reviewCount).toBe(3);
+    expect(c2.rating).toBe(0);
+    expect(c2.reviewCount).toBe(0);
+  });
 });
