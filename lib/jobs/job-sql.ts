@@ -10,6 +10,7 @@ export type JobFilterInput = {
   experienceLevel?: string;
   category?: string;
   salaryMillions?: number | null;
+  location?: string;
 };
 
 export function makePush(params: unknown[]): (v: unknown) => string {
@@ -39,6 +40,10 @@ export function appendFilters(
     clauses.push(`"experienceLevel" = ${push(input.experienceLevel)}::"ExperienceLevel"`);
   if (input.category && exclude !== "category")
     clauses.push(`category = ${push(input.category)}`);
+  const location = (input.location ?? "").trim();
+  if (location) {
+    clauses.push(`location ILIKE '%'||${push(location)}||'%'`);
+  }
   if (input.salaryMillions != null) {
     const vnd = push(input.salaryMillions * MILLION);
     clauses.push(

@@ -22,18 +22,19 @@ import { buttonVariants } from "@/components/ui/button";
 export default async function JobsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ q?: string; type?: string; level?: string; salary?: string; category?: string }>;
+  searchParams: Promise<{ q?: string; type?: string; level?: string; salary?: string; category?: string; location?: string }>;
 }) {
   const session = await auth();
   if (!session?.user?.id) redirect("/login");
 
-  const { q, type, level, salary, category } = await searchParams;
+  const { q, type, level, salary, category, location } = await searchParams;
   const term = (q ?? "").trim();
   const typeFilter = EMPLOYMENT_TYPES.includes(type as never) ? (type as (typeof EMPLOYMENT_TYPES)[number]) : undefined;
   const levelFilter = EXPERIENCE_LEVELS.includes(level as never) ? (level as (typeof EXPERIENCE_LEVELS)[number]) : undefined;
   const salaryNum = Number(salary);
   const salaryFilter = SALARY_FILTER_STEPS.includes(salaryNum as never) ? salaryNum : null;
   const categoryFilter = isJobCategory(category) ? category : undefined;
+  const locationFilter = (location ?? "").trim() || undefined;
 
   const filterInput = {
     term,
@@ -41,6 +42,7 @@ export default async function JobsPage({
     experienceLevel: levelFilter,
     salaryMillions: salaryFilter,
     category: categoryFilter,
+    location: locationFilter,
   };
   const [{ items: jobs, nextCursor }, facets] = await Promise.all([
     searchJobs({ ...filterInput, limit: 20 }),
@@ -80,7 +82,7 @@ export default async function JobsPage({
         )}
         <div className="grid gap-4 lg:grid-cols-[minmax(0,16rem)_1fr]">
           <aside className="lg:sticky lg:top-20 lg:self-start">
-            <JobFilters defaults={{ q: term, type: typeFilter, level: levelFilter, salary: salary ?? "", category: categoryFilter }} facets={facets} />
+            <JobFilters defaults={{ q: term, type: typeFilter, level: levelFilter, salary: salary ?? "", category: categoryFilter, location: locationFilter }} facets={facets} />
           </aside>
           <div>
             {jobs.length === 0 ? (
