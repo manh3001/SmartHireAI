@@ -10,6 +10,8 @@ import JobCard from "@/components/JobCard";
 import { buttonVariants } from "@/components/ui/button";
 import { JOB_CATEGORIES } from "@/lib/jobs/job-categories";
 import { topSkills } from "@/lib/jobs/top-skills";
+import TrustedCompanies from "@/components/home/TrustedCompanies";
+import { fetchTopCompanies } from "@/lib/company/top-companies";
 
 const steps = [
   { n: "1", title: "Tạo hoặc nhập CV", desc: "Điền form hoặc tải PDF cũ để AI đọc giúp." },
@@ -21,7 +23,7 @@ export default async function Home() {
   const session = await auth();
   const loggedIn = !!session?.user;
 
-  const [latestJobs, jobCount, companyGroups, cvCount, trendingSkills] = await Promise.all([
+  const [latestJobs, jobCount, companyGroups, cvCount, trendingSkills, topCompanies] = await Promise.all([
     prisma.jobDescription.findMany({
       where: { isPublic: true },
       orderBy: { createdAt: "desc" },
@@ -36,6 +38,7 @@ export default async function Home() {
     prisma.jobDescription.findMany({ where: { isPublic: true }, distinct: ["company"], select: { company: true } }),
     prisma.cV.count(),
     topSkills(8),
+    fetchTopCompanies(12),
   ]);
   const companyCount = companyGroups.filter((c) => c.company.trim()).length;
 
@@ -83,6 +86,8 @@ export default async function Home() {
             })}
           </div>
         </section>
+
+        <TrustedCompanies companies={topCompanies} loggedIn={loggedIn} />
 
         {/* Việc mới */}
         {latestJobs.length > 0 && (
