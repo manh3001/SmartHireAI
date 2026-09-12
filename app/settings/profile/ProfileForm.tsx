@@ -25,6 +25,12 @@ export default function ProfileForm({ initial, baseUrl }: Props) {
     setError(null);
   }
 
+  function handleToggle(value: boolean) {
+    setForm((f) => ({ ...f, openToWork: value }));
+    setSaved(false);
+    setError(null);
+  }
+
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
@@ -98,6 +104,18 @@ export default function ProfileForm({ initial, baseUrl }: Props) {
           />
         </div>
       ))}
+
+      <label className="flex items-center gap-3 rounded-md border border-border bg-card p-3">
+        <input
+          type="checkbox"
+          checked={form.openToWork}
+          onChange={(e) => handleToggle(e.target.checked)}
+          className="h-4 w-4"
+        />
+        <span className="text-sm text-foreground">
+          Đang tìm việc — cho nhà tuyển dụng biết bạn sẵn sàng
+        </span>
+      </label>
 
       {error && <p className="text-sm text-destructive">{error}</p>}
       {saved && <p className="text-sm text-emerald-600">Đã lưu thành công!</p>}

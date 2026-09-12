@@ -351,9 +351,10 @@ model CandidateProfile {
   github    String   @default("")
   linkedin  String   @default("")
   twitter   String   @default("")
-  website   String   @default("")
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  website    String   @default("")
+  openToWork Boolean  @default(false)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 }
 
 model Message {

@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { applyExpFilter, mapToCandidateCards } from "../search";
+import { applyExpFilter, mapToCandidateCards, applyOpenFilter } from "../search";
 
 type RawRow = {
   id: string;
@@ -7,15 +7,17 @@ type RawRow = {
   profile: { fullName: string; headline: string; location: string } | null;
   skills: { name: string }[];
   _count: { experiences: number };
+  openToWork: boolean;
 };
 
-function row(experienceCount: number, id = `cv_${experienceCount}`): RawRow {
+function row(experienceCount: number, id = `cv_${experienceCount}`, openToWork = false): RawRow {
   return {
     id,
     shareToken: `tok_${id}`,
     profile: { fullName: `Ứng viên ${id}`, headline: "Developer", location: "HCM" },
     skills: [{ name: "React" }, { name: "TypeScript" }],
     _count: { experiences: experienceCount },
+    openToWork,
   };
 }
 
@@ -58,7 +60,7 @@ describe("applyExpFilter", () => {
 
 describe("mapToCandidateCards", () => {
   it("map đúng tất cả các trường", () => {
-    const cards = mapToCandidateCards([row(2, "cv_test")]);
+    const cards = mapToCandidateCards([row(2, "cv_test", true)]);
     expect(cards[0]).toEqual({
       cvId: "cv_test",
       shareToken: "tok_cv_test",
@@ -66,6 +68,7 @@ describe("mapToCandidateCards", () => {
       headline: "Developer",
       location: "HCM",
       skills: ["React", "TypeScript"],
+      openToWork: true,
     });
   });
 
@@ -76,6 +79,7 @@ describe("mapToCandidateCards", () => {
       profile: null,
       skills: [],
       _count: { experiences: 0 },
+      openToWork: false,
     };
     const cards = mapToCandidateCards([r]);
     expect(cards[0].fullName).toBe("");
@@ -89,5 +93,18 @@ describe("mapToCandidateCards", () => {
     r.skills = [{ name: "Go" }, { name: "Rust" }];
     const cards = mapToCandidateCards([r]);
     expect(cards[0].skills).toEqual(["Go", "Rust"]);
+  });
+});
+
+describe("applyOpenFilter", () => {
+  it("open '1' -> chỉ giữ openToWork=true", () => {
+    const rows = [row(1, "a", true), row(1, "b", false)];
+    const result = applyOpenFilter(rows, "1");
+    expect(result.map((r) => r.id)).toEqual(["a"]);
+  });
+
+  it("open undefined -> giữ nguyên", () => {
+    const rows = [row(1, "a", true), row(1, "b", false)];
+    expect(applyOpenFilter(rows, undefined)).toHaveLength(2);
   });
 });

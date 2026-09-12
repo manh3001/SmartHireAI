@@ -3,6 +3,8 @@ import Navbar from "@/components/Navbar";
 import prisma from "@/lib/db/prisma";
 import ProfileForm from "./ProfileForm";
 import { headers } from "next/headers";
+import { profileCompleteness } from "@/lib/candidates/completeness";
+import ProfileCompleteness from "@/components/candidates/ProfileCompleteness";
 
 export default async function SettingsProfilePage() {
   // requireRole redirects non-CANDIDATE automatically — no try/catch needed
@@ -18,7 +20,17 @@ export default async function SettingsProfilePage() {
       linkedin: true,
       twitter: true,
       website: true,
+      openToWork: true,
     },
+  });
+
+  const cvCount = await prisma.cV.count({ where: { userId } });
+  const completeness = profileCompleteness({
+    hasCV: cvCount > 0,
+    bio: profile?.bio ?? "",
+    github: profile?.github ?? "",
+    linkedin: profile?.linkedin ?? "",
+    website: profile?.website ?? "",
   });
 
   const hdrs = await headers();
@@ -33,6 +45,7 @@ export default async function SettingsProfilePage() {
     linkedin: profile?.linkedin ?? "",
     twitter: profile?.twitter ?? "",
     website: profile?.website ?? "",
+    openToWork: profile?.openToWork ?? false,
   };
 
   return (
@@ -40,6 +53,9 @@ export default async function SettingsProfilePage() {
       <Navbar />
       <main className="mx-auto w-full max-w-xl flex-1 p-6">
         <h1 className="mb-6 text-2xl font-bold text-foreground">Hồ sơ cá nhân</h1>
+        <div className="mb-6">
+          <ProfileCompleteness result={completeness} />
+        </div>
         <ProfileForm initial={initial} baseUrl={baseUrl} />
       </main>
     </div>
