@@ -9,6 +9,7 @@ const validInput = {
   linkedin: "",
   twitter: "",
   website: "",
+  openToWork: false,
 };
 
 function makeDeps(overrides?: Partial<UpsertProfileDeps>): UpsertProfileDeps {
@@ -79,5 +80,15 @@ describe("runUpsertProfile", () => {
     expect(result.ok).toBe(false);
     expect(result.error).toMatch(/giới thiệu/i);
     expect(deps.upsertProfile).not.toHaveBeenCalled();
+  });
+
+  it("truyền openToWork xuống upsert", async () => {
+    const deps = makeDeps();
+    const result = await runUpsertProfile("user1", { ...validInput, openToWork: true }, deps);
+    expect(result).toEqual({ ok: true });
+    expect(deps.upsertProfile).toHaveBeenCalledWith(
+      "user1",
+      expect.objectContaining({ openToWork: true }),
+    );
   });
 });

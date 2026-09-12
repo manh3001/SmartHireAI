@@ -20,6 +20,7 @@ export default async function SettingsProfilePage() {
       linkedin: true,
       twitter: true,
       website: true,
+      openToWork: true,
     },
   });
 
@@ -44,6 +45,7 @@ export default async function SettingsProfilePage() {
     linkedin: profile?.linkedin ?? "",
     twitter: profile?.twitter ?? "",
     website: profile?.website ?? "",
+    openToWork: profile?.openToWork ?? false,
   };
 
   return (

@@ -5,6 +5,7 @@ export type ProfileInput = {
   linkedin: string;
   twitter: string;
   website: string;
+  openToWork: boolean;
 };
 
 export type UpsertProfileDeps = {
