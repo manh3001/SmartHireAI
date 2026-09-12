@@ -15,6 +15,8 @@ import { Button, buttonVariants } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { EmptyState } from "@/components/ui/empty-state";
 import CvCard from "./CvCard";
+import { profileCompleteness } from "@/lib/candidates/completeness";
+import ProfileCompleteness from "@/components/candidates/ProfileCompleteness";
 
 export default async function DashboardPage() {
   const session = await auth();
@@ -98,6 +100,17 @@ export default async function DashboardPage() {
     select: { id: true, title: true, template: true, updatedAt: true, isDefault: true, shareToken: true },
   });
   const cvCount = cvs.length;
+  const candidateProfile = await prisma.candidateProfile.findUnique({
+    where: { userId: session.user.id },
+    select: { bio: true, github: true, linkedin: true, website: true },
+  });
+  const completeness = profileCompleteness({
+    hasCV: cvCount > 0,
+    bio: candidateProfile?.bio ?? "",
+    github: candidateProfile?.github ?? "",
+    linkedin: candidateProfile?.linkedin ?? "",
+    website: candidateProfile?.website ?? "",
+  });
   const atLimit = cvCount >= 3;
   return (
     <div className="flex min-h-full flex-col bg-muted/20">
@@ -121,6 +134,11 @@ export default async function DashboardPage() {
             )}
           </div>
         </div>
+        {completeness.percent < 100 && (
+          <div className="mb-6">
+            <ProfileCompleteness result={completeness} compact />
+          </div>
+        )}
         <CandidateStats userId={session.user.id} />
         <div className="flex flex-col gap-3">
           {cvs.length === 0 && (
