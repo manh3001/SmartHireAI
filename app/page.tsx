@@ -9,6 +9,10 @@ import HomeSearch from "@/components/home/HomeSearch";
 import JobCard from "@/components/JobCard";
 import { buttonVariants } from "@/components/ui/button";
 import { JOB_CATEGORIES } from "@/lib/jobs/job-categories";
+import { topSkills } from "@/lib/jobs/top-skills";
+import TrustedCompanies from "@/components/home/TrustedCompanies";
+import { fetchTopCompanies } from "@/lib/company/top-companies";
+import FeatureTools from "@/components/home/FeatureTools";
 
 const steps = [
   { n: "1", title: "Tạo hoặc nhập CV", desc: "Điền form hoặc tải PDF cũ để AI đọc giúp." },
@@ -20,7 +24,7 @@ export default async function Home() {
   const session = await auth();
   const loggedIn = !!session?.user;
 
-  const [latestJobs, jobCount, companyGroups, cvCount] = await Promise.all([
+  const [latestJobs, jobCount, companyGroups, cvCount, trendingSkills, topCompanies] = await Promise.all([
     prisma.jobDescription.findMany({
       where: { isPublic: true },
       orderBy: { createdAt: "desc" },
@@ -29,11 +33,14 @@ export default async function Home() {
         id: true, title: true, company: true, location: true, rawText: true,
         employmentType: true, experienceLevel: true, skills: true,
         salaryMin: true, salaryMax: true, salaryNegotiable: true,
+        createdAt: true,
       },
     }),
     prisma.jobDescription.count({ where: { isPublic: true } }),
     prisma.jobDescription.findMany({ where: { isPublic: true }, distinct: ["company"], select: { company: true } }),
     prisma.cV.count(),
+    topSkills(8),
+    fetchTopCompanies(12),
   ]);
   const companyCount = companyGroups.filter((c) => c.company.trim()).length;
 
@@ -51,7 +58,7 @@ export default async function Home() {
             <p className="mx-auto mt-4 max-w-xl text-lg text-muted-foreground">
               Tạo CV, để AI đánh giá độ phù hợp với công việc và kết nối nhà tuyển dụng — tất cả trong một nơi.
             </p>
-            <HomeSearch />
+            <HomeSearch trendingSkills={trendingSkills} />
             {!loggedIn && (
               <div className="mt-4">
                 <Link href="/register" className={buttonVariants({ variant: "ghost" })}>Tạo tài khoản miễn phí →</Link>
@@ -81,6 +88,8 @@ export default async function Home() {
             })}
           </div>
         </section>
+
+        <TrustedCompanies companies={topCompanies} loggedIn={loggedIn} />
 
         {/* Việc mới */}
         {latestJobs.length > 0 && (
@@ -114,6 +123,8 @@ export default async function Home() {
             ))}
           </div>
         </section>
+
+        <FeatureTools />
 
         {/* 3 bước */}
         <section className="bg-muted/30">

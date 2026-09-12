@@ -40,4 +40,18 @@ describe("appendFilters", () => {
     expect(clauses.some((c) => c.includes(`"employmentType"`))).toBe(false);
     expect(clauses).toContain(`category = $1`);
   });
+
+  it("location -> them clause ILIKE voi param", () => {
+    const params: unknown[] = [];
+    const { clauses } = appendFilters({ location: "Hà Nội" }, makePush(params));
+    expect(clauses).toContain(`location ILIKE '%'||$1||'%'`);
+    expect(params).toEqual(["Hà Nội"]);
+  });
+
+  it("location rong/khoang trang -> bo qua", () => {
+    const params: unknown[] = [];
+    const { clauses } = appendFilters({ location: "   " }, makePush(params));
+    expect(clauses.some((c) => c.includes("location ILIKE"))).toBe(false);
+    expect(params).toEqual([]);
+  });
 });

@@ -53,3 +53,6 @@ sample-cv-mau.pdf
 /test-results/
 /playwright-report/
 /e2e/.auth/
+
+# Firecrawl (mockup/khảo sát tạm)
+.firecrawl/

@@ -5,8 +5,9 @@ import {
 import { SALARY_FILTER_STEPS } from "@/lib/jobs/salary";
 import { JOB_CATEGORIES } from "@/lib/jobs/job-categories";
 import type { FacetCounts } from "@/lib/jobs/search";
+import { LOCATION_OPTIONS } from "@/lib/jobs/locations";
 
-type Defaults = { q?: string; type?: string; level?: string; salary?: string; category?: string };
+type Defaults = { q?: string; type?: string; level?: string; salary?: string; category?: string; location?: string };
 
 function label(base: string, count: number | undefined): string {
   return count != null ? `${base} (${count})` : base;
@@ -42,6 +43,12 @@ export default function JobFilters({ defaults, facets }: { defaults: Defaults; f
           <option key={l} value={l} disabled={facets != null && !level[l]}>
             {label(EXPERIENCE_LEVEL_LABELS[l], level[l])}
           </option>
+        ))}
+      </select>
+      <select name="location" defaultValue={defaults.location ?? ""} className={sel}>
+        <option value="">Mọi địa điểm</option>
+        {LOCATION_OPTIONS.map((o) => (
+          <option key={o.value} value={o.value}>{o.label}</option>
         ))}
       </select>
       <select name="salary" defaultValue={defaults.salary ?? ""} className={sel}>
