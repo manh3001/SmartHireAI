@@ -10,7 +10,7 @@ export type CompletenessItem = { key: string; label: string; href: string };
 export type CompletenessResult = { percent: number; missing: CompletenessItem[] };
 
 const ITEMS: { key: keyof CompletenessInput; label: string; href: string }[] = [
-  { key: "hasCV", label: "Tạo CV", href: "/cv" },
+  { key: "hasCV", label: "Tạo CV", href: "/dashboard" },
   { key: "bio", label: "Viết giới thiệu bản thân", href: "/settings/profile" },
   { key: "github", label: "Thêm GitHub", href: "/settings/profile" },
   { key: "linkedin", label: "Thêm LinkedIn", href: "/settings/profile" },
