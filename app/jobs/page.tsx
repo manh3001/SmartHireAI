@@ -91,7 +91,7 @@ export default async function JobsPage({
                 title="Không tìm thấy tin nào"
                 description="Thử thay đổi từ khoá hoặc xoá bộ lọc."
                 action={
-                  (term || typeFilter || levelFilter || salaryFilter || categoryFilter) ? (
+                  (term || typeFilter || levelFilter || salaryFilter || categoryFilter || locationFilter) ? (
                     <Link href="/jobs" className={buttonVariants({ variant: "outline", size: "sm" })}>
                       Xoá bộ lọc
                     </Link>

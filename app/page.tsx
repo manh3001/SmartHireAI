@@ -33,6 +33,7 @@ export default async function Home() {
         id: true, title: true, company: true, location: true, rawText: true,
         employmentType: true, experienceLevel: true, skills: true,
         salaryMin: true, salaryMax: true, salaryNegotiable: true,
+        createdAt: true,
       },
     }),
     prisma.jobDescription.count({ where: { isPublic: true } }),
