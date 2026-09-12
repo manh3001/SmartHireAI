@@ -17,18 +17,41 @@ export default async function Navbar() {
     : { unreadCount: 0, latest: null };
   const unread = signal.unreadCount;
 
+  const role = session?.user?.role;
+  const roleLabel =
+    role === "ADMIN"
+      ? "Quản trị viên"
+      : role === "RECRUITER"
+        ? "Nhà tuyển dụng"
+        : "Ứng viên";
+  const name = session?.user?.name ?? "";
+  const initial = name.trim().charAt(0).toUpperCase() || "U";
+
   return (
     <header className="sticky top-0 z-20 border-b border-border bg-background/80 backdrop-blur">
-      <div className="mx-auto flex h-14 max-w-6xl items-center justify-between px-4">
-        <Link
-          href="/"
-          className="flex items-center gap-1.5 text-lg font-bold text-brand-gradient"
-        >
-          <Sparkles className="h-5 w-5" />
-          SmartHire
-        </Link>
-        <nav className="flex items-center gap-2">
-          <ThemeToggle />
+      <div className="mx-auto flex h-14 max-w-6xl items-center justify-between gap-4 px-4">
+        {/* Vùng trái: thương hiệu + điều hướng */}
+        <div className="flex min-w-0 items-center gap-6">
+          <Link
+            href="/"
+            className="flex shrink-0 items-center gap-1.5 text-lg font-bold text-brand-gradient"
+          >
+            <Sparkles className="h-5 w-5" />
+            SmartHire
+          </Link>
+          {loggedIn && (
+            <nav className="hidden items-center gap-5 sm:flex">
+              <NavLinks
+                isAdmin={role === "ADMIN"}
+                isRecruiter={role === "RECRUITER"}
+                isCandidate={role === "CANDIDATE"}
+              />
+            </nav>
+          )}
+        </div>
+
+        {/* Vùng phải: tiện ích + tài khoản */}
+        <div className="flex shrink-0 items-center gap-3">
           {loggedIn ? (
             <>
               <RealtimeProvider
@@ -36,37 +59,46 @@ export default async function Navbar() {
                 initialLatestId={signal.latest?.id ?? null}
               />
               <PushRegistrar />
-              <div className="flex items-center gap-2 sm:hidden">
+
+              <nav className="flex items-center gap-4 sm:hidden">
                 <MobileNavLinks
-                  isRecruiter={session!.user!.role === "RECRUITER"}
-                  isCandidate={session!.user!.role === "CANDIDATE"}
+                  isRecruiter={role === "RECRUITER"}
+                  isCandidate={role === "CANDIDATE"}
                 />
+              </nav>
+
+              {/* Nhóm tiện ích: theme + thông báo */}
+              <div className="flex items-center gap-1">
+                <ThemeToggle />
+                <Link
+                  href="/notifications"
+                  className="relative flex h-9 w-9 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+                  aria-label="Thông báo"
+                >
+                  <Bell className="h-5 w-5" />
+                  {unread > 0 && (
+                    <span className="absolute right-1 top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-red-500 px-1 text-[10px] font-medium text-white">
+                      {unread > 9 ? "9+" : unread}
+                    </span>
+                  )}
+                </Link>
               </div>
+
+              <div className="hidden h-6 w-px bg-border sm:block" />
+
+              {/* Khối tài khoản: avatar + tên + vai trò */}
               <div className="hidden items-center gap-2 sm:flex">
-                <NavLinks
-                  isAdmin={session!.user!.role === "ADMIN"}
-                  isRecruiter={session!.user!.role === "RECRUITER"}
-                  isCandidate={session!.user!.role === "CANDIDATE"}
-                />
-                <span className="rounded-full bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary">
-                  {session!.user!.role === "ADMIN"
-                    ? "Quản trị viên"
-                    : session!.user!.role === "RECRUITER"
-                      ? "Nhà tuyển dụng"
-                      : "Ứng viên"}
+                <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary/10 text-sm font-semibold text-primary">
+                  {initial}
                 </span>
-                <span className="text-sm text-muted-foreground">
-                  {session!.user!.name}
+                <span className="flex min-w-0 flex-col leading-tight">
+                  <span className="truncate text-sm font-medium text-foreground">
+                    {name}
+                  </span>
+                  <span className="text-xs text-muted-foreground">{roleLabel}</span>
                 </span>
               </div>
-              <Link href="/notifications" className="relative text-muted-foreground hover:text-foreground" aria-label="Thông báo">
-                <Bell className="h-5 w-5" />
-                {unread > 0 && (
-                  <span className="absolute -right-1.5 -top-1.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-red-500 px-1 text-[10px] font-medium text-white">
-                    {unread > 9 ? "9+" : unread}
-                  </span>
-                )}
-              </Link>
+
               <form
                 action={async () => {
                   "use server";
@@ -78,6 +110,7 @@ export default async function Navbar() {
             </>
           ) : (
             <>
+              <ThemeToggle />
               <Link href="/login" className={buttonVariants({ variant: "ghost", size: "sm" })}>
                 Đăng nhập
               </Link>
@@ -86,7 +119,7 @@ export default async function Navbar() {
               </Link>
             </>
           )}
-        </nav>
+        </div>
       </div>
     </header>
   );
