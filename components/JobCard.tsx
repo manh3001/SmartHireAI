@@ -3,6 +3,7 @@ import CompanyAvatar from "@/components/CompanyAvatar";
 import JobMeta from "@/components/JobMeta";
 import type { EmploymentType, ExperienceLevel } from "@/lib/jobs/job-fields";
 import { cn } from "@/lib/utils";
+import { jobBadges } from "@/lib/jobs/job-badges";
 
 export type JobCardData = {
   id: string;
@@ -17,6 +18,7 @@ export type JobCardData = {
   salaryNegotiable?: boolean | null;
   category?: string | null;
   rawText?: string | null;
+  createdAt?: string | Date | null;
 };
 
 export default function JobCard({
@@ -32,6 +34,8 @@ export default function JobCard({
   saveSlot?: React.ReactNode;
   onSelect?: () => void;
 }) {
+  const badges = jobBadges(job);
+
   const inner = (
     <div
       className={cn(
@@ -44,6 +48,22 @@ export default function JobCard({
         <div className="min-w-0">
           <div className="truncate font-semibold text-foreground">{job.title || "(chưa có tiêu đề)"}</div>
           <div className="truncate text-sm text-muted-foreground">{job.company || "—"}</div>
+          {badges.length > 0 && (
+            <div className="mt-1 flex flex-wrap gap-1">
+              {badges.map((b) => (
+                <span
+                  key={b.label}
+                  className={
+                    b.tone === "new"
+                      ? "rounded-full bg-emerald-500/10 px-2 py-0.5 text-[11px] font-medium text-emerald-600 dark:text-emerald-400"
+                      : "rounded-full bg-amber-500/10 px-2 py-0.5 text-[11px] font-medium text-amber-600 dark:text-amber-400"
+                  }
+                >
+                  {b.label}
+                </span>
+              ))}
+            </div>
+          )}
           <div className="mt-2">
             <JobMeta
               location={job.location}
