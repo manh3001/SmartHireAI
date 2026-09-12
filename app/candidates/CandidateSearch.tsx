@@ -23,20 +23,24 @@ export default function CandidateSearch({
   initialCandidates,
   initialQ,
   initialExp,
+  initialOpen,
 }: {
   initialCandidates: CandidateCard[];
   initialQ: string;
   initialExp: string;
+  initialOpen: boolean;
 }) {
   const router = useRouter();
   const [q, setQ] = useState(initialQ);
   const [exp, setExp] = useState(initialExp);
+  const [open, setOpen] = useState(initialOpen);
 
   function handleSearch(e: React.FormEvent) {
     e.preventDefault();
     const params = new URLSearchParams();
     if (q.trim()) params.set("q", q.trim());
     if (exp) params.set("exp", exp);
+    if (open) params.set("open", "1");
     const qs = params.toString();
     router.push(qs ? `/candidates?${qs}` : "/candidates");
   }
@@ -61,6 +65,15 @@ export default function CandidateSearch({
             </option>
           ))}
         </select>
+        <label className="flex items-center gap-2 text-sm text-foreground">
+          <input
+            type="checkbox"
+            checked={open}
+            onChange={(e) => setOpen(e.target.checked)}
+            className="h-4 w-4"
+          />
+          Chỉ người đang tìm việc
+        </label>
         <Button type="submit" size="sm">
           Tìm
         </Button>
@@ -98,6 +111,11 @@ export default function CandidateSearch({
                     )}
                   </div>
                 </div>
+                {c.openToWork && (
+                  <Badge variant="outline" className="mt-2 border-emerald-500/40 text-emerald-600 dark:text-emerald-400">
+                    Đang tìm việc
+                  </Badge>
+                )}
                 {c.location && (
                   <p className="mt-2 text-xs text-muted-foreground">
                     <MapPin className="mr-0.5 inline h-3 w-3" />{c.location}

@@ -7,6 +7,7 @@ export type CandidateCard = {
   headline: string;
   location: string;
   skills: string[];
+  openToWork: boolean;
 };
 
 type RawRow = {
@@ -15,6 +16,7 @@ type RawRow = {
   profile: { fullName: string; headline: string; location: string } | null;
   skills: { name: string }[];
   _count: { experiences: number };
+  openToWork: boolean;
 };
 
 export function applyExpFilter(rows: RawRow[], exp: string | undefined): RawRow[] {
@@ -28,6 +30,11 @@ export function applyExpFilter(rows: RawRow[], exp: string | undefined): RawRow[
   });
 }
 
+export function applyOpenFilter(rows: RawRow[], open: string | undefined): RawRow[] {
+  if (open !== "1") return rows;
+  return rows.filter((r) => r.openToWork);
+}
+
 export function mapToCandidateCards(rows: RawRow[]): CandidateCard[] {
   return rows.map((r) => ({
     cvId: r.id,
@@ -36,12 +43,14 @@ export function mapToCandidateCards(rows: RawRow[]): CandidateCard[] {
     headline: r.profile?.headline ?? "",
     location: r.profile?.location ?? "",
     skills: r.skills.map((s) => s.name),
+    openToWork: r.openToWork,
   }));
 }
 
 export async function searchCandidates(params: {
   q?: string;
   exp?: string;
+  open?: string;
 }): Promise<CandidateCard[]> {
   const keywords = (params.q ?? "").trim().split(/\s+/).filter(Boolean);
 
@@ -64,11 +73,21 @@ export async function searchCandidates(params: {
       profile: { select: { fullName: true, headline: true, location: true } },
       skills: { select: { name: true }, take: 4, orderBy: { order: "asc" } },
       _count: { select: { experiences: true } },
+      user: { select: { candidateProfile: { select: { openToWork: true } } } },
     },
     take: 100,
     orderBy: { updatedAt: "desc" },
   });
 
-  const filtered = applyExpFilter(rows, params.exp);
-  return mapToCandidateCards(filtered.slice(0, 50));
+  const flat: RawRow[] = rows.map((r) => ({
+    id: r.id,
+    shareToken: r.shareToken,
+    profile: r.profile,
+    skills: r.skills,
+    _count: r._count,
+    openToWork: r.user?.candidateProfile?.openToWork ?? false,
+  }));
+  const byExp = applyExpFilter(flat, params.exp);
+  const byOpen = applyOpenFilter(byExp, params.open);
+  return mapToCandidateCards(byOpen.slice(0, 50));
 }

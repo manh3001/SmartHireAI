@@ -9,14 +9,14 @@ export const dynamic = "force-dynamic";
 export default async function CandidatesPage({
   searchParams,
 }: {
-  searchParams: Promise<{ q?: string; exp?: string }>;
+  searchParams: Promise<{ q?: string; exp?: string; open?: string }>;
 }) {
   const session = await auth();
   if (!session?.user?.id) redirect("/login");
   if (session.user.role !== "RECRUITER") redirect("/dashboard");
 
-  const { q, exp } = await searchParams;
-  const candidates = await searchCandidates({ q, exp });
+  const { q, exp, open } = await searchParams;
+  const candidates = await searchCandidates({ q, exp, open });
 
   return (
     <div className="flex min-h-full flex-col bg-muted/20">
@@ -27,6 +27,7 @@ export default async function CandidatesPage({
           initialCandidates={candidates}
           initialQ={q ?? ""}
           initialExp={exp ?? ""}
+          initialOpen={open === "1"}
         />
       </main>
     </div>
