@@ -14,6 +14,7 @@ import {
   type ApplicationStatus,
 } from "@/lib/applications/status";
 import WithdrawButton from "./WithdrawButton";
+import ApplicationTimeline from "@/components/applications/ApplicationTimeline";
 
 export const dynamic = "force-dynamic";
 
@@ -83,14 +84,7 @@ export default async function MyApplicationsPage() {
                   {a.evaluation && (
                     <p>Điểm phù hợp: <span className="font-semibold">{a.evaluation.overallScore}/100</span></p>
                   )}
-                  <div className="flex flex-wrap gap-1 text-xs text-muted-foreground">
-                    {a.events.map((e, i) => (
-                      <span key={i}>
-                        {STATUS_LABELS[e.toStatus as ApplicationStatus]}
-                        {i < a.events.length - 1 ? " → " : ""}
-                      </span>
-                    ))}
-                  </div>
+                  <ApplicationTimeline app={a} />
                   {a.interview && (
                     <div className="rounded-md border border-primary/30 bg-primary/5 p-3 text-sm">
                       <p className="font-medium text-foreground">Lịch phỏng vấn</p>
