@@ -12,6 +12,7 @@ import { JOB_CATEGORIES } from "@/lib/jobs/job-categories";
 import { topSkills } from "@/lib/jobs/top-skills";
 import TrustedCompanies from "@/components/home/TrustedCompanies";
 import { fetchTopCompanies } from "@/lib/company/top-companies";
+import FeatureTools from "@/components/home/FeatureTools";
 
 const steps = [
   { n: "1", title: "Tạo hoặc nhập CV", desc: "Điền form hoặc tải PDF cũ để AI đọc giúp." },
@@ -121,6 +122,8 @@ export default async function Home() {
             ))}
           </div>
         </section>
+
+        <FeatureTools />
 
         {/* 3 bước */}
         <section className="bg-muted/30">
