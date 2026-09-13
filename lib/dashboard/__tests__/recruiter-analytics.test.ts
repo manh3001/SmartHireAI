@@ -1,4 +1,5 @@
 import { describe, it, expect } from "vitest";
+import type { ApplicationStatus } from "@/lib/applications/status";
 import { computeAvgTimeToHire, computeTopJobs } from "../recruiter-analytics";
 
 const DAY = 1000 * 60 * 60 * 24;
@@ -48,7 +49,7 @@ describe("computeTopJobs", () => {
   const makeApp = (id: string, jobId: string, status: "SUBMITTED" | "HIRED" | "REJECTED", score: number | null = null) => ({
     id,
     jobId,
-    status: status as any,
+    status: status as ApplicationStatus,
     job: { id: jobId, title: `Job ${jobId}` },
     evaluation: score !== null ? { overallScore: score } : null,
   });
@@ -85,7 +86,7 @@ describe("computeTopJobs", () => {
     const apps = [
       makeApp("a1", "j1", "SUBMITTED"),
       makeApp("a2", "j1", "SUBMITTED"),
-      { ...makeApp("a3", "j1", "REJECTED"), status: "REJECTED" as any },
+      { ...makeApp("a3", "j1", "REJECTED"), status: "REJECTED" as ApplicationStatus },
     ];
     const result = computeTopJobs(apps);
     // 2 of 3 not rejected → 2/3
