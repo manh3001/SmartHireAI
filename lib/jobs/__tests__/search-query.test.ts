@@ -40,4 +40,10 @@ describe("buildSearchSql", () => {
     expect(sql).toContain(`"salaryNegotiable"`);
     expect(sql).toContain(`FROM "JobDescription"`);
   });
+
+  it("select gom applicationCount qua subquery COUNT Application", () => {
+    const { sql } = buildSearchSql({ limit: 20 });
+    expect(sql).toContain(`AS "applicationCount"`);
+    expect(sql).toContain(`FROM "Application"`);
+  });
 });

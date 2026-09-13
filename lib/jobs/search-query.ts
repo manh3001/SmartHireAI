@@ -4,7 +4,8 @@ import type { SearchCursor } from "./cursor";
 export type SearchQueryInput = JobFilterInput & { cursor?: SearchCursor | null; limit: number };
 
 const COLS =
-  `id, title, company, "rawText", "createdAt", location, "employmentType", "experienceLevel", skills, "salaryMin", "salaryMax", "salaryNegotiable", category`;
+  `id, title, company, "rawText", "createdAt", location, "employmentType", "experienceLevel", skills, "salaryMin", "salaryMax", "salaryNegotiable", category, ` +
+  `(SELECT COUNT(*)::int FROM "Application" WHERE "Application"."jobId" = "JobDescription".id) AS "applicationCount"`;
 
 export function buildSearchSql(input: SearchQueryInput): { sql: string; params: unknown[] } {
   const params: unknown[] = [];

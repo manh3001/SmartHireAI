@@ -27,7 +27,7 @@ export default async function DashboardPage() {
     const jobs = await prisma.jobDescription.findMany({
       where: { userId: session.user.id, isPublic: true },
       orderBy: { createdAt: "desc" },
-      select: { id: true, title: true, company: true, createdAt: true },
+      select: { id: true, title: true, company: true, createdAt: true, _count: { select: { applications: true } } },
     });
     const companyProfile = await prisma.companyProfile.findUnique({
       where: { userId: session.user.id },
@@ -77,7 +77,7 @@ export default async function DashboardPage() {
                     <div>
                       <div className="font-medium text-foreground">{j.title || "(chưa có tiêu đề)"}</div>
                       <div className="text-xs text-muted-foreground">
-                        {j.company || "—"} · {new Date(j.createdAt).toLocaleDateString("vi-VN")}
+                        {j.company || "—"} · {new Date(j.createdAt).toLocaleDateString("vi-VN")} · {j._count.applications} ứng tuyển
                       </div>
                     </div>
                   </div>

@@ -34,6 +34,7 @@ export default async function Home() {
         employmentType: true, experienceLevel: true, skills: true,
         salaryMin: true, salaryMax: true, salaryNegotiable: true,
         createdAt: true,
+        _count: { select: { applications: true } },
       },
     }),
     prisma.jobDescription.count({ where: { isPublic: true } }),
@@ -101,7 +102,7 @@ export default async function Home() {
               </div>
               <div className="grid gap-3 sm:grid-cols-2">
                 {latestJobs.map((j) => (
-                  <JobCard key={j.id} job={j} href={loggedIn ? `/jobs/${j.id}` : "/login"} />
+                  <JobCard key={j.id} job={{ ...j, applicationCount: j._count.applications }} href={loggedIn ? `/jobs/${j.id}` : "/login"} />
                 ))}
               </div>
             </div>
