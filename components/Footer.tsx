@@ -20,6 +20,7 @@ export default function Footer() {
             <li><Link href="/salaries" className="hover:text-foreground">Thống kê lương</Link></li>
             <li><Link href="/jobs" className="hover:text-foreground">Việc làm</Link></li>
             <li><Link href="/dashboard" className="hover:text-foreground">Bảng điều khiển</Link></li>
+            <li><Link href="/blog" className="hover:text-foreground">Cẩm nang nghề nghiệp</Link></li>
           </ul>
         </div>
         <div>

@@ -39,6 +39,12 @@ export default async function Navbar() {
             <Sparkles className="h-5 w-5" />
             SmartHire
           </Link>
+          <Link
+            href="/blog"
+            className="hidden shrink-0 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground sm:block"
+          >
+            Cẩm nang
+          </Link>
           {loggedIn && (
             <nav className="hidden items-center gap-5 sm:flex">
               <NavLinks
