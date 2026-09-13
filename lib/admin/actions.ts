@@ -1,6 +1,7 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
+import { CACHE_TAGS } from "@/lib/cache/tags";
 import prisma from "@/lib/db/prisma";
 import { requireAdmin } from "./guard";
 import { canDeleteUser } from "./can-delete";
@@ -20,6 +21,7 @@ export async function deleteJobAsAdmin(formData: FormData): Promise<void> {
   const id = String(formData.get("id") ?? "");
   await prisma.jobDescription.deleteMany({ where: { id } });
   revalidatePath("/admin/jobs");
+  revalidateTag(CACHE_TAGS.jobs, "max");
 }
 
 export async function setJobPublicAsAdmin(formData: FormData): Promise<void> {
@@ -28,4 +30,5 @@ export async function setJobPublicAsAdmin(formData: FormData): Promise<void> {
   const isPublic = formData.get("isPublic") === "1";
   await prisma.jobDescription.updateMany({ where: { id }, data: { isPublic } });
   revalidatePath("/admin/jobs");
+  revalidateTag(CACHE_TAGS.jobs, "max");
 }
