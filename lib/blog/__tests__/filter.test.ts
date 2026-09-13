@@ -26,3 +26,11 @@ describe("filterByTag", () => {
     expect(filterByTag(posts, "Khác")).toEqual([]);
   });
 });
+
+describe("chuẩn hoá tag (trim)", () => {
+  it("allTags gộp 'CV ' và 'CV'; filterByTag khớp bất kể khoảng trắng", () => {
+    const posts = [post("a", "CV "), post("b", "CV")];
+    expect(allTags(posts)).toEqual(["CV"]);
+    expect(filterByTag(posts, "CV").map((p) => p.slug)).toEqual(["a", "b"]);
+  });
+});
