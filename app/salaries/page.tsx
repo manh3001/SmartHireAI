@@ -1,13 +1,10 @@
 import type { Metadata } from "next";
-import prisma from "@/lib/db/prisma";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { EmptyState } from "@/components/ui/empty-state";
 import { BarChart3 } from "lucide-react";
-import { computeSalaryInsights } from "@/lib/salary/insights";
+import { getCachedSalaryInsights } from "@/lib/salary/insights-data";
 import { formatSalary } from "@/lib/jobs/salary";
-
-export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Lương theo ngành | SmartHire",
@@ -16,11 +13,7 @@ export const metadata: Metadata = {
 };
 
 export default async function SalariesPage() {
-  const rows = await prisma.jobDescription.findMany({
-    where: { isPublic: true },
-    select: { category: true, salaryMin: true, salaryMax: true },
-  });
-  const insights = computeSalaryInsights(rows);
+  const insights = await getCachedSalaryInsights();
   const maxMedian = Math.max(1, ...insights.map((i) => i.medianMax ?? 0));
 
   return (
