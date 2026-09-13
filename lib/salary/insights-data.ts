@@ -5,14 +5,17 @@ import {
   computeSalaryInsights,
   computeSalaryByLevel,
   computeSalaryBySkill,
+  computeSalaryMatrix,
   type CategorySalary,
   type SalaryBarRow,
+  type SalaryMatrix,
 } from "./insights";
 
 export type SalaryData = {
   byCategory: CategorySalary[];
   byLevel: SalaryBarRow[];
   bySkill: SalaryBarRow[];
+  matrix: SalaryMatrix;
 };
 
 async function fetchSalaryDataRaw(): Promise<SalaryData> {
@@ -24,6 +27,7 @@ async function fetchSalaryDataRaw(): Promise<SalaryData> {
     byCategory: computeSalaryInsights(rows),
     byLevel: computeSalaryByLevel(rows),
     bySkill: computeSalaryBySkill(rows),
+    matrix: computeSalaryMatrix(rows),
   };
 }
 

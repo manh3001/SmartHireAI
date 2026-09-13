@@ -1,4 +1,4 @@
-import { JOB_CATEGORY_LABELS, normalizeCategory, type JobCategory } from "@/lib/jobs/job-categories";
+import { JOB_CATEGORIES, JOB_CATEGORY_LABELS, normalizeCategory, type JobCategory } from "@/lib/jobs/job-categories";
 import { EXPERIENCE_LEVELS, EXPERIENCE_LEVEL_LABELS, type ExperienceLevel } from "@/lib/jobs/job-fields";
 
 export function median(nums: number[]): number | null {
@@ -140,4 +140,46 @@ export function computeSalaryBySkill(
   }
   result.sort(bySalaryDesc);
   return result.slice(0, limit);
+}
+
+export type SalaryMatrix = {
+  levels: { level: ExperienceLevel; label: string }[];
+  rows: { label: string; cells: (number | null)[] }[];
+};
+
+export function computeSalaryMatrix(
+  rows: { category: string | null; experienceLevel: string | null; salaryMin: number | null; salaryMax: number | null }[],
+): SalaryMatrix {
+  const buckets = new Map<JobCategory, Map<ExperienceLevel, number[]>>();
+  for (const r of rows) {
+    const rep = r.salaryMax ?? r.salaryMin;
+    if (rep == null) continue;
+    if (r.experienceLevel == null || !(EXPERIENCE_LEVELS as readonly string[]).includes(r.experienceLevel)) continue;
+    const level = r.experienceLevel as ExperienceLevel;
+    const cat = normalizeCategory(r.category) ?? "other";
+    let byLevel = buckets.get(cat);
+    if (!byLevel) {
+      byLevel = new Map();
+      buckets.set(cat, byLevel);
+    }
+    const arr = byLevel.get(level);
+    if (arr) arr.push(rep);
+    else byLevel.set(level, [rep]);
+  }
+
+  const levels = EXPERIENCE_LEVELS.map((level) => ({ level, label: EXPERIENCE_LEVEL_LABELS[level] }));
+
+  const resultRows: { label: string; cells: (number | null)[] }[] = [];
+  for (const c of JOB_CATEGORIES) {
+    const byLevel = buckets.get(c.slug);
+    if (!byLevel) continue;
+    const cells = EXPERIENCE_LEVELS.map((level) => {
+      const arr = byLevel.get(level);
+      return arr ? median(arr) : null;
+    });
+    if (cells.every((x) => x === null)) continue;
+    resultRows.push({ label: JOB_CATEGORY_LABELS[c.slug], cells });
+  }
+
+  return { levels, rows: resultRows };
 }
