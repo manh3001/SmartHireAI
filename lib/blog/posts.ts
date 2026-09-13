@@ -17,9 +17,14 @@ export async function getAllPosts(): Promise<PostMeta[]> {
   for (const file of files) {
     if (!file.endsWith(".md")) continue;
     const slug = file.slice(0, -3);
-    const raw = await readFile(path.join(BLOG_DIR, file), "utf8");
-    const { data } = parseFrontmatter(raw);
-    posts.push(buildPostMeta(slug, data));
+    if (!SLUG_RE.test(slug)) continue;
+    try {
+      const raw = await readFile(path.join(BLOG_DIR, file), "utf8");
+      const { data } = parseFrontmatter(raw);
+      posts.push(buildPostMeta(slug, data));
+    } catch {
+      continue;
+    }
   }
   posts.sort((a, b) => (b.date || "").localeCompare(a.date || ""));
   return posts;
