@@ -154,6 +154,7 @@ model JobDescription {
   salaryMin        Int?
   salaryMax        Int?
   salaryNegotiable Boolean         @default(false)
+  viewCount        Int             @default(0)
   isPublic        Boolean         @default(false)
   evaluations     Evaluation[]
   applications    Application[]
