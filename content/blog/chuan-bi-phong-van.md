@@ -4,6 +4,7 @@ description: Các bước chuẩn bị giúp bạn tự tin và thể hiện t�
 date: 2026-09-12
 tag: Phỏng vấn
 author: SmartHire
+cover: /blog/chuan-bi-phong-van.svg
 ---
 
 ## Tìm hiểu về công ty

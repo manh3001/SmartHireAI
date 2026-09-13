@@ -13,6 +13,8 @@ import { topSkills } from "@/lib/jobs/top-skills";
 import TrustedCompanies from "@/components/home/TrustedCompanies";
 import { fetchTopCompanies } from "@/lib/company/top-companies";
 import FeatureTools from "@/components/home/FeatureTools";
+import PostCard from "@/components/blog/PostCard";
+import { getAllPosts } from "@/lib/blog/posts";
 
 const steps = [
   { n: "1", title: "Tạo hoặc nhập CV", desc: "Điền form hoặc tải PDF cũ để AI đọc giúp." },
@@ -24,7 +26,7 @@ export default async function Home() {
   const session = await auth();
   const loggedIn = !!session?.user;
 
-  const [latestJobs, jobCount, companyGroups, cvCount, trendingSkills, topCompanies] = await Promise.all([
+  const [latestJobs, jobCount, companyGroups, cvCount, trendingSkills, topCompanies, allPosts] = await Promise.all([
     prisma.jobDescription.findMany({
       where: { isPublic: true },
       orderBy: { createdAt: "desc" },
@@ -42,7 +44,9 @@ export default async function Home() {
     prisma.cV.count(),
     topSkills(8),
     fetchTopCompanies(12),
+    getAllPosts(),
   ]);
+  const latestPosts = allPosts.slice(0, 3);
   const companyCount = companyGroups.filter((c) => c.company.trim()).length;
 
   return (
@@ -126,6 +130,20 @@ export default async function Home() {
         </section>
 
         <FeatureTools />
+
+        {latestPosts.length > 0 && (
+          <section className="mx-auto max-w-6xl px-4 py-14">
+            <div className="mb-6 flex items-center justify-between">
+              <h2 className="text-2xl font-bold text-foreground">Cẩm nang mới nhất</h2>
+              <Link href="/blog" className="text-sm font-medium text-primary hover:underline">Xem tất cả →</Link>
+            </div>
+            <div className="grid gap-4 sm:grid-cols-3">
+              {latestPosts.map((p) => (
+                <PostCard key={p.slug} post={p} />
+              ))}
+            </div>
+          </section>
+        )}
 
         {/* 3 bước */}
         <section className="bg-muted/30">

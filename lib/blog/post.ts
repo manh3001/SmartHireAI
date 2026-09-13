@@ -5,6 +5,7 @@ export type PostMeta = {
   date: string;
   tag: string;
   author: string;
+  cover: string;
 };
 
 export function buildPostMeta(slug: string, data: Record<string, string>): PostMeta {
@@ -15,5 +16,6 @@ export function buildPostMeta(slug: string, data: Record<string, string>): PostM
     date: data.date || "",
     tag: data.tag || "",
     author: data.author || "",
+    cover: data.cover || "",
   };
 }
