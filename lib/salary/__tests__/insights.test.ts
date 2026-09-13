@@ -1,5 +1,6 @@
 import { describe, it, expect } from "vitest";
-import { median, computeSalaryInsights } from "../insights";
+import { median, computeSalaryInsights, computeSalaryByLevel, computeSalaryBySkill } from "../insights";
+import { EXPERIENCE_LEVEL_LABELS } from "@/lib/jobs/job-fields";
 
 const M = 1_000_000;
 
@@ -72,5 +73,67 @@ describe("computeSalaryInsights", () => {
     ];
     const out = computeSalaryInsights(rows);
     expect(out.map((o) => o.category)).toEqual(["finance", "hr"]);
+  });
+});
+
+describe("computeSalaryByLevel", () => {
+  it("gom theo cấp, sắp theo thứ tự cấp bậc (không theo median)", () => {
+    const rows = [
+      { experienceLevel: "SENIOR", salaryMin: null, salaryMax: 50 * M },
+      { experienceLevel: "INTERN", salaryMin: null, salaryMax: 10 * M },
+    ];
+    const out = computeSalaryByLevel(rows);
+    expect(out).toHaveLength(2);
+    expect(out[0].label).toBe(EXPERIENCE_LEVEL_LABELS.INTERN);
+    expect(out[0].medianMax).toBe(10 * M);
+    expect(out[1].label).toBe(EXPERIENCE_LEVEL_LABELS.SENIOR);
+  });
+
+  it("bỏ tin cấp bậc null/không hợp lệ và tin không có lương", () => {
+    const rows = [
+      { experienceLevel: null, salaryMin: 10 * M, salaryMax: null },
+      { experienceLevel: "XXX", salaryMin: 10 * M, salaryMax: null },
+      { experienceLevel: "MID", salaryMin: null, salaryMax: null },
+      { experienceLevel: "MID", salaryMin: 20 * M, salaryMax: 30 * M },
+    ];
+    const out = computeSalaryByLevel(rows);
+    expect(out).toHaveLength(1);
+    expect(out[0]).toMatchObject({ label: EXPERIENCE_LEVEL_LABELS.MID, sampleSize: 1, medianMin: 20 * M, medianMax: 30 * M });
+  });
+});
+
+describe("computeSalaryBySkill", () => {
+  it("tách + dedupe trong tin, gộp không phân biệt hoa thường", () => {
+    const rows = [
+      { skills: "React, React, node", salaryMin: null, salaryMax: 30 * M },
+      { skills: "REACT", salaryMin: null, salaryMax: 40 * M },
+      { skills: "react", salaryMin: null, salaryMax: 50 * M },
+    ];
+    const out = computeSalaryBySkill(rows);
+    const react = out.find((r) => r.label.toLowerCase() === "react");
+    expect(react?.sampleSize).toBe(3);
+    expect(react?.label).toBe("React"); // dạng hiển thị lần đầu
+  });
+
+  it("loại kỹ năng dưới ngưỡng mẫu (>=3)", () => {
+    const rows = [
+      { skills: "Go", salaryMin: null, salaryMax: 40 * M },
+      { skills: "Go", salaryMin: null, salaryMax: 40 * M },
+    ];
+    expect(computeSalaryBySkill(rows)).toEqual([]);
+  });
+
+  it("sắp theo medianMax giảm dần và cắt theo limit", () => {
+    const rows = [
+      { skills: "A", salaryMin: null, salaryMax: 10 * M },
+      { skills: "A", salaryMin: null, salaryMax: 10 * M },
+      { skills: "A", salaryMin: null, salaryMax: 10 * M },
+      { skills: "B", salaryMin: null, salaryMax: 90 * M },
+      { skills: "B", salaryMin: null, salaryMax: 90 * M },
+      { skills: "B", salaryMin: null, salaryMax: 90 * M },
+    ];
+    const out = computeSalaryBySkill(rows, 1);
+    expect(out).toHaveLength(1);
+    expect(out[0].label).toBe("B");
   });
 });

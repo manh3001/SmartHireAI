@@ -3,28 +3,35 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { EmptyState } from "@/components/ui/empty-state";
 import { BarChart3 } from "lucide-react";
-import { getCachedSalaryInsights } from "@/lib/salary/insights-data";
-import { formatSalary } from "@/lib/jobs/salary";
+import { getCachedSalaryData } from "@/lib/salary/insights-data";
+import SalaryTable from "@/components/salary/SalaryTable";
+import type { SalaryBarRow } from "@/lib/salary/insights";
 
 export const metadata: Metadata = {
-  title: "Lương theo ngành | SmartHire",
-  description: "Khoảng lương phổ biến theo ngành nghề, tổng hợp từ tin tuyển dụng trên SmartHire.",
+  title: "Thống kê lương theo ngành, cấp bậc & kỹ năng | SmartHire",
+  description: "Khoảng lương phổ biến theo ngành nghề, cấp bậc và kỹ năng, tổng hợp từ tin tuyển dụng trên SmartHire.",
   alternates: { canonical: "/salaries" },
 };
 
 export default async function SalariesPage() {
-  const insights = await getCachedSalaryInsights();
-  const maxMedian = Math.max(1, ...insights.map((i) => i.medianMax ?? 0));
+  const { byCategory, byLevel, bySkill } = await getCachedSalaryData();
+  const categoryRows: SalaryBarRow[] = byCategory.map((c) => ({
+    label: c.label,
+    sampleSize: c.sampleSize,
+    medianMin: c.medianMin,
+    medianMax: c.medianMax,
+  }));
+  const empty = byCategory.length === 0 && byLevel.length === 0 && bySkill.length === 0;
 
   return (
     <div className="flex min-h-full flex-col">
       <Navbar />
       <main className="mx-auto w-full max-w-4xl flex-1 p-4 sm:p-6">
-        <h1 className="text-2xl font-bold text-foreground">Lương theo ngành</h1>
+        <h1 className="text-2xl font-bold text-foreground">Thống kê lương</h1>
         <p className="mt-1 text-sm text-muted-foreground">
-          Khoảng lương phổ biến (trung vị) theo ngành, tổng hợp từ các tin tuyển dụng công khai.
+          Khoảng lương phổ biến (trung vị) theo ngành, cấp bậc và kỹ năng, tổng hợp từ các tin tuyển dụng công khai.
         </p>
-        {insights.length === 0 ? (
+        {empty ? (
           <div className="mt-8">
             <EmptyState
               icon={<BarChart3 className="h-10 w-10" />}
@@ -33,26 +40,25 @@ export default async function SalariesPage() {
             />
           </div>
         ) : (
-          <div className="mt-6 flex flex-col gap-3">
-            {insights.map((i) => (
-              <div key={i.category} className="rounded-2xl border border-border bg-card p-4">
-                <div className="flex items-center justify-between gap-2">
-                  <span className="font-semibold text-foreground">{i.label}</span>
-                  <span className="text-sm font-medium text-foreground">
-                    {formatSalary(i.medianMin, i.medianMax, false) ?? "—"}
-                  </span>
-                </div>
-                <div className="mt-2 h-2 w-full rounded-full bg-muted">
-                  <div
-                    className="h-2 rounded-full bg-brand-gradient"
-                    style={{ width: `${((i.medianMax ?? 0) / maxMedian) * 100}%` }}
-                  />
-                </div>
-                <div className="mt-1 text-xs text-muted-foreground">
-                  {i.sampleSize} tin{i.sampleSize < 5 ? " · ít dữ liệu" : ""}
-                </div>
-              </div>
-            ))}
+          <div className="mt-6 flex flex-col gap-8">
+            {categoryRows.length > 0 && (
+              <section>
+                <h2 className="text-lg font-semibold text-foreground">Theo ngành</h2>
+                <SalaryTable rows={categoryRows} />
+              </section>
+            )}
+            {byLevel.length > 0 && (
+              <section>
+                <h2 className="text-lg font-semibold text-foreground">Theo cấp bậc</h2>
+                <SalaryTable rows={byLevel} />
+              </section>
+            )}
+            {bySkill.length > 0 && (
+              <section>
+                <h2 className="text-lg font-semibold text-foreground">Top kỹ năng lương cao</h2>
+                <SalaryTable rows={bySkill} />
+              </section>
+            )}
           </div>
         )}
       </main>
