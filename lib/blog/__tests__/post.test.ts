@@ -4,15 +4,15 @@ import { buildPostMeta } from "../post";
 describe("buildPostMeta", () => {
   it("map đầy đủ từ frontmatter", () => {
     const meta = buildPostMeta("bai-1", {
-      title: "Tiêu đề", description: "Mô tả", date: "2026-09-13", tag: "CV", author: "An",
+      title: "Tiêu đề", description: "Mô tả", date: "2026-09-13", tag: "CV", author: "An", cover: "/blog/x.svg",
     });
     expect(meta).toEqual({
-      slug: "bai-1", title: "Tiêu đề", description: "Mô tả", date: "2026-09-13", tag: "CV", author: "An",
+      slug: "bai-1", title: "Tiêu đề", description: "Mô tả", date: "2026-09-13", tag: "CV", author: "An", cover: "/blog/x.svg",
     });
   });
 
-  it("thiếu title -> fallback slug; field khác rỗng", () => {
+  it("thiếu title -> fallback slug; field khác rỗng (gồm cover)", () => {
     const meta = buildPostMeta("bai-2", {});
-    expect(meta).toEqual({ slug: "bai-2", title: "bai-2", description: "", date: "", tag: "", author: "" });
+    expect(meta).toEqual({ slug: "bai-2", title: "bai-2", description: "", date: "", tag: "", author: "", cover: "" });
   });
 });

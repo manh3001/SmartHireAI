@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { buildArticleJsonLd } from "../article-jsonld";
 
-const meta = { slug: "s", title: "Tiêu đề", description: "Mô tả", date: "2026-09-13", tag: "CV", author: "An" };
+const meta = { slug: "s", title: "Tiêu đề", description: "Mô tả", date: "2026-09-13", tag: "CV", author: "An", cover: "" };
 
 describe("buildArticleJsonLd", () => {
   it("shape BlogPosting đúng", () => {
