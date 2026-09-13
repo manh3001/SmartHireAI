@@ -60,6 +60,7 @@ export async function createJobDescription(formData: FormData): Promise<void> {
     salaryMax: job.salaryMax,
   });
 
+  revalidateTag(CACHE_TAGS.jobs, "max");
   redirect("/dashboard");
 }
 
@@ -68,4 +69,5 @@ export async function deleteJobDescription(formData: FormData): Promise<void> {
   const id = String(formData.get("id") ?? "");
   await prisma.jobDescription.deleteMany({ where: { id, userId: session.user.id } });
   revalidateTag(CACHE_TAGS.dashboard, "max");
+  revalidateTag(CACHE_TAGS.jobs, "max");
 }
