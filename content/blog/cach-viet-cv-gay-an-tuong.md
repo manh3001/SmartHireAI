@@ -4,6 +4,7 @@ description: Những nguyên tắc cốt lõi giúp CV của bạn nổi bật v
 date: 2026-09-10
 tag: CV
 author: SmartHire
+cover: /blog/cach-viet-cv-gay-an-tuong.svg
 ---
 
 ## Bắt đầu từ mục tiêu rõ ràng
