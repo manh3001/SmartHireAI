@@ -5,6 +5,7 @@ import { EmptyState } from "@/components/ui/empty-state";
 import { BarChart3 } from "lucide-react";
 import { getCachedSalaryData } from "@/lib/salary/insights-data";
 import SalaryTable from "@/components/salary/SalaryTable";
+import SalaryMatrix from "@/components/salary/SalaryMatrix";
 import type { SalaryBarRow } from "@/lib/salary/insights";
 
 export const metadata: Metadata = {
@@ -14,7 +15,7 @@ export const metadata: Metadata = {
 };
 
 export default async function SalariesPage() {
-  const { byCategory, byLevel, bySkill } = await getCachedSalaryData();
+  const { byCategory, byLevel, bySkill, matrix } = await getCachedSalaryData();
   const categoryRows: SalaryBarRow[] = byCategory.map((c) => ({
     label: c.label,
     sampleSize: c.sampleSize,
@@ -57,6 +58,15 @@ export default async function SalariesPage() {
               <section>
                 <h2 className="text-lg font-semibold text-foreground">Top kỹ năng lương cao</h2>
                 <SalaryTable rows={bySkill} />
+              </section>
+            )}
+            {matrix.rows.length > 0 && (
+              <section>
+                <h2 className="text-lg font-semibold text-foreground">Ma trận lương theo ngành × cấp bậc</h2>
+                <p className="mt-1 text-xs text-muted-foreground">Trung vị lương (triệu VND) theo ngành và cấp bậc.</p>
+                <div className="mt-4">
+                  <SalaryMatrix matrix={matrix} />
+                </div>
               </section>
             )}
           </div>
