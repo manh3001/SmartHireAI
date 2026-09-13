@@ -2,10 +2,17 @@ import { cookies } from "next/headers";
 import prisma from "@/lib/db/prisma";
 import { auth } from "@/auth";
 import { recordView } from "@/lib/jobs/view-count";
+import { checkRateLimit } from "@/lib/security/ratelimit";
+import { getClientIp } from "@/lib/security/ip";
 
 export const runtime = "nodejs";
 
-export async function POST(_req: Request, { params }: { params: Promise<{ id: string }> }) {
+export async function POST(req: Request, { params }: { params: Promise<{ id: string }> }) {
+  const ip = getClientIp(req);
+  if (!(await checkRateLimit("mutation", ip))) {
+    return new Response(null, { status: 429 });
+  }
+
   const { id } = await params;
   const job = await prisma.jobDescription.findFirst({
     where: { id, isPublic: true },
