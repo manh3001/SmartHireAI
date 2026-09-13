@@ -17,6 +17,7 @@ export default function Footer() {
         <div>
           <div className="mb-2 text-sm font-semibold text-foreground">Ứng viên</div>
           <ul className="space-y-1 text-sm text-muted-foreground">
+            <li><Link href="/salaries" className="hover:text-foreground">Lương theo ngành</Link></li>
             <li><Link href="/jobs" className="hover:text-foreground">Việc làm</Link></li>
             <li><Link href="/dashboard" className="hover:text-foreground">Bảng điều khiển</Link></li>
           </ul>

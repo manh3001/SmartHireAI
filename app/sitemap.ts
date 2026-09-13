@@ -12,6 +12,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const staticRoutes: MetadataRoute.Sitemap = [
     { url: absoluteUrl("/"), changeFrequency: "daily", priority: 1 },
     { url: absoluteUrl("/jobs"), changeFrequency: "daily", priority: 0.9 },
+    { url: absoluteUrl("/salaries"), changeFrequency: "weekly", priority: 0.6 },
   ];
   const jobRoutes: MetadataRoute.Sitemap = jobs.map((j) => ({
     url: absoluteUrl(`/jobs/${j.id}`),
