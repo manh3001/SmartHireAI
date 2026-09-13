@@ -15,6 +15,8 @@ import {
 export default function ThemeToggle() {
   const { setTheme, theme } = useTheme();
   const [mounted, setMounted] = React.useState(false);
+  // Pattern "mounted gate" của next-themes để tránh hydration mismatch (chạy 1 lần khi mount).
+  // eslint-disable-next-line react-hooks/set-state-in-effect
   React.useEffect(() => setMounted(true), []);
 
   // Tránh hydration mismatch: chỉ render nội dung phụ thuộc theme sau khi mounted.
