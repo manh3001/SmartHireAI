@@ -19,6 +19,7 @@ export type JobCardData = {
   category?: string | null;
   rawText?: string | null;
   createdAt?: string | Date | null;
+  applicationCount?: number | null;
 };
 
 export default function JobCard({
@@ -54,9 +55,12 @@ export default function JobCard({
                 <span
                   key={b.label}
                   className={
-                    b.tone === "new"
-                      ? "rounded-full bg-emerald-500/10 px-2 py-0.5 text-[11px] font-medium text-emerald-600 dark:text-emerald-400"
-                      : "rounded-full bg-amber-500/10 px-2 py-0.5 text-[11px] font-medium text-amber-600 dark:text-amber-400"
+                    "rounded-full px-2 py-0.5 text-[11px] font-medium " +
+                    (b.tone === "hot"
+                      ? "bg-rose-500/10 text-rose-600 dark:text-rose-400"
+                      : b.tone === "new"
+                        ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
+                        : "bg-amber-500/10 text-amber-600 dark:text-amber-400")
                   }
                 >
                   {b.label}
