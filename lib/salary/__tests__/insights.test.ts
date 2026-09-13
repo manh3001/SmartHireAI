@@ -1,6 +1,7 @@
 import { describe, it, expect } from "vitest";
-import { median, computeSalaryInsights, computeSalaryByLevel, computeSalaryBySkill } from "../insights";
+import { median, computeSalaryInsights, computeSalaryByLevel, computeSalaryBySkill, computeSalaryMatrix } from "../insights";
 import { EXPERIENCE_LEVEL_LABELS } from "@/lib/jobs/job-fields";
+import { JOB_CATEGORY_LABELS } from "@/lib/jobs/job-categories";
 
 const M = 1_000_000;
 
@@ -135,5 +136,40 @@ describe("computeSalaryBySkill", () => {
     const out = computeSalaryBySkill(rows, 1);
     expect(out).toHaveLength(1);
     expect(out[0].label).toBe("B");
+  });
+});
+
+describe("computeSalaryMatrix", () => {
+  it("levels đúng thứ tự INTERN->LEAD; rỗng -> không hàng", () => {
+    const m = computeSalaryMatrix([]);
+    expect(m.levels.map((l) => l.level)).toEqual(["INTERN", "JUNIOR", "MID", "SENIOR", "LEAD"]);
+    expect(m.rows).toEqual([]);
+  });
+
+  it("gom theo ngành×cấp, median rep = salaryMax ?? salaryMin; ô rỗng = null", () => {
+    const rows = [
+      { category: "it", experienceLevel: "SENIOR", salaryMin: null, salaryMax: 40 * M },
+      { category: "it", experienceLevel: "SENIOR", salaryMin: 20 * M, salaryMax: null },
+    ];
+    const m = computeSalaryMatrix(rows);
+    expect(m.rows).toHaveLength(1);
+    expect(m.rows[0].label).toBe(JOB_CATEGORY_LABELS.it);
+    const seniorIdx = m.levels.findIndex((l) => l.level === "SENIOR");
+    const internIdx = m.levels.findIndex((l) => l.level === "INTERN");
+    expect(m.rows[0].cells[seniorIdx]).toBe(30 * M);
+    expect(m.rows[0].cells[internIdx]).toBeNull();
+  });
+
+  it("loại tin cấp bậc null/không hợp lệ + tin không lương; ngành lạ -> Khác", () => {
+    const rows = [
+      { category: "xyz", experienceLevel: "MID", salaryMin: null, salaryMax: 25 * M },
+      { category: "it", experienceLevel: null, salaryMin: 10 * M, salaryMax: null },
+      { category: "it", experienceLevel: "MID", salaryMin: null, salaryMax: null },
+    ];
+    const m = computeSalaryMatrix(rows);
+    expect(m.rows).toHaveLength(1);
+    expect(m.rows[0].label).toBe(JOB_CATEGORY_LABELS.other);
+    const midIdx = m.levels.findIndex((l) => l.level === "MID");
+    expect(m.rows[0].cells[midIdx]).toBe(25 * M);
   });
 });
