@@ -11,6 +11,7 @@ export type JobRow = {
   id: string; title: string; company: string; rawText: string; createdAt: Date;
   location: string | null; employmentType: EmploymentType | null; experienceLevel: ExperienceLevel | null;
   skills: string; salaryMin: number | null; salaryMax: number | null; salaryNegotiable: boolean; category: string | null;
+  applicationCount: number;
 };
 
 export type FacetCounts = {
