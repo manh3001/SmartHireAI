@@ -12,6 +12,7 @@ import SaveJobButton from "../SaveJobButton";
 import { absoluteUrl } from "@/lib/seo/url";
 import { metaDescription } from "@/lib/seo/job-seo";
 import { buildJobPostingJsonLd } from "@/lib/seo/job-jsonld";
+import ViewTracker from "@/components/jobs/ViewTracker";
 
 export async function generateMetadata({
   params,
@@ -49,6 +50,7 @@ export default async function JobDetailPage({
       id: true, title: true, company: true, rawText: true, userId: true,
       location: true, employmentType: true, experienceLevel: true, skills: true,
       salaryMin: true, salaryMax: true, salaryNegotiable: true, createdAt: true,
+      viewCount: true,
     },
   });
   if (!job) notFound();
@@ -125,6 +127,8 @@ export default async function JobDetailPage({
           }}
         />
         <Link href="/jobs" className="text-sm text-primary hover:underline">← Về danh sách</Link>
+        <p className="mt-2 text-xs text-muted-foreground">{job.viewCount} lượt xem</p>
+        <ViewTracker jobId={job.id} />
         <div className="mt-3">
           <JobDetail job={job} action={actionSlot} />
         </div>
