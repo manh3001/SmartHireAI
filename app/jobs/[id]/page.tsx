@@ -103,6 +103,11 @@ export default async function JobDetailPage({
         )
       )}
       {isCandidate && <SaveJobButton jobId={job.id} initialSaved={!!savedJob} />}
+      {isCandidate && (
+        <Link href={`/jobs/${job.id}/interview-practice`} className={buttonVariants({ variant: "outline" })}>
+          Phỏng vấn thử
+        </Link>
+      )}
       {isOwnerRecruiter && (
         <Link href={`/jobs/${job.id}/applicants`} className={buttonVariants()}>
           Xem ứng viên đã nộp
