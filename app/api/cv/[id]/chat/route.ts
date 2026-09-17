@@ -1,3 +1,4 @@
+import { NextResponse } from "next/server";
 import { auth } from "@/auth";
 import prisma from "@/lib/db/prisma";
 import { getAiClient, AI_MODEL } from "@/lib/ai/client";
@@ -5,6 +6,7 @@ import { buildChatSystemPrompt } from "@/lib/ai/chat";
 import type { EvaluationResult } from "@/lib/ai/schema";
 import { checkRateLimit } from "@/lib/security/ratelimit";
 import { loadCvInput } from "@/lib/cv/load";
+import { assertSameOrigin } from "@/lib/security/origin";
 import type { ChatCompletionMessageParam } from "openai/resources/chat/completions";
 
 export const runtime = "nodejs";
@@ -19,6 +21,10 @@ export async function POST(
     return new Response("Chưa đăng nhập", { status: 401 });
   }
   const userId = session.user.id;
+
+  if (!assertSameOrigin(req)) {
+    return NextResponse.json({ error: "Yêu cầu không hợp lệ" }, { status: 403 });
+  }
 
   if (!(await checkRateLimit("ai", userId))) {
     return new Response("Bạn nhắn quá nhanh, vui lòng chờ một chút", { status: 429 });

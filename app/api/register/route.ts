@@ -4,9 +4,13 @@ import { registerUser } from "@/lib/auth/register";
 import { hashPassword } from "@/lib/auth/password";
 import { checkRateLimit } from "@/lib/security/ratelimit";
 import { getClientIp } from "@/lib/security/ip";
+import { assertSameOrigin } from "@/lib/security/origin";
 
 export async function POST(req: Request) {
   try {
+    if (!assertSameOrigin(req)) {
+      return NextResponse.json({ error: "Yêu cầu không hợp lệ" }, { status: 403 });
+    }
     const ip = getClientIp(req);
     if (!(await checkRateLimit("register", ip))) {
       return NextResponse.json(
