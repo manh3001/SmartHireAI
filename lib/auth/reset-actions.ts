@@ -110,5 +110,5 @@ export async function confirmPasswordReset(
     used: "Liên kết đã được sử dụng.",
     weak: res.message ?? "Mật khẩu chưa đủ mạnh.",
   };
-  return { ok: false, message: MSG[res.reason] };
+  return { ok: false, message: MSG[res.reason] ?? "Đã có lỗi xảy ra." };
 }
