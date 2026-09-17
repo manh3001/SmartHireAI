@@ -21,7 +21,9 @@ export function isTrustedOrigin(
   // Không có chỉ dấu trình duyệt nào -> không thể kết luận CSRF, cho qua.
   if (!h.origin && !h.referer) return true;
   if (h.origin) return allowed.has(h.origin);
-  return allowed.has(originOf(h.referer)!);
+  const refOrigin = originOf(h.referer);
+  if (!refOrigin) return false;
+  return allowed.has(refOrigin);
 }
 
 export function assertSameOrigin(req: Request): boolean {
