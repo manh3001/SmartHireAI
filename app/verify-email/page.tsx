@@ -1,4 +1,5 @@
 import Link from "next/link";
+import type { Prisma } from "@prisma/client";
 import prisma from "@/lib/db/prisma";
 import { confirmVerification } from "@/lib/auth/email-verification";
 import { recordAudit, AUDIT_ACTIONS } from "@/lib/audit/log";
@@ -39,7 +40,7 @@ export default async function VerifyEmailPage({
                   userId: en.userId ?? undefined,
                   targetId: en.targetId ?? undefined,
                   ip: en.ip ?? undefined,
-                  metadata: en.metadata as import("@prisma/client").Prisma.InputJsonValue ?? undefined,
+                  metadata: en.metadata != null ? (en.metadata as Prisma.InputJsonValue) : undefined,
                 },
               })
               .then(() => undefined),

@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import type { Prisma } from "@prisma/client";
 import prisma from "@/lib/db/prisma";
 import { registerUser } from "@/lib/auth/register";
 import { hashPassword } from "@/lib/auth/password";
@@ -60,7 +61,7 @@ export async function POST(req: Request) {
                 userId: en.userId ?? undefined,
                 targetId: en.targetId ?? undefined,
                 ip: en.ip ?? undefined,
-                metadata: en.metadata as import("@prisma/client").Prisma.InputJsonValue ?? undefined,
+                metadata: en.metadata != null ? (en.metadata as Prisma.InputJsonValue) : undefined,
               },
             })
             .then(() => undefined),
