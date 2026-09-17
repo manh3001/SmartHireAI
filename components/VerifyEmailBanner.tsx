@@ -18,6 +18,7 @@ export default function VerifyEmailBanner() {
     <div className="mb-4 flex flex-wrap items-center gap-3 rounded-lg border border-amber-300 bg-amber-50 p-3 text-sm text-amber-900 dark:border-amber-700/50 dark:bg-amber-950/30 dark:text-amber-200">
       <span>Email của bạn chưa được xác minh. Một số thao tác (ứng tuyển, đăng tin) sẽ bị hạn chế.</span>
       <button
+        type="button"
         onClick={onResend}
         disabled={sending}
         className="font-medium underline underline-offset-2 disabled:opacity-60"

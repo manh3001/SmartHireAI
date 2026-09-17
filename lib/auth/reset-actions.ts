@@ -72,15 +72,19 @@ export async function confirmPasswordReset(
       }),
     hash: hashPassword,
     applyReset: async (userId, passwordHash, tokenHash, at) => {
-      await prisma.$transaction([
-        prisma.user.update({ where: { id: userId }, data: { passwordHash } }),
-        prisma.authToken.update({ where: { tokenHash }, data: { usedAt: at } }),
+      await prisma.$transaction(async (tx) => {
+        const consumed = await tx.authToken.updateMany({
+          where: { tokenHash, usedAt: null },
+          data: { usedAt: at },
+        });
+        if (consumed.count === 0) return; // token đã dùng bởi request khác
+        await tx.user.update({ where: { id: userId }, data: { passwordHash } });
         // Vô hiệu mọi token reset khác còn hiệu lực của user.
-        prisma.authToken.updateMany({
+        await tx.authToken.updateMany({
           where: { userId, purpose: "PASSWORD_RESET", usedAt: null },
           data: { usedAt: at },
-        }),
-      ]);
+        });
+      });
     },
   });
 

@@ -11,6 +11,7 @@ export default async function AdminAuditPage({
   const sp = await searchParams;
   const page = Math.max(1, Number(sp.page ?? "1") || 1);
   const action = sp.action?.trim() || undefined;
+  const encodedAction = action ? encodeURIComponent(action) : "";
   const where = action ? { action } : {};
 
   const [logs, total] = await Promise.all([
@@ -71,10 +72,10 @@ export default async function AdminAuditPage({
         <span className="text-muted-foreground">Trang {page}/{totalPages}</span>
         <div className="flex gap-2">
           {page > 1 && (
-            <Link href={`/admin/audit?page=${page - 1}${action ? `&action=${action}` : ""}`} className="rounded-md border border-border px-3 py-1.5">Trước</Link>
+            <Link href={`/admin/audit?page=${page - 1}${encodedAction ? `&action=${encodedAction}` : ""}`} className="rounded-md border border-border px-3 py-1.5">Trước</Link>
           )}
           {page < totalPages && (
-            <Link href={`/admin/audit?page=${page + 1}${action ? `&action=${action}` : ""}`} className="rounded-md border border-border px-3 py-1.5">Sau</Link>
+            <Link href={`/admin/audit?page=${page + 1}${encodedAction ? `&action=${encodedAction}` : ""}`} className="rounded-md border border-border px-3 py-1.5">Sau</Link>
           )}
         </div>
       </div>

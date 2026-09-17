@@ -21,10 +21,14 @@ export default async function VerifyEmailPage({
           select: { userId: true, purpose: true, expiresAt: true, usedAt: true },
         }),
       markVerified: async (tokenHash, userId, at) => {
-        await prisma.$transaction([
-          prisma.authToken.update({ where: { tokenHash }, data: { usedAt: at } }),
-          prisma.user.update({ where: { id: userId }, data: { emailVerified: at } }),
-        ]);
+        await prisma.$transaction(async (tx) => {
+          const consumed = await tx.authToken.updateMany({
+            where: { tokenHash, usedAt: null },
+            data: { usedAt: at },
+          });
+          if (consumed.count === 0) return; // đã bị dùng bởi request khác
+          await tx.user.update({ where: { id: userId }, data: { emailVerified: at } });
+        });
       },
     });
     state = result.ok ? "ok" : result.reason;
