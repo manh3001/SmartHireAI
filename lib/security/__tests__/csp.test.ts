@@ -17,3 +17,16 @@ describe("buildCsp", () => {
     expect(buildCsp({ isProd: false })).toContain("'unsafe-eval'");
   });
 });
+
+describe("buildCsp connect-src", () => {
+  it("khong con dung 'https:' rong cho connect-src", () => {
+    const csp = buildCsp({ isProd: true });
+    expect(csp).not.toMatch(/connect-src[^;]*\bhttps:(\s|;|$)/);
+    expect(csp).toMatch(/connect-src[^;]*'self'/);
+  });
+
+  it("them host Sentry khi co DSN", () => {
+    const csp = buildCsp({ isProd: true, sentryDsn: "https://abc@o123.ingest.sentry.io/456" });
+    expect(csp).toContain("https://o123.ingest.sentry.io");
+  });
+});
