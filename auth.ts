@@ -62,7 +62,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
               prisma.user.findUnique({ where: { email }, select: { id: true, role: true } }),
             createUser: (email, name) =>
               prisma.user.create({
-                data: { email, name, role: "CANDIDATE" },
+                data: { email, name, role: "CANDIDATE", emailVerified: new Date() },
                 select: { id: true, role: true },
               }),
           },
