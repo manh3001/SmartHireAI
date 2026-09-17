@@ -56,7 +56,8 @@ export async function checkRateLimit(
     const { success } = await limiter.limit(key);
     return success;
   } catch (e) {
-    console.warn("[ratelimit] Upstash lỗi, fail-open:", e);
-    return true;
+    console.warn("[ratelimit] Upstash lỗi:", e);
+    // Scope nhạy cảm (auth) fail-closed; scope khác fail-open để giữ uptime.
+    return !RATE_LIMITS[scope].failClosed;
   }
 }
