@@ -4,6 +4,7 @@ import {
   parseSalaryInput,
   salaryWhere,
   SALARY_FILTER_STEPS,
+  vndToMillions,
 } from "../salary";
 
 describe("formatSalary", () => {
@@ -66,5 +67,13 @@ describe("salaryWhere", () => {
 describe("SALARY_FILTER_STEPS", () => {
   it("có các mốc tăng dần", () => {
     expect(SALARY_FILTER_STEPS).toEqual([10, 15, 20, 25, 30, 40, 50]);
+  });
+});
+
+describe("vndToMillions", () => {
+  it("đổi VND sang triệu, làm tròn 1 chữ số", () => {
+    expect(vndToMillions(15_000_000)).toBe(15);
+    expect(vndToMillions(15_500_000)).toBe(15.5);
+    expect(vndToMillions(0)).toBe(0);
   });
 });
