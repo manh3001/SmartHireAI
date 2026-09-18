@@ -7,6 +7,7 @@ export const AUDIT_ACTIONS = {
   passwordReset: "password.reset",
   roleChange: "role.change",
   userDelete: "user.delete",
+  sessionRevokeAll: "session.revoke_all",
 } as const;
 
 export type AuditAction = (typeof AUDIT_ACTIONS)[keyof typeof AUDIT_ACTIONS];
