@@ -73,10 +73,11 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
             where: { id: authed.id },
             select: { totpEnabled: true, totpSecret: true },
           });
+          const totpSecret = tf?.totpSecret ? decryptSecret(tf.totpSecret) : null;
           const outcome = await resolveTwoFactor(
             { totpEnabled: Boolean(tf?.totpEnabled), code },
             {
-              checkTotp: (c) => Boolean(tf?.totpSecret) && verifyTotp(decryptSecret(tf!.totpSecret!), c),
+              checkTotp: (c) => totpSecret !== null && verifyTotp(totpSecret, c),
               consumeBackup: async (c) => {
                 const r = await prisma.twoFactorBackupCode.updateMany({
                   where: { userId: authed.id, codeHash: hashBackupCode(c), usedAt: null },
