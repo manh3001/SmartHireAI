@@ -9,6 +9,7 @@ import { resolveOAuthUser } from "@/lib/auth/oauth";
 import { checkRateLimit } from "@/lib/security/ratelimit";
 import { getClientIp } from "@/lib/security/ip";
 import { recordAudit, AUDIT_ACTIONS } from "@/lib/audit/log";
+import { checkTokenVersion } from "@/lib/auth/token-version";
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   session: { strategy: "jwt" },
@@ -25,6 +26,29 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         const ok = await checkRateLimit("login", `${ip}:${email}`);
         if (!ok) {
           console.warn("[auth] login bị rate-limit:", email);
+          await recordAudit(
+            {
+              action: AUDIT_ACTIONS.loginFailure,
+              userId: null,
+              ip,
+              metadata: { email, reason: "rate_limited" },
+            },
+            {
+              save: (en) =>
+                prisma.auditLog
+                  .create({
+                    data: {
+                      action: en.action,
+                      userId: en.userId ?? undefined,
+                      targetId: en.targetId ?? undefined,
+                      ip: en.ip ?? undefined,
+                      metadata:
+                        en.metadata != null ? (en.metadata as Prisma.InputJsonValue) : undefined,
+                    },
+                  })
+                  .then(() => undefined),
+            },
+          );
           return null; // trả lỗi đồng nhất, không tiết lộ bị khoá
         }
 
@@ -98,6 +122,18 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       } else if (user) {
         token.id = (user as { id: string }).id;
         token.role = (user as { role?: "CANDIDATE" | "RECRUITER" | "ADMIN" }).role;
+      }
+      if (token.id) {
+        const dbUser = await prisma.user.findUnique({
+          where: { id: token.id as string },
+          select: { tokenVersion: true },
+        });
+        const check = checkTokenVersion({
+          tokenVersion: token.tokenVersion as number | undefined,
+          dbVersion: dbUser?.tokenVersion ?? null,
+        });
+        if (check !== "valid") return null; // phiên bị thu hồi / user bị xóa
+        token.tokenVersion = dbUser!.tokenVersion;
       }
       return token;
     },
