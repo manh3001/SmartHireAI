@@ -23,7 +23,6 @@ export default function TwoFactorSection({
   const [secret, setSecret] = useState("");
   const [code, setCode] = useState("");
   const [backupCodes, setBackupCodes] = useState<string[] | null>(null);
-  const [disabling, setDisabling] = useState(false);
   const [disableCode, setDisableCode] = useState("");
 
   function begin() {
@@ -43,13 +42,13 @@ export default function TwoFactorSection({
   function disable() {
     startTransition(async () => {
       const r = await disableTwoFactor(disableCode);
-      if (r.ok) { setDisabling(false); setDisableCode(""); toast.success("Đã tắt 2FA"); location.reload(); }
+      if (r.ok) { setDisableCode(""); toast.success("Đã tắt 2FA"); location.reload(); }
       else toast.error(r.error ?? "Không thể tắt 2FA");
     });
   }
   function regen() {
     startTransition(async () => {
-      const r = await regenerateBackupCodes(disableCode || code);
+      const r = await regenerateBackupCodes(disableCode);
       if (r.ok) { setBackupCodes(r.backupCodes); toast.success("Đã tạo lại mã dự phòng"); }
       else toast.error(r.error);
     });
