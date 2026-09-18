@@ -3,6 +3,7 @@ import Navbar from "@/components/Navbar";
 import prisma from "@/lib/db/prisma";
 import { EmptyState } from "@/components/ui/empty-state";
 import RevokeSessionsButton from "./RevokeSessionsButton";
+import TwoFactorSection from "./TwoFactorSection";
 
 export default async function SecuritySettingsPage() {
   const session = await requireUser();
@@ -13,6 +14,11 @@ export default async function SecuritySettingsPage() {
     orderBy: { createdAt: "desc" },
     take: 10,
     select: { id: true, ip: true, createdAt: true },
+  });
+
+  const me = await prisma.user.findUnique({
+    where: { id: userId },
+    select: { totpEnabled: true, _count: { select: { backupCodes: { where: { usedAt: null } } } } },
   });
 
   return (
@@ -47,6 +53,14 @@ export default async function SecuritySettingsPage() {
               </table>
             </div>
           )}
+        </section>
+
+        <section className="mb-8">
+          <h2 className="mb-3 text-lg font-semibold text-foreground">Xác thực 2 lớp (2FA)</h2>
+          <TwoFactorSection
+            enabled={Boolean(me?.totpEnabled)}
+            remainingBackup={me?._count.backupCodes ?? 0}
+          />
         </section>
 
         <section>
