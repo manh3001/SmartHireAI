@@ -8,6 +8,9 @@ export const AUDIT_ACTIONS = {
   roleChange: "role.change",
   userDelete: "user.delete",
   sessionRevokeAll: "session.revoke_all",
+  twoFactorEnable: "2fa.enable",
+  twoFactorDisable: "2fa.disable",
+  twoFactorRegenerateBackup: "2fa.backup_regenerate",
 } as const;
 
 export type AuditAction = (typeof AUDIT_ACTIONS)[keyof typeof AUDIT_ACTIONS];
