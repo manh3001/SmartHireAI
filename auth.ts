@@ -10,16 +10,21 @@ import { checkRateLimit } from "@/lib/security/ratelimit";
 import { getClientIp } from "@/lib/security/ip";
 import { recordAudit, AUDIT_ACTIONS } from "@/lib/audit/log";
 import { checkTokenVersion } from "@/lib/auth/token-version";
+import { verifyTotp } from "@/lib/auth/totp";
+import { decryptSecret } from "@/lib/auth/totp-crypto";
+import { hashBackupCode } from "@/lib/auth/backup-codes";
+import { resolveTwoFactor } from "@/lib/auth/two-factor";
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   session: { strategy: "jwt" },
   pages: { signIn: "/login" },
   providers: [
     Credentials({
-      credentials: { email: {}, password: {} },
+      credentials: { email: {}, password: {}, code: {} },
       authorize: async (creds, request) => {
         const email = creds?.email as string | undefined;
         const password = creds?.password as string | undefined;
+        const code = creds?.code as string | undefined;
         if (!email || !password) return null;
 
         const ip = getClientIp(request as Request | undefined);
@@ -61,12 +66,35 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           verify: verifyPassword,
         });
 
+        // Enforce 2FA khi tài khoản đã bật (defense-in-depth, kể cả client bỏ pre-check).
+        let loginOk = Boolean(authed);
+        if (authed) {
+          const tf = await prisma.user.findUnique({
+            where: { id: authed.id },
+            select: { totpEnabled: true, totpSecret: true },
+          });
+          const outcome = await resolveTwoFactor(
+            { totpEnabled: Boolean(tf?.totpEnabled), code },
+            {
+              checkTotp: (c) => Boolean(tf?.totpSecret) && verifyTotp(decryptSecret(tf!.totpSecret!), c),
+              consumeBackup: async (c) => {
+                const r = await prisma.twoFactorBackupCode.updateMany({
+                  where: { userId: authed.id, codeHash: hashBackupCode(c), usedAt: null },
+                  data: { usedAt: new Date() },
+                });
+                return r.count === 1;
+              },
+            },
+          );
+          if (outcome !== "ok") loginOk = false;
+        }
+
         await recordAudit(
           {
-            action: authed ? AUDIT_ACTIONS.loginSuccess : AUDIT_ACTIONS.loginFailure,
+            action: loginOk ? AUDIT_ACTIONS.loginSuccess : AUDIT_ACTIONS.loginFailure,
             userId: authed?.id ?? null,
             ip,
-            metadata: authed ? null : { email },
+            metadata: loginOk ? null : { email },
           },
           {
             save: (en) =>
@@ -83,7 +111,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
                 .then(() => undefined),
           },
         );
-        return authed;
+        return loginOk ? authed : null;
       },
     }),
     Google({
