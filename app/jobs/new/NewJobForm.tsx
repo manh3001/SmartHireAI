@@ -22,6 +22,13 @@ import { JOB_CATEGORIES } from "@/lib/jobs/job-categories";
 const selectClass =
   "w-full rounded-md border border-input bg-background px-3 py-2 text-sm";
 
+const BASIS_LABEL: Record<SalarySuggestion["basis"], string> = {
+  category_level: "theo ngành & cấp bậc",
+  category: "theo ngành",
+  level: "theo cấp bậc",
+  overall: "toàn thị trường",
+};
+
 export default function NewJobForm() {
   const [title, setTitle] = useState("");
   const [brief, setBrief] = useState("");
@@ -35,13 +42,6 @@ export default function NewJobForm() {
   const [salaryMax, setSalaryMax] = useState("");
   const [sug, setSug] = useState<{ suggestion: SalarySuggestion; note: string } | null>(null);
   const [sugPending, startSug] = useTransition();
-
-  const BASIS_LABEL: Record<SalarySuggestion["basis"], string> = {
-    category_level: "theo ngành & cấp bậc",
-    category: "theo ngành",
-    level: "theo cấp bậc",
-    overall: "toàn thị trường",
-  };
 
   function handleSuggestSalary() {
     startSug(async () => {
@@ -111,7 +111,7 @@ export default function NewJobForm() {
         </select></div>
       <div><Label>Ngành nghề</Label>
         <select name="category" className={selectClass}
-          value={category} onChange={(e) => setCategory(e.target.value)}>
+          value={category} onChange={(e) => { setCategory(e.target.value); setSug(null); }}>
           <option value="">— Chọn —</option>
           {JOB_CATEGORIES.map((c) => (
             <option key={c.slug} value={c.slug}>{c.label}</option>
@@ -119,7 +119,7 @@ export default function NewJobForm() {
         </select></div>
       <div><Label>Cấp bậc</Label>
         <select name="experienceLevel" className={selectClass}
-          value={experienceLevel} onChange={(e) => setExperienceLevel(e.target.value)}>
+          value={experienceLevel} onChange={(e) => { setExperienceLevel(e.target.value); setSug(null); }}>
           <option value="">— Chọn —</option>
           {EXPERIENCE_LEVELS.map((l) => (
             <option key={l} value={l}>{EXPERIENCE_LEVEL_LABELS[l]}</option>
