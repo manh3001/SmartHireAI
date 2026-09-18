@@ -10,6 +10,7 @@ import Navbar from "@/components/Navbar";
 import ImportCvButton from "./ImportCvButton";
 import RecruiterStats from "./RecruiterStats";
 import RecruiterAnalytics from "@/components/dashboard/RecruiterAnalytics";
+import RecruiterFunnel from "@/components/dashboard/RecruiterFunnel";
 import CandidateStats from "./CandidateStats";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -61,6 +62,9 @@ export default async function DashboardPage() {
           <RecruiterStats userId={session.user.id} />
           <Suspense fallback={<div className="mb-6 h-48 animate-pulse rounded-xl bg-muted" />}>
             <RecruiterAnalytics userId={session.user.id} />
+          </Suspense>
+          <Suspense fallback={<div className="mb-6 h-48 animate-pulse rounded-xl bg-muted" />}>
+            <RecruiterFunnel userId={session.user.id} />
           </Suspense>
           <div className="flex flex-col gap-3">
             {jobs.length === 0 && (
