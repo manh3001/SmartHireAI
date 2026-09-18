@@ -66,7 +66,7 @@ function hotp(secretBuf: Buffer, counter: number, digits: number = 6): string {
 
 export function generateTotp(secret: string, forTime: number = Date.now()): string {
   const counter = Math.floor(forTime / 1000 / 30);
-  return hotp(base32Decode(secret), counter, 8);
+  return hotp(base32Decode(secret), counter, 6);
 }
 
 export function verifyTotp(
@@ -75,13 +75,13 @@ export function verifyTotp(
   opts: { now?: number; window?: number } = {},
 ): boolean {
   const clean = (code || "").trim();
-  if (!/^\d{8}$/.test(clean)) return false;
+  if (!/^\d{6}$/.test(clean)) return false;
   const now = opts.now ?? Date.now();
   const window = opts.window ?? 1;
   const counter = Math.floor(now / 1000 / 30);
   const buf = base32Decode(secret);
   for (let i = -window; i <= window; i++) {
-    const candidate = hotp(buf, counter + i, 8);
+    const candidate = hotp(buf, counter + i, 6);
     if (timingSafeEqual(Buffer.from(candidate), Buffer.from(clean))) return true;
   }
   return false;

@@ -23,8 +23,8 @@ describe("generateTotp (RFC 6238 SHA-1 vectors)", () => {
   // Secret chuẩn RFC: ASCII "12345678901234567890"
   const SECRET = base32Encode(Buffer.from("12345678901234567890"));
   it("khớp vector tại T=59s và T=1111111109s", () => {
-    expect(generateTotp(SECRET, 59_000)).toBe("94287082");
-    expect(generateTotp(SECRET, 1_111_111_109_000)).toBe("07081804");
+    expect(generateTotp(SECRET, 59_000)).toBe("287082");
+    expect(generateTotp(SECRET, 1_111_111_109_000)).toBe("081804");
   });
 });
 
