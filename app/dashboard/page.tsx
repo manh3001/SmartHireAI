@@ -17,11 +17,18 @@ import { EmptyState } from "@/components/ui/empty-state";
 import CvCard from "./CvCard";
 import { profileCompleteness } from "@/lib/candidates/completeness";
 import ProfileCompleteness from "@/components/candidates/ProfileCompleteness";
+import VerifyEmailBanner from "@/components/VerifyEmailBanner";
+import { isEmailVerified } from "@/lib/auth/require-verified";
 
 export default async function DashboardPage() {
   const session = await auth();
   if (!session?.user?.id) redirect("/login");
   const isRecruiter = session.user.role === "RECRUITER";
+
+  const me = await prisma.user.findUnique({
+    where: { id: session.user.id },
+    select: { emailVerified: true },
+  });
 
   if (isRecruiter) {
     const jobs = await prisma.jobDescription.findMany({
@@ -37,6 +44,7 @@ export default async function DashboardPage() {
       <div className="flex min-h-full flex-col bg-muted/20">
         <Navbar />
         <main className="mx-auto w-full max-w-3xl flex-1 p-6">
+          {!isEmailVerified(me) && <VerifyEmailBanner />}
           <div className="mb-6 flex items-center justify-between">
             <div>
               <h1 className="text-2xl font-bold text-foreground">Tin tuyển dụng của bạn</h1>
@@ -116,6 +124,7 @@ export default async function DashboardPage() {
     <div className="flex min-h-full flex-col bg-muted/20">
       <Navbar />
       <main className="mx-auto w-full max-w-3xl flex-1 p-6">
+        {!isEmailVerified(me) && <VerifyEmailBanner />}
         <div className="mb-6 flex items-center justify-between">
           <div>
             <h1 className="text-2xl font-bold text-foreground">CV của bạn</h1>

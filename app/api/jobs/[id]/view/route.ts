@@ -4,10 +4,14 @@ import { auth } from "@/auth";
 import { recordView } from "@/lib/jobs/view-count";
 import { checkRateLimit } from "@/lib/security/ratelimit";
 import { getClientIp } from "@/lib/security/ip";
+import { assertSameOrigin } from "@/lib/security/origin";
 
 export const runtime = "nodejs";
 
 export async function POST(req: Request, { params }: { params: Promise<{ id: string }> }) {
+  if (!assertSameOrigin(req)) {
+    return new Response("forbidden", { status: 403 });
+  }
   const ip = getClientIp(req);
   if (!(await checkRateLimit("mutation", ip))) {
     return new Response(null, { status: 429 });

@@ -5,6 +5,7 @@ import { runCvEvaluation, type CvEvaluationDeps } from "@/lib/ai/evaluate";
 import { checkRateLimit } from "@/lib/security/ratelimit";
 import { loadCvInput } from "@/lib/cv/load";
 import { requestEvaluation } from "@/lib/ai/request-evaluation";
+import { assertSameOrigin } from "@/lib/security/origin";
 
 export const runtime = "nodejs";
 
@@ -18,6 +19,10 @@ export async function POST(
     return NextResponse.json({ error: "Chưa đăng nhập" }, { status: 401 });
   }
   const userId = session.user.id;
+
+  if (!assertSameOrigin(req)) {
+    return NextResponse.json({ error: "Yêu cầu không hợp lệ" }, { status: 403 });
+  }
 
   if (!(await checkRateLimit("ai", userId))) {
     return NextResponse.json(

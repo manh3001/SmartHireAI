@@ -19,6 +19,7 @@ import { buildCoverLetterPrompt } from "@/lib/ai/cover-letter-prompt";
 import { composeJdText } from "@/lib/jobs/job-fields";
 import { checkRateLimit } from "@/lib/security/ratelimit";
 import type { EvaluationResult } from "@/lib/ai/schema";
+import { isEmailVerified, VERIFY_REQUIRED_MESSAGE } from "@/lib/auth/require-verified";
 
 export async function previewMatch(
   jobId: string,
@@ -108,6 +109,13 @@ export async function submitApplication(input: {
   if (!userId) return { ok: false, error: "Chưa đăng nhập" };
   if (session.user.role !== "CANDIDATE")
     return { ok: false, error: "Chỉ ứng viên mới được ứng tuyển" };
+
+  const verified = await prisma.user.findUnique({
+    where: { id: userId },
+    select: { emailVerified: true },
+  });
+  if (!isEmailVerified(verified))
+    return { ok: false, error: VERIFY_REQUIRED_MESSAGE };
 
   if (!(await checkRateLimit("mutation", userId)))
     return { ok: false, error: "Bạn thao tác quá nhanh, thử lại sau một phút" };

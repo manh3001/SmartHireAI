@@ -5,12 +5,19 @@ import { revalidateTag } from "next/cache";
 import { CACHE_TAGS } from "@/lib/cache/tags";
 import prisma from "@/lib/db/prisma";
 import { requireUser, requireRole } from "@/lib/auth/session";
+import { isEmailVerified } from "@/lib/auth/require-verified";
 import { jobSchema } from "./schema";
 import { parseSalaryInput } from "./salary";
 import { notifyMatchingAlerts } from "./alert-notify";
 
 export async function createJobDescription(formData: FormData): Promise<void> {
   const session = await requireRole("RECRUITER");
+
+  const rec = await prisma.user.findUnique({
+    where: { id: session.user.id },
+    select: { emailVerified: true },
+  });
+  if (!isEmailVerified(rec)) redirect("/dashboard?verify=1");
 
   const parsed = jobSchema.safeParse({
     title: String(formData.get("title") ?? "").trim(),

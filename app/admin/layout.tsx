@@ -12,6 +12,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
           <Link href="/admin" className="text-muted-foreground hover:text-foreground">Tổng quan</Link>
           <Link href="/admin/users" className="text-muted-foreground hover:text-foreground">Người dùng</Link>
           <Link href="/admin/jobs" className="text-muted-foreground hover:text-foreground">Tin tuyển dụng</Link>
+          <Link href="/admin/audit" className="text-muted-foreground hover:text-foreground">Nhật ký</Link>
         </nav>
         {children}
       </main>

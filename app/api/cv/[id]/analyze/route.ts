@@ -1,9 +1,11 @@
 import { z } from "zod";
+import { NextResponse } from "next/server";
 import { auth } from "@/auth";
 import prisma from "@/lib/db/prisma";
 import { getAiClient, AI_MODEL } from "@/lib/ai/client";
 import { loadCvInput } from "@/lib/cv/load";
 import { checkRateLimit } from "@/lib/security/ratelimit";
+import { assertSameOrigin } from "@/lib/security/origin";
 
 export const runtime = "nodejs";
 
@@ -73,13 +75,17 @@ function cvToText(cv: Awaited<ReturnType<typeof loadCvInput>>): string {
 }
 
 export async function POST(
-  _req: Request,
+  req: Request,
   { params }: { params: Promise<{ id: string }> },
 ) {
   const { id } = await params;
   const session = await auth();
   if (!session?.user?.id) return new Response("Chưa đăng nhập", { status: 401 });
   const userId = session.user.id;
+
+  if (!assertSameOrigin(req)) {
+    return NextResponse.json({ error: "Yêu cầu không hợp lệ" }, { status: 403 });
+  }
 
   if (!(await checkRateLimit("ai", userId))) {
     return new Response("Bạn gửi yêu cầu quá nhanh", { status: 429 });

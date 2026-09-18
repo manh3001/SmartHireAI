@@ -20,6 +20,9 @@ model User {
   name         String
   role            Role             @default(CANDIDATE)
   createdAt       DateTime         @default(now())
+  emailVerified DateTime?
+  authTokens    AuthToken[]
+  auditLogs     AuditLog[]
   cvs             CV[]
   jobDescriptions JobDescription[]
   evaluations     Evaluation[]
@@ -406,4 +409,37 @@ model PushSubscription {
   createdAt DateTime @default(now())
 
   @@index([userId])
+}
+
+enum AuthTokenPurpose {
+  EMAIL_VERIFY
+  PASSWORD_RESET
+}
+
+model AuthToken {
+  id        String           @id @default(cuid())
+  userId    String
+  user      User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  purpose   AuthTokenPurpose
+  tokenHash String           @unique
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime         @default(now())
+
+  @@index([userId, purpose])
+}
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  action    String
+  targetId  String?
+  ip        String?
+  metadata  Json?
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([action])
+  @@index([createdAt])
 }

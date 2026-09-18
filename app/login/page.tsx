@@ -43,6 +43,9 @@ export default function LoginPage() {
           <form onSubmit={onSubmit} className="flex flex-col gap-3">
             <Input name="email" type="email" placeholder="Email" required />
             <Input name="password" type="password" placeholder="Mật khẩu" required />
+            <Link href="/forgot-password" className="self-end text-xs text-muted-foreground hover:text-primary">
+              Quên mật khẩu?
+            </Link>
             {error && <p className="text-sm text-red-600">{error}</p>}
             <Button type="submit" disabled={loading} className="mt-1">
               {loading ? "Đang xử lý..." : "Đăng nhập"}

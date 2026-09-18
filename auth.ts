@@ -1,12 +1,14 @@
 import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import Google from "next-auth/providers/google";
+import type { Prisma } from "@prisma/client";
 import prisma from "@/lib/db/prisma";
 import { verifyPassword } from "@/lib/auth/password";
 import { resolveCredentials } from "@/lib/auth/credentials";
 import { resolveOAuthUser } from "@/lib/auth/oauth";
 import { checkRateLimit } from "@/lib/security/ratelimit";
 import { getClientIp } from "@/lib/security/ip";
+import { recordAudit, AUDIT_ACTIONS } from "@/lib/audit/log";
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   session: { strategy: "jwt" },
@@ -26,7 +28,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           return null; // trả lỗi đồng nhất, không tiết lộ bị khoá
         }
 
-        return resolveCredentials(email, password, {
+        const authed = await resolveCredentials(email, password, {
           findByEmail: (e) =>
             prisma.user.findUnique({
               where: { email: e },
@@ -34,6 +36,30 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
             }),
           verify: verifyPassword,
         });
+
+        await recordAudit(
+          {
+            action: authed ? AUDIT_ACTIONS.loginSuccess : AUDIT_ACTIONS.loginFailure,
+            userId: authed?.id ?? null,
+            ip,
+            metadata: authed ? null : { email },
+          },
+          {
+            save: (en) =>
+              prisma.auditLog
+                .create({
+                  data: {
+                    action: en.action,
+                    userId: en.userId ?? undefined,
+                    targetId: en.targetId ?? undefined,
+                    ip: en.ip ?? undefined,
+                    metadata: en.metadata != null ? (en.metadata as Prisma.InputJsonValue) : undefined,
+                  },
+                })
+                .then(() => undefined),
+          },
+        );
+        return authed;
       },
     }),
     Google({
@@ -62,7 +88,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
               prisma.user.findUnique({ where: { email }, select: { id: true, role: true } }),
             createUser: (email, name) =>
               prisma.user.create({
-                data: { email, name, role: "CANDIDATE" },
+                data: { email, name, role: "CANDIDATE", emailVerified: new Date() },
                 select: { id: true, role: true },
               }),
           },
