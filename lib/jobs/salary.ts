@@ -2,9 +2,13 @@ export const SALARY_FILTER_STEPS = [10, 15, 20, 25, 30, 40, 50] as const;
 
 const MILLION = 1_000_000;
 
+export function vndToMillions(vnd: number): number {
+  return Math.round((vnd / MILLION) * 10) / 10;
+}
+
 // VND -> chuỗi triệu, bỏ ".0" thừa, giữ tối đa 1 chữ số thập phân.
 function toMillions(vnd: number): string {
-  const m = Math.round((vnd / MILLION) * 10) / 10;
+  const m = vndToMillions(vnd);
   return Number.isInteger(m) ? String(m) : m.toFixed(1);
 }
 

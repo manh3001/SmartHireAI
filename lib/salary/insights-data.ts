@@ -1,6 +1,7 @@
 import { unstable_cache } from "next/cache";
 import prisma from "@/lib/db/prisma";
 import { CACHE_TAGS } from "@/lib/cache/tags";
+import type { SuggestionRow } from "./suggestion";
 import {
   computeSalaryInsights,
   computeSalaryByLevel,
@@ -39,4 +40,19 @@ const getCached = unstable_cache(
 
 export async function getCachedSalaryData(): Promise<SalaryData> {
   return getCached();
+}
+
+const getCachedRows = unstable_cache(
+  async (): Promise<SuggestionRow[]> => {
+    return prisma.jobDescription.findMany({
+      where: { isPublic: true },
+      select: { category: true, experienceLevel: true, salaryMin: true, salaryMax: true },
+    });
+  },
+  ["salary-rows"],
+  { tags: [CACHE_TAGS.jobs], revalidate: 3600 },
+);
+
+export async function getCachedSalaryRows(): Promise<SuggestionRow[]> {
+  return getCachedRows();
 }
