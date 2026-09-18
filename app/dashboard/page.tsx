@@ -20,6 +20,8 @@ import { profileCompleteness } from "@/lib/candidates/completeness";
 import ProfileCompleteness from "@/components/candidates/ProfileCompleteness";
 import VerifyEmailBanner from "@/components/VerifyEmailBanner";
 import { isEmailVerified } from "@/lib/auth/require-verified";
+import { computeOnboarding } from "@/lib/dashboard/onboarding";
+import OnboardingCard from "@/components/dashboard/OnboardingCard";
 
 export default async function DashboardPage() {
   const session = await auth();
@@ -46,6 +48,15 @@ export default async function DashboardPage() {
         <Navbar />
         <main className="mx-auto w-full max-w-3xl flex-1 p-6">
           {!isEmailVerified(me) && <VerifyEmailBanner />}
+          <OnboardingCard
+            onboarding={computeOnboarding("RECRUITER", {
+              hasCV: false,
+              hasBio: false,
+              hasApplication: false,
+              hasCompany: !!companyProfile,
+              hasJob: jobs.length > 0,
+            })}
+          />
           <div className="mb-6 flex items-center justify-between">
             <div>
               <h1 className="text-2xl font-bold text-foreground">Tin tuyển dụng của bạn</h1>
@@ -123,12 +134,22 @@ export default async function DashboardPage() {
     linkedin: candidateProfile?.linkedin ?? "",
     website: candidateProfile?.website ?? "",
   });
+  const appCount = await prisma.application.count({ where: { candidateId: session.user.id } });
   const atLimit = cvCount >= 3;
   return (
     <div className="flex min-h-full flex-col bg-muted/20">
       <Navbar />
       <main className="mx-auto w-full max-w-3xl flex-1 p-6">
         {!isEmailVerified(me) && <VerifyEmailBanner />}
+        <OnboardingCard
+          onboarding={computeOnboarding("CANDIDATE", {
+            hasCV: cvCount > 0,
+            hasBio: !!candidateProfile?.bio?.trim(),
+            hasApplication: appCount > 0,
+            hasCompany: false,
+            hasJob: false,
+          })}
+        />
         <div className="mb-6 flex items-center justify-between">
           <div>
             <h1 className="text-2xl font-bold text-foreground">CV của bạn</h1>
