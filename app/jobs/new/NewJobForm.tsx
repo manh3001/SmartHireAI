@@ -6,6 +6,7 @@ import { createJobDescription } from "@/lib/jobs/actions";
 import { draftJobDescription } from "@/lib/jobs/ai-actions";
 import { formatSalary, vndToMillions } from "@/lib/jobs/salary";
 import { suggestSalary } from "@/lib/jobs/salary-suggest-actions";
+import { MIN_SUGGESTION_SAMPLE } from "@/lib/salary/suggestion";
 import type { SalarySuggestion } from "@/lib/salary/suggestion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -154,7 +155,7 @@ export default function NewJobForm() {
               {formatSalary(sug.suggestion.medianMin, sug.suggestion.medianMax, false) ?? "Chưa xác định"}
               <span className="ml-2 text-xs font-normal text-muted-foreground">
                 {BASIS_LABEL[sug.suggestion.basis]} · {sug.suggestion.sampleSize} tin
-                {sug.suggestion.sampleSize < 3 ? " · ít dữ liệu" : ""}
+                {sug.suggestion.sampleSize < MIN_SUGGESTION_SAMPLE ? " · ít dữ liệu" : ""}
               </span>
             </p>
             {sug.note ? <p className="mt-1 text-muted-foreground">{sug.note}</p> : null}
