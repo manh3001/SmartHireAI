@@ -11,7 +11,7 @@ import { getClientIp } from "@/lib/security/ip";
 import { recordAudit, AUDIT_ACTIONS } from "@/lib/audit/log";
 import { checkTokenVersion } from "@/lib/auth/token-version";
 import { verifyTotp } from "@/lib/auth/totp";
-import { decryptSecret } from "@/lib/auth/totp-crypto";
+import { safeDecryptSecret } from "@/lib/auth/totp-crypto";
 import { hashBackupCode } from "@/lib/auth/backup-codes";
 import { resolveTwoFactor } from "@/lib/auth/two-factor";
 
@@ -28,7 +28,8 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         if (!email || !password) return null;
 
         const ip = getClientIp(request as Request | undefined);
-        const ok = await checkRateLimit("login", `${ip}:${email}`);
+        const rlKey = code ? `2fa:${ip}:${email}` : `${ip}:${email}`;
+        const ok = await checkRateLimit("login", rlKey);
         if (!ok) {
           console.warn("[auth] login bị rate-limit:", email);
           await recordAudit(
@@ -73,7 +74,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
             where: { id: authed.id },
             select: { totpEnabled: true, totpSecret: true },
           });
-          const totpSecret = tf?.totpSecret ? decryptSecret(tf.totpSecret) : null;
+          const totpSecret = tf?.totpSecret ? safeDecryptSecret(tf.totpSecret) : null;
           const outcome = await resolveTwoFactor(
             { totpEnabled: Boolean(tf?.totpEnabled), code },
             {

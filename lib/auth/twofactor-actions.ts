@@ -8,7 +8,7 @@ import { requireUser } from "@/lib/auth/session";
 import { resolveCredentials } from "@/lib/auth/credentials";
 import { verifyPassword } from "@/lib/auth/password";
 import { generateSecret, totpUri, verifyTotp } from "@/lib/auth/totp";
-import { encryptSecret, decryptSecret } from "@/lib/auth/totp-crypto";
+import { encryptSecret, safeDecryptSecret } from "@/lib/auth/totp-crypto";
 import { generateBackupCodes, hashBackupCode } from "@/lib/auth/backup-codes";
 import { checkRateLimit } from "@/lib/security/ratelimit";
 import { getClientIp } from "@/lib/security/ip";
@@ -87,7 +87,8 @@ export async function confirmTotpEnrollment(
   const user = await prisma.user.findUnique({ where: { id: userId }, select: { totpSecret: true, totpEnabled: true } });
   if (!user?.totpSecret) return { ok: false, error: "Chưa bắt đầu thiết lập 2FA" };
   if (user.totpEnabled) return { ok: false, error: "2FA đã được bật" };
-  if (!verifyTotp(decryptSecret(user.totpSecret), code)) return { ok: false, error: "Mã không đúng" };
+  const pendingSecret = safeDecryptSecret(user.totpSecret);
+  if (!pendingSecret || !verifyTotp(pendingSecret, code)) return { ok: false, error: "Mã không đúng" };
 
   const { plain, hashes } = generateBackupCodes(10);
   await prisma.$transaction([
@@ -100,7 +101,7 @@ export async function confirmTotpEnrollment(
 }
 
 async function verifyUserCode(userId: string, secretEnc: string | null, code: string): Promise<boolean> {
-  if (secretEnc && verifyTotp(decryptSecret(secretEnc), code)) return true;
+  if (secretEnc) { const s = safeDecryptSecret(secretEnc); if (s && verifyTotp(s, code)) return true; }
   const r = await prisma.twoFactorBackupCode.updateMany({
     where: { userId, codeHash: hashBackupCode(code), usedAt: null },
     data: { usedAt: new Date() },

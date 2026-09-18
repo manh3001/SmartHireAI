@@ -22,3 +22,11 @@ export function decryptSecret(payload: string): string {
   decipher.setAuthTag(Buffer.from(tagHex, "hex"));
   return Buffer.concat([decipher.update(Buffer.from(dataHex, "hex")), decipher.final()]).toString("utf8");
 }
+
+export function safeDecryptSecret(payload: string): string | null {
+  try {
+    return decryptSecret(payload);
+  } catch {
+    return null;
+  }
+}
