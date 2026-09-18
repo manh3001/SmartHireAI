@@ -78,7 +78,10 @@ export async function confirmPasswordReset(
           data: { usedAt: at },
         });
         if (consumed.count === 0) return; // token đã dùng bởi request khác
-        await tx.user.update({ where: { id: userId }, data: { passwordHash } });
+        await tx.user.update({
+          where: { id: userId },
+          data: { passwordHash, tokenVersion: { increment: 1 } },
+        });
         // Vô hiệu mọi token reset khác còn hiệu lực của user.
         await tx.authToken.updateMany({
           where: { userId, purpose: "PASSWORD_RESET", usedAt: null },

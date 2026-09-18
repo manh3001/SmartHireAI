@@ -105,6 +105,13 @@ export default async function Navbar() {
                 </span>
               </div>
 
+              <Link
+                href="/settings/security"
+                className={buttonVariants({ variant: "ghost", size: "sm" })}
+              >
+                Bảo mật
+              </Link>
+
               <form
                 action={async () => {
                   "use server";
