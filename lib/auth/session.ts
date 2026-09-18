@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import type { Session } from "next-auth";
 
 export type Role = "CANDIDATE" | "RECRUITER" | "ADMIN";
 
@@ -8,7 +9,7 @@ export function roleAccess(
   session: SessionLike,
   role: Role,
 ): "ok" | "login" | "forbidden" {
-  if (!session?.user) return "login";
+  if (!session?.user?.id) return "login";
   return session.user.role === role ? "ok" : "forbidden";
 }
 
@@ -18,14 +19,16 @@ export async function getSessionUser() {
   return session?.user ?? null;
 }
 
-export async function requireUser() {
+export type AuthedSession = Session & { user: { id: string } };
+
+export async function requireUser(): Promise<AuthedSession> {
   const { auth } = await import("@/auth");
   const session = await auth();
   if (!session?.user?.id) redirect("/login");
   return session!;
 }
 
-export async function requireRole(role: Role) {
+export async function requireRole(role: Role): Promise<AuthedSession> {
   const { auth } = await import("@/auth");
   const session = await auth();
   const access = roleAccess(session, role);

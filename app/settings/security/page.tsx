@@ -7,7 +7,7 @@ import TwoFactorSection from "./TwoFactorSection";
 
 export default async function SecuritySettingsPage() {
   const session = await requireUser();
-  const userId = session.user!.id as string;
+  const userId = session.user.id;
 
   const logins = await prisma.auditLog.findMany({
     where: { userId, action: "login.success" },

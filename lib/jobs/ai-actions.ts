@@ -15,7 +15,7 @@ export async function draftJobDescription(
   if (!title) return { ok: false, error: "Vui lòng nhập tiêu đề vị trí trước" };
   if (!brief) return { ok: false, error: "Vui lòng nhập mô tả ngắn để AI soạn" };
 
-  if (!(await checkRateLimit("ai", session.user!.id as string)))
+  if (!(await checkRateLimit("ai", session.user.id)))
     return { ok: false, error: "Bạn thao tác quá nhanh, thử lại sau một phút" };
 
   try {

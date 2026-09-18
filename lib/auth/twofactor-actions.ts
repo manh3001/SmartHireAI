@@ -59,7 +59,7 @@ export async function beginTotpEnrollment(): Promise<
   { ok: true; qrDataUrl: string; secret: string } | { ok: false; error: string }
 > {
   const session = await requireUser();
-  const userId = session.user!.id as string;
+  const userId = session.user.id;
   if (!(await checkRateLimit("login", `2fa:${userId}`)))
     return { ok: false, error: "Bạn thử quá nhiều lần, hãy đợi rồi thử lại" };
   const user = await prisma.user.findUnique({ where: { id: userId }, select: { email: true, totpEnabled: true } });
@@ -80,7 +80,7 @@ export async function confirmTotpEnrollment(
   code: string,
 ): Promise<{ ok: true; backupCodes: string[] } | { ok: false; error: string }> {
   const session = await requireUser();
-  const userId = session.user!.id as string;
+  const userId = session.user.id;
   if (!(await checkRateLimit("login", `2fa:${userId}`)))
     return { ok: false, error: "Bạn thử quá nhiều lần, hãy đợi rồi thử lại" };
 
@@ -111,7 +111,7 @@ async function verifyUserCode(userId: string, secretEnc: string | null, code: st
 
 export async function disableTwoFactor(code: string): Promise<{ ok: boolean; error?: string }> {
   const session = await requireUser();
-  const userId = session.user!.id as string;
+  const userId = session.user.id;
   if (!(await checkRateLimit("login", `2fa:${userId}`)))
     return { ok: false, error: "Bạn thử quá nhiều lần, hãy đợi rồi thử lại" };
   const user = await prisma.user.findUnique({ where: { id: userId }, select: { totpSecret: true, totpEnabled: true } });
@@ -130,7 +130,7 @@ export async function regenerateBackupCodes(
   code: string,
 ): Promise<{ ok: true; backupCodes: string[] } | { ok: false; error: string }> {
   const session = await requireUser();
-  const userId = session.user!.id as string;
+  const userId = session.user.id;
   if (!(await checkRateLimit("login", `2fa:${userId}`)))
     return { ok: false, error: "Bạn thử quá nhiều lần, hãy đợi rồi thử lại" };
   const user = await prisma.user.findUnique({ where: { id: userId }, select: { totpSecret: true, totpEnabled: true } });

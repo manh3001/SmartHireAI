@@ -17,7 +17,7 @@ export async function suggestSalary(input: {
   skills: string;
 }): Promise<{ ok: true; suggestion: SalarySuggestion; note: string } | { ok: false; error: string }> {
   const session = await requireRole("RECRUITER");
-  if (!(await checkRateLimit("ai", session.user!.id as string)))
+  if (!(await checkRateLimit("ai", session.user.id)))
     return { ok: false, error: "Bạn thao tác quá nhanh, vui lòng thử lại sau." };
 
   const rows = await getCachedSalaryRows();

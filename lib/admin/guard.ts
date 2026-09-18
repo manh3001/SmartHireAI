@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 import { roleAccess } from "@/lib/auth/session";
 
-type SessionLike = { user?: { role?: string } | null } | null;
+type SessionLike = { user?: { id?: string; role?: string } | null } | null;
 
 export function adminAccess(session: SessionLike): "ok" | "login" | "forbidden" {
   return roleAccess(session, "ADMIN");

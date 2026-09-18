@@ -9,12 +9,12 @@ describe("adminAccess", () => {
     expect(adminAccess({} as never)).toBe("login");
   });
   it("CANDIDATE -> forbidden", () => {
-    expect(adminAccess({ user: { role: "CANDIDATE" } })).toBe("forbidden");
+    expect(adminAccess({ user: { id: "u1", role: "CANDIDATE" } })).toBe("forbidden");
   });
   it("RECRUITER -> forbidden", () => {
-    expect(adminAccess({ user: { role: "RECRUITER" } })).toBe("forbidden");
+    expect(adminAccess({ user: { id: "u1", role: "RECRUITER" } })).toBe("forbidden");
   });
   it("ADMIN -> ok", () => {
-    expect(adminAccess({ user: { role: "ADMIN" } })).toBe("ok");
+    expect(adminAccess({ user: { id: "u1", role: "ADMIN" } })).toBe("ok");
   });
 });

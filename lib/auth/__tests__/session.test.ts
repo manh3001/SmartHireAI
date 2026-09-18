@@ -6,10 +6,13 @@ describe("roleAccess", () => {
     expect(roleAccess(null, "ADMIN")).toBe("login");
     expect(roleAccess({ user: null }, "RECRUITER")).toBe("login");
   });
-  it("dung role -> ok", () => {
-    expect(roleAccess({ user: { role: "ADMIN" } }, "ADMIN")).toBe("ok");
+  it("co user nhung thieu id -> login", () => {
+    expect(roleAccess({ user: { role: "ADMIN" } }, "ADMIN")).toBe("login");
   });
-  it("sai role -> forbidden", () => {
-    expect(roleAccess({ user: { role: "CANDIDATE" } }, "RECRUITER")).toBe("forbidden");
+  it("dung role (co id) -> ok", () => {
+    expect(roleAccess({ user: { id: "u1", role: "ADMIN" } }, "ADMIN")).toBe("ok");
+  });
+  it("sai role (co id) -> forbidden", () => {
+    expect(roleAccess({ user: { id: "u1", role: "CANDIDATE" } }, "RECRUITER")).toBe("forbidden");
   });
 });
