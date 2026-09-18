@@ -39,7 +39,7 @@ export function generateSecret(): string {
 
 export function totpUri(input: { secret: string; email: string; issuer?: string }): string {
   const issuer = input.issuer ?? "SmartHire";
-  const label = encodeURIComponent(`${issuer}:${input.email}`);
+  const label = `${encodeURIComponent(issuer)}:${encodeURIComponent(input.email)}`;
   const params = new URLSearchParams({
     secret: input.secret,
     issuer,

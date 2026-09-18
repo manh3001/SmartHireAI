@@ -42,7 +42,7 @@ describe("verifyTotp", () => {
   });
   it("từ chối mã sai định dạng", () => {
     expect(verifyTotp(secret, "abc", { now })).toBe(false);
-    expect(verifyTotp(secret, "000000", { now })).toBe(false);
+    expect(verifyTotp(secret, generateTotp(secret, now - 300_000), { now })).toBe(false);
   });
 });
 
