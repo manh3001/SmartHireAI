@@ -60,6 +60,8 @@ export async function beginTotpEnrollment(): Promise<
 > {
   const session = await requireUser();
   const userId = session.user!.id as string;
+  if (!(await checkRateLimit("login", `2fa:${userId}`)))
+    return { ok: false, error: "Bạn thử quá nhiều lần, hãy đợi rồi thử lại" };
   const user = await prisma.user.findUnique({ where: { id: userId }, select: { email: true, totpEnabled: true } });
   if (!user) return { ok: false, error: "Không tìm thấy tài khoản" };
   if (user.totpEnabled) return { ok: false, error: "2FA đã được bật" };
@@ -139,5 +141,9 @@ export async function regenerateBackupCodes(
     prisma.twoFactorBackupCode.deleteMany({ where: { userId } }),
     prisma.twoFactorBackupCode.createMany({ data: hashes.map((codeHash) => ({ userId, codeHash })) }),
   ]);
+  await recordAudit(
+    { action: AUDIT_ACTIONS.twoFactorRegenerateBackup, userId, ip: await clientIp() },
+    auditSave,
+  );
   return { ok: true, backupCodes: plain };
 }
