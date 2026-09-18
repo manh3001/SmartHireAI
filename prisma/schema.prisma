@@ -21,6 +21,7 @@ model User {
   role            Role             @default(CANDIDATE)
   createdAt       DateTime         @default(now())
   emailVerified DateTime?
+  tokenVersion  Int      @default(0)
   authTokens    AuthToken[]
   auditLogs     AuditLog[]
   cvs             CV[]
