@@ -13,10 +13,10 @@ export async function deleteUserAsAdmin(formData: FormData): Promise<void> {
   const id = String(formData.get("id") ?? "");
   const target = await prisma.user.findUnique({ where: { id }, select: { id: true, role: true } });
   if (!target) return;
-  if (!canDeleteUser(session.user!.id, target).ok) return;
+  if (!canDeleteUser(session.user.id, target).ok) return;
   await prisma.user.delete({ where: { id } });
   await recordAudit(
-    { action: AUDIT_ACTIONS.userDelete, userId: session.user!.id, targetId: id },
+    { action: AUDIT_ACTIONS.userDelete, userId: session.user.id, targetId: id },
     {
       save: (en) =>
         prisma.auditLog

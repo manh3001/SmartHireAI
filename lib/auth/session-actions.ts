@@ -7,7 +7,7 @@ import { recordAudit, AUDIT_ACTIONS } from "@/lib/audit/log";
 
 export async function revokeAllSessions(): Promise<void> {
   const session = await requireUser();
-  const userId = session.user!.id as string;
+  const userId = session.user.id;
 
   await prisma.user.update({
     where: { id: userId },
