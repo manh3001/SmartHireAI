@@ -180,28 +180,28 @@ export default function CvEditor({
           <Card className="mb-4">
             <CardHeader><CardTitle className="text-foreground">Thông tin cá nhân</CardTitle></CardHeader>
             <CardContent className="grid gap-3">
-              <div><Label>Họ tên</Label>
-                <Input value={cv.profile.fullName} onChange={(e) => setProfile("fullName", e.target.value)} /></div>
-              <div><Label>Chức danh</Label>
-                <Input value={cv.profile.headline} onChange={(e) => setProfile("headline", e.target.value)} /></div>
+              <div><Label htmlFor="profile-fullName">Họ tên</Label>
+                <Input id="profile-fullName" value={cv.profile.fullName} onChange={(e) => setProfile("fullName", e.target.value)} /></div>
+              <div><Label htmlFor="profile-headline">Chức danh</Label>
+                <Input id="profile-headline" value={cv.profile.headline} onChange={(e) => setProfile("headline", e.target.value)} /></div>
               <div className="grid grid-cols-2 gap-2">
-                <div><Label>Email</Label>
-                  <Input value={cv.profile.email} onChange={(e) => setProfile("email", e.target.value)} /></div>
-                <div><Label>Điện thoại</Label>
-                  <Input value={cv.profile.phone} onChange={(e) => setProfile("phone", e.target.value)} /></div>
+                <div><Label htmlFor="profile-email">Email</Label>
+                  <Input id="profile-email" value={cv.profile.email} onChange={(e) => setProfile("email", e.target.value)} /></div>
+                <div><Label htmlFor="profile-phone">Điện thoại</Label>
+                  <Input id="profile-phone" value={cv.profile.phone} onChange={(e) => setProfile("phone", e.target.value)} /></div>
               </div>
-              <div><Label>Địa chỉ / Thành phố</Label>
-                <Input placeholder="TP. Hồ Chí Minh" value={cv.profile.location} onChange={(e) => setProfile("location", e.target.value)} /></div>
-              <div><Label>LinkedIn</Label>
-                <Input placeholder="linkedin.com/in/yourname" value={cv.profile.linkedin} onChange={(e) => setProfile("linkedin", e.target.value)} /></div>
+              <div><Label htmlFor="profile-location">Địa chỉ / Thành phố</Label>
+                <Input id="profile-location" placeholder="TP. Hồ Chí Minh" value={cv.profile.location} onChange={(e) => setProfile("location", e.target.value)} /></div>
+              <div><Label htmlFor="profile-linkedin">LinkedIn</Label>
+                <Input id="profile-linkedin" placeholder="linkedin.com/in/yourname" value={cv.profile.linkedin} onChange={(e) => setProfile("linkedin", e.target.value)} /></div>
               <div className="grid grid-cols-2 gap-2">
-                <div><Label>GitHub</Label>
-                  <Input placeholder="github.com/yourname" value={cv.profile.github} onChange={(e) => setProfile("github", e.target.value)} /></div>
-                <div><Label>Portfolio</Label>
-                  <Input placeholder="yoursite.com" value={cv.profile.portfolio} onChange={(e) => setProfile("portfolio", e.target.value)} /></div>
+                <div><Label htmlFor="profile-github">GitHub</Label>
+                  <Input id="profile-github" placeholder="github.com/yourname" value={cv.profile.github} onChange={(e) => setProfile("github", e.target.value)} /></div>
+                <div><Label htmlFor="profile-portfolio">Portfolio</Label>
+                  <Input id="profile-portfolio" placeholder="yoursite.com" value={cv.profile.portfolio} onChange={(e) => setProfile("portfolio", e.target.value)} /></div>
               </div>
-              <div><Label>Giới thiệu bản thân</Label>
-                <Textarea value={cv.profile.summary} onChange={(e) => setProfile("summary", e.target.value)} /></div>
+              <div><Label htmlFor="profile-summary">Giới thiệu bản thân</Label>
+                <Textarea id="profile-summary" value={cv.profile.summary} onChange={(e) => setProfile("summary", e.target.value)} /></div>
             </CardContent>
           </Card>
 
