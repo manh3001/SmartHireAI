@@ -38,14 +38,14 @@ export default async function CompanyEditPage({
           <CardHeader><CardTitle className="text-foreground">Hồ sơ công ty</CardTitle></CardHeader>
           <CardContent>
             <form action={upsertCompanyProfile} encType="multipart/form-data" className="grid gap-3">
-              <div><Label>Tên công ty</Label>
-                <Input name="name" defaultValue={profile?.name ?? ""} placeholder="VD: ACME" required /></div>
-              <div><Label>Địa điểm</Label>
-                <Input name="location" defaultValue={profile?.location ?? ""} placeholder="VD: Hà Nội" /></div>
-              <div><Label>Website</Label>
-                <Input name="website" defaultValue={profile?.website ?? ""} placeholder="https://..." /></div>
+              <div><Label htmlFor="name">Tên công ty</Label>
+                <Input id="name" name="name" defaultValue={profile?.name ?? ""} placeholder="VD: ACME" required /></div>
+              <div><Label htmlFor="location">Địa điểm</Label>
+                <Input id="location" name="location" defaultValue={profile?.location ?? ""} placeholder="VD: Hà Nội" /></div>
+              <div><Label htmlFor="website">Website</Label>
+                <Input id="website" name="website" defaultValue={profile?.website ?? ""} placeholder="https://..." /></div>
               <div>
-                <Label>Logo công ty</Label>
+                <Label htmlFor="logo">Logo công ty</Label>
                 <div className="mt-1 mb-2 flex items-center gap-3">
                   {profile?.logoUrl ? (
                     // eslint-disable-next-line @next/next/no-img-element
@@ -55,6 +55,7 @@ export default async function CompanyEditPage({
                   )}
                 </div>
                 <input
+                  id="logo"
                   type="file"
                   name="logo"
                   accept="image/png,image/jpeg,image/webp"
@@ -67,8 +68,8 @@ export default async function CompanyEditPage({
                 )}
                 <p className="mt-1 text-xs text-muted-foreground">PNG, JPEG hoặc WebP, tối đa 500KB.</p>
               </div>
-              <div><Label>Giới thiệu công ty</Label>
-                <Textarea name="description" rows={6} defaultValue={profile?.description ?? ""} placeholder="Mô tả về công ty..." /></div>
+              <div><Label htmlFor="description">Giới thiệu công ty</Label>
+                <Textarea id="description" name="description" rows={6} defaultValue={profile?.description ?? ""} placeholder="Mô tả về công ty..." /></div>
               {error && <p className="text-sm text-destructive">{error}</p>}
               <Button type="submit" className="justify-self-start">Lưu hồ sơ</Button>
             </form>
