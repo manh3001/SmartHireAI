@@ -86,8 +86,8 @@ export default function EvaluateClient({
             <Input placeholder="Công ty (tuỳ chọn)" value={jdCompany} onChange={(e) => setJdCompany(e.target.value)} />
           </div>
           <div>
-            <Label>Dán nội dung JD vào đây</Label>
-            <Textarea rows={8} value={jdText} onChange={(e) => setJdText(e.target.value)}
+            <Label htmlFor="jd-text">Dán nội dung JD vào đây</Label>
+            <Textarea id="jd-text" rows={8} value={jdText} onChange={(e) => setJdText(e.target.value)}
               placeholder="Copy mô tả công việc từ tin tuyển dụng và dán vào..." />
           </div>
           <Button onClick={onEvaluate} disabled={loading || !jdText.trim()} className="justify-self-start">

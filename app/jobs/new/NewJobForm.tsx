@@ -81,16 +81,16 @@ export default function NewJobForm() {
 
   return (
     <form action={createJobDescription} className="grid gap-3">
-      <div><Label>Tiêu đề vị trí</Label>
-        <Input name="title" placeholder="VD: Frontend Developer" required
+      <div><Label htmlFor="title">Tiêu đề vị trí</Label>
+        <Input id="title" name="title" placeholder="VD: Frontend Developer" required
           value={title} onChange={(e) => setTitle(e.target.value)} /></div>
 
       <div className="rounded-lg border border-dashed border-primary/40 bg-primary/5 p-3">
-        <Label>Soạn nhanh bằng AI</Label>
+        <Label htmlFor="jd-brief">Soạn nhanh bằng AI</Label>
         <p className="mb-2 text-xs text-muted-foreground">
           Nhập vài gạch đầu dòng (kỹ năng, kinh nghiệm, đãi ngộ...), AI sẽ soạn mô tả đầy đủ.
         </p>
-        <Textarea rows={3} placeholder="VD: React + TypeScript, 2 năm KN, làm việc Hà Nội, lương thỏa thuận"
+        <Textarea id="jd-brief" rows={3} placeholder="VD: React + TypeScript, 2 năm KN, làm việc Hà Nội, lương thỏa thuận"
           value={brief} onChange={(e) => setBrief(e.target.value)} />
         <Button type="button" variant="outline" size="sm" className="mt-2"
           onClick={handleDraft} disabled={isPending}>
@@ -98,36 +98,36 @@ export default function NewJobForm() {
         </Button>
       </div>
 
-      <div><Label>Công ty</Label>
-        <Input name="company" placeholder="VD: ACME" /></div>
-      <div><Label>Địa điểm</Label>
-        <Input name="location" placeholder="VD: Hà Nội, Remote" /></div>
-      <div><Label>Loại hình làm việc</Label>
-        <select name="employmentType" className={selectClass}
+      <div><Label htmlFor="company">Công ty</Label>
+        <Input id="company" name="company" placeholder="VD: ACME" /></div>
+      <div><Label htmlFor="location">Địa điểm</Label>
+        <Input id="location" name="location" placeholder="VD: Hà Nội, Remote" /></div>
+      <div><Label htmlFor="employmentType">Loại hình làm việc</Label>
+        <select id="employmentType" name="employmentType" className={selectClass}
           value={employmentType} onChange={(e) => setEmploymentType(e.target.value)}>
           <option value="">— Chọn —</option>
           {EMPLOYMENT_TYPES.map((t) => (
             <option key={t} value={t}>{EMPLOYMENT_TYPE_LABELS[t]}</option>
           ))}
         </select></div>
-      <div><Label>Ngành nghề</Label>
-        <select name="category" className={selectClass}
+      <div><Label htmlFor="category">Ngành nghề</Label>
+        <select id="category" name="category" className={selectClass}
           value={category} onChange={(e) => { setCategory(e.target.value); setSug(null); }}>
           <option value="">— Chọn —</option>
           {JOB_CATEGORIES.map((c) => (
             <option key={c.slug} value={c.slug}>{c.label}</option>
           ))}
         </select></div>
-      <div><Label>Cấp bậc</Label>
-        <select name="experienceLevel" className={selectClass}
+      <div><Label htmlFor="experienceLevel">Cấp bậc</Label>
+        <select id="experienceLevel" name="experienceLevel" className={selectClass}
           value={experienceLevel} onChange={(e) => { setExperienceLevel(e.target.value); setSug(null); }}>
           <option value="">— Chọn —</option>
           {EXPERIENCE_LEVELS.map((l) => (
             <option key={l} value={l}>{EXPERIENCE_LEVEL_LABELS[l]}</option>
           ))}
         </select></div>
-      <div><Label>Kỹ năng yêu cầu</Label>
-        <Input name="skills" placeholder="VD: React, Node, SQL (cách nhau bởi phẩy)"
+      <div><Label htmlFor="skills">Kỹ năng yêu cầu</Label>
+        <Input id="skills" name="skills" placeholder="VD: React, Node, SQL (cách nhau bởi phẩy)"
           value={skills} onChange={(e) => setSkills(e.target.value)} /></div>
 
       <div>
@@ -164,8 +164,8 @@ export default function NewJobForm() {
         ) : null}
       </div>
 
-      <div><Label>Mô tả công việc (JD)</Label>
-        <Textarea name="rawText" rows={10} placeholder="Dán nội dung mô tả công việc..." required
+      <div><Label htmlFor="rawText">Mô tả công việc (JD)</Label>
+        <Textarea id="rawText" name="rawText" rows={10} placeholder="Dán nội dung mô tả công việc..." required
           value={rawText} onChange={(e) => setRawText(e.target.value)} /></div>
       <Button type="submit" className="justify-self-start">Đăng tin</Button>
     </form>
